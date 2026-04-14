@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{% block title %}Mahitaji{% endblock %}</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="icon" href="{% static 'assets/favicon.ico' %}">
+    
+    <script src="{% static 'js/main.js' %}" defer></script>
+    
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav> 
+    <div class="top-row">
+        <a href="{% url 'home' %}" class="logo-container">
+            <img src="{% static 'assets/logo.png' %}" alt="Logo">
+            <span class="logo-text">Mahitaji</span>
+        </a>
+
+        <div class="nav-icons">
+            <a href="{% url 'search' %}" title="Search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </a>
+            <a href="{% url 'cart' %}" title="Shopping Cart">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </a>
+            <a href="{% url 'dashboard' %}" title="My Account">
+                <i class="fa-regular fa-user"></i>
+            </a>
+            <a id="navHamburger" class="hamburger">
+                <i class="fa-solid fa-bars"></i>
+            </a>
+        </div>
+    </div>
+
+    <div class="nav-links">		
+        		
+        <div class="nav-item">
+            <a href="#">Shop</a>
+            <ul class="dropdown">
+                <li><a href="{% url 'retailers' %}">For Retailers</a></li>
+                <li><a href="{% url 'wholesalers' %}">For Wholesalers</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-item">
+            <a href="#">Products Catalog</a>
+            <ul class="dropdown">
+                <li><a href="{% url 'categories' %}">By Categories</a></li>
+                <li><a href="{% url 'brands' %}">By Brand</a></li>
+            </ul>
+        </div>
+		
+        <div class="nav-item">
+            <a href="#">Mahitaji</a>
+            <ul class="dropdown">
+                <li><a href="{% url 'about' %}">About Us</a></li>
+                <li><a href="{% url 'statement' %}">Our Statement</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-item">
+            <a href="#">Contact Us</a>
+            <ul class="dropdown">
+                <li><a href="{% url 'contact' %}">Customer Care</a></li>
+                <li><a href="{% url 'location' %}">Our Location</a></li>
+            </ul>
+        </div>
+		
+    </div>
+</nav>
+
+
+<!-- PAGE CONTENT -->
+{% block content %}
+
+
+
+
+
+
+
+
+
+{% endblock %}
+
+
+
+<!-- FOOTER -->
+<footer style="margin-top:10rem;">
+ 
+    <div class="footer-grid">
+    
+        <div class="footer-section">
+            <h4>Help Center</h4>
+            <p><a href="{% url 'pickups' %}">About Pickups and Deliveries</a></p>
+            <p><a href="{% url 'payments' %}">Secure Online Payment</a></p>
+            <p><a href="{% url 'payments' %}">Paying on Delivery</a></p>
+            <p><a href="{% url 'returns' %}">Good Returns</a></p>   
+            <p><a href="{% url 'faqs' %}">FAQs</a></p>
+        </div>
+        
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fa fa-phone"></i> +254 750 530 130</p>
+            <p><i class="fa fa-envelope"></i> sales@mahitaji.co.ke</p>
+            <p>
+                <a href="{% url 'location' %}">
+                    <i class="fa fa-location-dot"></i> Baba Dogo, Nairobi
+                </a>
+            </p>    
+        </div>
+        
+        <div class="footer-section">
+            <h4>Follow Us</h4>
+            <a href="#"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/254750530130">
+                <i class="fa-brands fa-whatsapp"></i>
+            </a>
+        </div>
+        
+    </div>
+    
+    <div class="copyright">
+        <p><a href="{% url 'terms' %}">Terms & Conditions</a></p>
+        &copy; 2026 Mahitaji. Your Trusted Wholesale Partner in Kenya.
+    </div>
+    
+</footer>
+
+</body>
+</html>

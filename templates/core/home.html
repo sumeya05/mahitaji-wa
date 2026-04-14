@@ -1,0 +1,308 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %}Mahitaji | Home{% endblock %}
+
+{% block content %}
+
+<header class="hero">
+	
+	<div class="hero-slider">
+		<div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=1600&q=80');"></div>
+		<div class="hero-slide" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('https://images.unsplash.com/photo-1528498033973-3c07049c70e1?auto=format&fit=crop&w=1600&q=80');"></div>
+		<div class="hero-slide" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1600&q=80');"></div>
+		<div class="hero-slide" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('https://images.unsplash.com/photo-1594910411244-c6894d803973?auto=format&fit=crop&w=1600&q=80');"></div>
+		<div class="hero-slide" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.7)), url('https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=1600&q=80');"></div>
+	</div>
+
+    <div class="intro-class">
+        <h1>Wholesale Essentials Delivered</h1>
+        <p>Reliable supply for wholesalers and retailers across Kenya at factory prices.</p>
+    </div>
+
+    <div class="rotary-wrapper">
+		<div class="middle-container">
+		    <img src="static/assets/logo.png" alt="Logo" class="center-logo">
+		</div>
+
+		<div id="categories" class="categories-container">
+			<div class="category-item"><span><a href="categories.html" data-supplier="oils">Oils</a></span></div>
+			<div class="category-item"><span><a href="categories.html" data-supplier="drinks">Drinks</a></span></div>
+			<div class="category-item"><span><a href="categories.html" data-supplier="bakeries">Bakeries</a></span></div>
+			<div class="category-item"><span><a href="categories.html" data-supplier="cereals">Cereals</a></span></div>
+			<div class="category-item"><span><a href="categories.html" data-supplier="grocery">Grocery</a></span></div>
+		</div>
+
+		<div id="suppliers" class="ring suppliers-container desktop-only">
+		    <a href="brands.html" class="supplier-link" data-supplier="ajab"><img src="static/assets/ajab.jpeg" alt="Ajab"><span class="supplier-name">Ajab</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="cocacola"><img src="static/assets/cocacola.png" alt="Coca-Cola"><span class="supplier-name">Coca-Cola</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="soko"><img src="static/assets/soko.jpeg" alt="Soko"><span class="supplier-name">Soko</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="delmonte"><img src="static/assets/delmonte.png" alt="Del Monte"><span class="supplier-name">Del Monte</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="kensalt"><img src="static/assets/kensalt.jpeg" alt="Kensalt"><span class="supplier-name">Kensalt</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="exe"><img src="static/assets/exe.png" alt="EXE"><span class="supplier-name">EXE</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="ketepa"><img src="static/assets/ketepa.jpeg" alt="Ketepa"><span class="supplier-name">Ketepa</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="jetlak"><img src="static/assets/jetlak.png" alt="Jetlak"><span class="supplier-name">Jetlak</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="tropicalheat"><img src="static/assets/tropicalheat.jpeg" alt="Tropical Heat"><span class="supplier-name">Tropical Heat</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="kapa"><img src="static/assets/kapa.png" alt="Kapa Oil"><span class="supplier-name">Kapa Oil</span></a>
+		    <a href="brands.html"  class="supplier-link" data-supplier="pembe"><img src="static/assets/pembe.jpeg" alt="Pembe"><span class="supplier-name">Pembe</span></a>
+		</div>
+	</div>
+
+	<div id="ourSuppliers" class="mobile-only-bar">
+		<h3>Catalog By Brand</h3>
+		<div class="suppliersCarousel">
+		    <div id="suppliers-mobile" class="cards-container suppliers-mobile-track">
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="ajab"><img src="static/assets/ajab.jpeg" alt="Ajab"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="cocacola"><img src="static/assets/cocacola.png" alt="Coca-Cola"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="soko"><img src="static/assets/soko.jpeg" alt="Soko"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="delmonte"><img src="static/assets/delmonte.png" alt="Del Monte"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="kensalt"><img src="static/assets/kensalt.jpeg" alt="Kensalt"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="exe"><img src="static/assets/exe.png" alt="EXE"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="ketepa"><img src="static/assets/ketepa.jpeg" alt="Ketepa"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="jetlak"><img src="static/assets/jetlak.png" alt="Jetlak"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="tropicalheat"><img src="static/assets/tropicalheat.jpeg" alt="Tropical Heat"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="kapa"><img src="static/assets/kapa.png" alt="Kapa Oil"></a>
+		        <a href="brands.html"  class="mobile-supplier-link" data-supplier="pembe"><img src="static/assets/pembe.jpeg" alt="Pembe"></a>
+		    </div>
+		</div>
+	</div>
+    
+</header>
+
+
+<main id="mainContainer">        
+   
+	<div class="topOffersWrapper">
+		<div style="max-width: 1200px; margin: 0 auto;">
+		    <h3 id="topOffersH">Top Offers</h3>
+		    <hr>
+		</div>
+		
+		<div class="productsCarousel">	
+		    <div id="topOffers" class="cards-container"> 
+		    
+		        <div class="product-card">
+		            <span class="discount-badge">SAVE 10%</span>
+		            <img src="https://images.pexels.com/photos/4110251/pexels-photo-4110251.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Rice" class="product-image">
+		            <div class="product-info">
+		                <p class="product-name">Mwea Pishori Rice</p>
+		                <p class="product-sku">10 X 5KG (Bale)</p>
+		                <p class="expiry-tag"><i class="fa-regular fa-clock"></i> Ends in 2 days</p>
+		                
+		                <div class="price-box">
+		                    <span class="old-price">KSh 13,900</span>
+		                    <div class="price-row-flex">
+		                        <span class="price">KSh 12,500</span>
+		                        <button class="add-btn">Add</button>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+
+		        <div class="product-card">
+		            <span class="discount-badge">FLASH SALE</span>
+		            <img src="https://images.pexels.com/photos/5217918/pexels-photo-5217918.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Detergent" class="product-image">
+		            <div class="product-info">
+		                <p class="product-name">Omo Handwash Powder</p>
+		                <p class="product-sku">40 X 500G (Carton)</p>
+		                <p class="expiry-tag"><i class="fa-regular fa-clock"></i> Ends Tonight</p>
+		                
+		                <div class="price-box">
+		                    <span class="old-price">KSh 6,400</span>
+		                    <div class="price-row-flex">
+		                        <span class="price">KSh 5,800</span>
+		                        <button class="add-btn">Add</button>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+
+		        <div class="product-card">
+		            <span class="discount-badge">SAVE 15%</span>
+		            <img src="https://images.pexels.com/photos/248412/pexels-photo-248412.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Milk" class="product-image">
+		            <div class="product-info">
+		                <p class="product-name">Brookside Long Life</p>
+		                <p class="product-sku">12 X 500ML (Box)</p>
+		                <p class="expiry-tag"><i class="fa-regular fa-clock"></i> 3 Days Left</p>
+		                
+		                <div class="price-box">
+		                    <span class="old-price">KSh 1,680</span>
+		                    <div class="price-row-flex">
+		                        <span class="price">KSh 1,440</span>
+		                        <button class="add-btn">Add</button>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+
+		        <div class="product-card">
+		            <span class="discount-badge">HOT DEAL</span>
+		            <img src="https://images.pexels.com/photos/606540/pexels-photo-606540.jpeg?auto=compress&cs=tinysrgb&w=400" alt="Flour" class="product-image">
+		            <div class="product-info">
+		                <p class="product-name">EXE Wheat Flour</p>
+		                <p class="product-sku">12 X 2KG (Bale)</p>
+		                <p class="expiry-tag"><i class="fa-regular fa-clock"></i> Ends in 24h</p>
+		                
+		                <div class="price-box">
+		                    <span class="old-price">KSh 2,550</span>
+		                    <div class="price-row-flex">
+		                        <span class="price">KSh 2,150</span>
+		                        <button class="add-btn">Add</button>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		        
+		    </div>
+		</div>
+		
+		<div class="see-more">
+		    <a href="offers.html"> 
+		        See more offers <i class="fa-solid fa-arrow-right"></i> 
+		    </a>
+		</div>
+	</div>
+		
+		
+	<div class="topCategoriesWrapper">	
+	
+		<div class="">
+			<h3 id="topCategoriesH">Top categories</h3>
+			<hr>
+		</div>
+		
+			
+		<div id="topCategories" class="top-categories"> 
+			
+			<div class="product-card">
+				<img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=400&q=80" alt="Cooking Oils" class="product-image">
+				<div class="product-info">
+					<p class="product-name">Oils</p>
+					<div class="price-box"><button class="view-btn">View</button></div>
+				</div>
+			</div>
+
+			<div class="product-card">
+				<img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80" alt="Soft Drinks" class="product-image">
+				<div class="product-info">
+					<p class="product-name">Drinks</p>
+					<div class="price-box"><button class="view-btn">View</button></div>
+				</div>
+			</div>
+			
+
+			<div class="product-card">
+				<img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=400&q=80" alt="Bakery Items" class="product-image">
+				<div class="product-info">
+					<p class="product-name">Bakeries</p>
+					<div class="price-box"><button class="view-btn">View</button></div>
+				</div>
+			</div>
+
+			<div class="product-card">
+				<img src="https://images.unsplash.com/photo-1521483451569-e33803c0330c?auto=format&fit=crop&w=400&q=80" alt="Cereals and Grains" class="product-image">
+				<div class="product-info">
+					<p class="product-name">Cereals</p>
+					<div class="price-box"><button class="view-btn">View</button></div>
+				</div>
+			</div>
+
+			<div class="product-card">
+				<img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80" alt="Fresh Groceries" class="product-image">
+				<div class="product-info">
+					<p class="product-name">Groceries</p>
+					<div class="price-box"><button class="view-btn">View</button></div>
+				</div>
+			</div>
+		
+		</div>
+		
+	</div>
+	
+	
+	<div class="allCategoriesWrapper">
+	
+		<div class="">
+			<h3 id="allCategoriesH">All Categories</h3>
+			<hr>
+		</div>
+		
+		<div class="productsCarousel">		
+			<div id="allCategories" class="cards-container">
+			
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=400&q=80" alt="Freshly baked bread" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Bakeries</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=400&q=80" alt="Soft Drinks" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Soft Drinks</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1548839140-29a749e1cf4d?auto=format&fit=crop&w=400&q=80" alt="Mineral water bottles" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Water</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=400&q=80" alt="Fresh produce groceries" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Groceries</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1521483451569-e33803c0330c?auto=format&fit=crop&w=400&q=80" alt="Cereals and Grains" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Cereals</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=400&q=80" alt="Hygiene products" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Sanitary</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1583947215259-38e31be8751f?auto=format&fit=crop&w=400&q=80" alt="Cleaning and household supplies" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Household Items</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+
+				<div class="product-card">
+					<img src="https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&w=400&q=80" alt="Cooking oil bottles" class="product-image">
+					<div class="product-info">
+						<p class="product-name">Oils</p>
+						<div class="price-box"><button class="view-btn">View</button></div>
+					</div>
+				</div>
+			  
+			</div>
+		</div>
+		
+		<div class="see-more">
+			<a href="categories.html"> See more... </a>
+		</div>
+		
+	</div>
+    
+</main>
+
+{% endblock %}

@@ -1,0 +1,6 @@
+.env
+venv/
+__pycache__/
+_templates/
+db.sqlite3
+media/
