@@ -10,26 +10,48 @@ router.register(r'orders', OrderViewSet, basename='order')
 
 
 urlpatterns = [
-    # 1. The Website Home Page
+
+    # 1. Templates Routes
+
+    # landing page
     path('', views.home, name='home'),
-    path('search/', views.search, name='search'),
-    path('cart/', views.cart, name='cart'),
-    path('dashboard/', views.dashboard, name='dashboard'),
-    path('about/', views.about, name='about'),
-    path('statement/', views.statement, name='statement'),
+
+    # sales routes
     path('retailers/', views.retailers, name='retailers'),
     path('wholesalers/', views.wholesalers, name='wholesalers'),
     path('categories/', views.categories, name='categories'),
     path('brands/', views.brands, name='brands'),
-    path('contact/', views.contact, name='contact'),
-    path('location/', views.location, name='location'),
+    path('search/', views.search, name='search'),
+    path('cart/', views.cart, name='cart'),
+    path('checkout/', views.checkout, name='checkout'),
+
+    # user routes
+    path('login/', views.login, name='login'),
+    path('signup/', views.signup, name='signup'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('transactions/', views.transactions, name='transactions'),
+    path('addresses/', views.addresses, name='addresses'),
+    path('payment_methods/', views.payment_methods, name='payment_methods'),
+    path('settings/', views.settings, name='settings'),
+    path('logout/', views.logout_view, name='logout'),
+
+    # helpdesk    
     path('pickups/', views.pickups, name='pickups'),
-    path('payments/', views.payments, name='payments'),
-    path('returns/', views.returns, name='returns'),
+    path('payment-info/', views.payment_info, name='payment_info'),
+    path('return-policy/', views.returns, name='returns'),
     path('faqs/', views.faqs, name='faqs'),
     path('terms/', views.terms, name='terms'),
+    path('contact/', views.contact, name='contact'),
 
-    # 2. The API endpoints (accessed via /api/ products will be at /api/data/products)
-    # Alternatively, keep them flat if you prefer
+    # informational routes
+    path('about/', views.about, name='about'),
+    path('statement/', views.statement, name='statement'),
+    path('location/', views.location, name='location'),   
+    
+
+    # 2. API endpoints 
+    
+    # accessed via /api/ - i.e products will be at /api/data/products
     path('data/', include(router.urls)), 
+
 ]

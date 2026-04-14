@@ -1,0 +1,68 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Login | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+.auth-wrapper {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+.auth-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 450px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+.auth-header { text-align: center; margin-bottom: 2rem; }
+.auth-header img { height: 50px; margin-bottom: 10px; }
+.auth-header h2 { color: var(--dark-navy); }
+
+.form-group { margin-bottom: 1.2rem; }
+label { display: block; margin-bottom: 8px; font-size: 0.9rem; font-weight: 600; color: #475569; }
+input { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; box-sizing: border-box; }
+input:focus { border-color: var(--primary-blue); }
+
+.auth-btn { width: 100%; padding: 12px; background: var(--primary-blue); color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 1rem; transition: 0.3s; }
+.auth-btn:hover { background: var(--dark-navy); }
+
+.auth-footer { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: #64748b; }
+.auth-footer a { color: var(--primary-blue); text-decoration: none; font-weight: 600; }
+.forgot-link { display: block; text-align: right; font-size: 0.8rem; margin-top: 5px; color: var(--primary-blue); text-decoration: none; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="auth-card">
+        <div class="auth-header">
+            <a href="{% url 'home' %}"><img src="{% static 'assets/logo.png' %}" alt="Logo"></a>
+            <h2>Welcome Back</h2>
+        </div>
+        <form>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" placeholder="name@business.com" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" placeholder="••••••••" required>
+                <a href="#" class="forgot-link">Forgot Password?</a>
+            </div>
+            <button type="submit" class="auth-btn">Login to Account</button>
+        </form>
+        <div class="auth-footer">
+            Don't have an account? <a href="{% url 'signup' %}">Register Business</a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

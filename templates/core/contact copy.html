@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Customer Care | Mahitaji </title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="static/main.css">
+    <script src="static/main.js"></script>
+    <style>
+        .contact-hero {
+            background: var(--light-bg);
+            padding: 4rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .contact-hero h1 { color: var(--dark-navy); font-size: 2.2rem; }
+        .contact-hero p { color: #64748b; margin-top: 10px; }
+
+        .contact-container {
+            max-width: 1100px;
+            margin: -50px auto 4rem;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 2rem;
+            padding: 0 1rem;
+        }
+
+        /* Side Info Cards */
+        .contact-info-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .info-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .info-card i {
+            background: #eff6ff;
+            color: var(--primary-blue);
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+
+        .info-card h4 { margin-bottom: 5px; color: var(--dark-navy); }
+        .info-card p, .info-card a { font-size: 0.9rem; color: #64748b; text-decoration: none; }
+        .info-card a:hover { color: var(--primary-blue); }
+
+        /* Support Form */
+        .contact-form-card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+
+        .contact-form-card h2 { margin-bottom: 1.5rem; color: var(--dark-navy); }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: var(--dark-navy); }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: inherit;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+        }
+
+        textarea.form-control { height: 120px; resize: vertical; }
+
+        .submit-btn {
+            background: var(--dark-navy);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover { background: var(--primary-blue); }
+
+        @media (max-width: 850px) {
+            .contact-container { grid-template-columns: 1fr; margin-top: 2rem; }
+            .contact-hero { padding: 3rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+<nav> 
+    <div class="top-row">
+        <a href="index.html" class="logo-container">
+            <img src="static/media/logo.png" alt="Logo">
+            <span class="logo-text">Mahitaji</span>
+        </a>
+        <div class="nav-icons">
+            <a href="search.html"><i class="fa-solid fa-magnifying-glass"></i></a>
+            <a href="cart.html"><i class="fa-solid fa-cart-shopping"></i></a>
+            <a href="dashboard.html"><i class="fa-regular fa-user"></i></a>
+            <a id="navHamburger" class="hamburger"><i class="fa-solid fa-bars"></i></a>
+        </div>
+    </div>
+    
+    <div class="nav-links">		
+        <div class="nav-item"><a href="about.html">Mahitaji</a></div>
+        <div class="nav-item"><a href="retailers.html">Shop</a></div>
+        <div class="nav-item"><a href="categories.html">Products Catalog</a></div>
+        <div class="nav-item">
+            <a href="#" style="color: #0056b3;">Contact Us</a>
+            <ul class="dropdown">
+              <li><a href="contact.html">Customer Care</a></li>
+              <li><a href="location.html">Our Location</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="contact-hero">
+    <h1>Customer Care</h1>
+    <p>How can we help your business today?</p>
+</header>
+
+<main class="contact-container">
+    <div class="contact-info-panel">
+        <div class="info-card">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+                <h4>Call or WhatsApp</h4>
+                <p><a href="tel:+254750530130">+254 750 530 130</a></p>
+                <p>Mon-Sat: 8:00 AM - 6:00 PM</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+                <h4>Email Support</h4>
+                <p><a href="mailto:sales@mahitaji.co.ke">sales@mahitaji.co.ke</a></p>
+                <p>We reply within 2 hours</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <i class="fa-solid fa-truck-fast"></i>
+            <div>
+                <h4>Order Tracking</h4>
+                <p>Track your bale delivery status via our WhatsApp bot.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-form-card">
+        <h2>Send us a Message</h2>
+        <form action="#">
+            <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" class="form-control" placeholder="e.g. Mama Bo's Shop" required>
+            </div>
+            <div class="form-group">
+                <label>Your Email</label>
+                <input type="email" class="form-control" placeholder="name@email.com" required>
+            </div>
+            <div class="form-group">
+                <label>How can we help?</label>
+                <select class="form-control">
+                    <option>Inquiry about Bulk Prices</option>
+                    <option>Delivery Issue</option>
+                    <option>Payment Confirmation</option>
+                    <option>General Feedback</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-control" placeholder="Describe your request..."></textarea>
+            </div>
+            <button type="submit" class="submit-btn">Send Message</button>
+        </form>
+    </div>
+</main>
+
+
+<footer style="margin-top:10rem;">
+ 
+    <div class="footer-grid">
+    
+        <div class="footer-section">
+            <h4>Help Center</h4>
+            <p><a href="pickups_deliveries.html" style="color:inherit; text-decoration:none;">About Pickups and Deliveries</a></p>
+            <p><a href="payments_info.html" style="color:inherit; text-decoration:none;">Secure Online Payment</a></p>
+            <p><a href="payments_info.html" style="color:inherit; text-decoration:none;">Paying on Delivery</a></p>
+            <p><a href="return_policy.html" style="color:inherit; text-decoration:none;">Good Returns</a></p>   
+            <p><a href="faqs.html" style="color:inherit; text-decoration:none;">FAQs</a></p>
+        </div>
+        
+        <div class="footer-section">
+            <h4>Contact Us</h4>
+            <p><i class="fa fa-phone"></i> +254 750 530 130</p>
+            <p><i class="fa fa-envelope"></i> sales@mahitaji.co.ke</p>
+            <p><a href="location.html" style="color:inherit; text-decoration:none;"><i class="fa fa-location-dot"></i> Baba Dogo, Nairobi</a></p>    
+        </div>
+        
+        <div class="footer-section">
+            <h4>Follow Us</h4>
+            <a href="#" style="color:white; margin-right:15px;"><i class="fa-brands fa-facebook"></i></a>
+            <a href="#" style="color:white; margin-right:15px;"><i class="fa-brands fa-instagram"></i></a>
+            <a href="https://wa.me/254750530130" style="color:white;"><i class="fa-brands fa-whatsapp"></i></a>
+        </div>
+        
+    </div>
+    
+    <div class="copyright">
+        <p><a href="terms.html" style="color:inherit; text-decoration:none;">Terms & Conditions</a></p>
+        &copy; 2026 Mahitaji. Your Trusted Wholesale Partner in Kenya.
+    </div>
+    
+</footer>
+
+</body>
+</html>

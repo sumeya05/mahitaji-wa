@@ -1,0 +1,259 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Brands | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .brand-layout {
+        max-width: 1200px;
+        margin: 2rem auto;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+
+    .brand-sidebar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .brand-sidebar h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1.2rem;
+        color: var(--dark-navy);
+        border-bottom: 2px solid var(--primary-blue);
+        padding-bottom: 10px;
+    }
+
+    .brand-list { list-style: none; padding: 0; }
+    .brand-list li { margin-bottom: 0.5rem; }
+
+    .brand-list a {
+        text-decoration: none;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .brand-list a:hover,
+    .brand-list a.active {
+        background: var(--light-bg);
+        color: var(--primary-blue);
+        font-weight: 600;
+    }
+
+    .mobile-brand-nav {
+        display: none;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 1rem;
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .mobile-brand-nav a {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-right: 8px;
+        background: var(--light-bg);
+        border-radius: 20px;
+        text-decoration: none;
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .mobile-brand-nav a.active {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .brand-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .brand-item-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .item-img {
+        width: 100%;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .item-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .item-info h3 {
+        font-size: 0.95rem;
+        margin: 0 0 5px;
+        color: var(--dark-navy);
+    }
+
+    .pack-size {
+        font-size: 0.8rem;
+        color: #64748b;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: var(--primary-blue);
+    }
+
+    .add-cart-btn {
+        background: var(--light-bg);
+        color: var(--primary-blue);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+        .brand-layout { grid-template-columns: 1fr; }
+        .brand-sidebar { display: none; }
+        .mobile-brand-nav {
+            display: block;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MOBILE BRAND NAV (STATIC) -->
+<div class="mobile-brand-nav">
+    <a href="#" class="active">Ajab</a>
+    <a href="#">Coca-Cola</a>
+    <a href="#">Soko</a>
+    <a href="#">Del Monte</a>
+    <a href="#">Kensalt</a>
+    <a href="#">EXE</a>
+    <a href="#">Ketepa</a>
+</div>
+
+<div class="brand-layout">
+
+    <!-- SIDEBAR (STATIC) -->
+    <aside class="brand-sidebar">
+        <h2>Our Brands</h2>
+
+        <ul class="brand-list">
+            <li><a href="#" class="active">Ajab <span>(12)</span></a></li>
+            <li><a href="#">Coca-Cola <span>(24)</span></a></li>
+            <li><a href="#">Soko <span>(15)</span></a></li>
+            <li><a href="#">Del Monte <span>(32)</span></a></li>
+            <li><a href="#">Kensalt <span>(8)</span></a></li>
+            <li><a href="#">EXE <span>(10)</span></a></li>
+            <li><a href="#">Ketepa <span>(20)</span></a></li>
+            <li><a href="#">Jetlak <span>(14)</span></a></li>
+            <li><a href="#">Tropical Heat <span>(45)</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="brand-main">
+
+        <div class="brand-section-header">
+            <h1>Ajab Products</h1>
+            <p>3 items</p>
+        </div>
+
+        <div class="product-grid">
+
+            <div class="brand-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab">
+                </div>
+                <div class="item-info">
+                    <h3>Wheat Flour</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 1,950</span>
+                        <button class="add-cart-btn">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="brand-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab">
+                </div>
+                <div class="item-info">
+                    <h3>Mandazi Flour</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 2,050</span>
+                        <button class="add-cart-btn">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="brand-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab">
+                </div>
+                <div class="item-info">
+                    <h3>Atta Mark 1</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 2,150</span>
+                        <button class="add-cart-btn">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+{% endblock %}

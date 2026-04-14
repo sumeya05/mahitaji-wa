@@ -1,0 +1,277 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Wholesaler Marketplace | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Wholesale Page Specific Styles */
+    .wholesale-hero {
+        background: var(--dark-navy);
+        color: white;
+        padding: 3rem 1rem;
+        text-align: center;
+    }
+
+    .wholesale-hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+    .wholesale-hero p { opacity: 0.8; font-size: 1.1rem; }
+
+    /* Unified Grid Layout */
+    .marketplace-container {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+    }
+
+    /* Sidebar */
+    .filter-sidebar {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .filter-group { margin-bottom: 2rem; }
+
+    .filter-group h4 {
+        margin-bottom: 1rem;
+        color: var(--dark-navy);
+        font-size: 0.95rem;
+        border-bottom: 1px solid var(--border-color);
+        padding-bottom: 8px;
+    }
+
+    .filter-options {
+        list-style: none;
+        padding: 0;
+    }
+
+    .filter-options li {
+        margin-bottom: 0.8rem;
+        font-size: 0.9rem;
+        color: #475569;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        cursor: pointer;
+    }
+
+    .filter-options input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+    }
+
+    /* Grid */
+    .wholesale-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2rem;
+    }
+
+    .bulk-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 15px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition: 0.3s;
+    }
+
+    .bulk-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary-blue);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+    }
+
+    .bulk-img {
+        width: 100%;
+        height: 200px;
+        background: #f8fafc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+    }
+
+    .bulk-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .bulk-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+    }
+
+    .bulk-content h3 {
+        color: var(--dark-navy);
+        margin-bottom: 1rem;
+        font-size: 1.1rem;
+    }
+
+    .bulk-specs {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 1.5rem;
+    }
+
+    .bulk-specs li {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bulk-specs i {
+        color: var(--primary-blue);
+        width: 14px;
+    }
+
+    .bulk-footer {
+        padding: 1.2rem 1.5rem;
+        background: #f8fafc;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-top: 1px solid var(--border-color);
+    }
+
+    .bulk-price {
+        font-weight: 800;
+        color: var(--primary-blue);
+        font-size: 1.2rem;
+    }
+
+    .bulk-price span {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 400;
+    }
+
+    .quote-btn {
+        background: var(--primary-blue);
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .quote-btn:hover {
+        background: var(--dark-navy);
+    }
+
+    @media (max-width: 900px) {
+        .marketplace-container {
+            grid-template-columns: 1fr;
+        }
+        .filter-sidebar {
+            display: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<header class="wholesale-hero">
+    <h1>Bulk Marketplace</h1>
+    <p>Manufacturer-Direct Pricing for Large Volume Orders</p>
+</header>
+
+<div class="marketplace-container">
+
+    <!-- SIDEBAR -->
+    <aside class="filter-sidebar">
+
+        <div class="filter-group">
+            <h4>Supply Categories</h4>
+            <ul class="filter-options">
+                <li><input type="checkbox"> Grains & Flour</li>
+                <li><input type="checkbox"> Beverages</li>
+                <li><input type="checkbox"> Cooking Oils</li>
+                <li><input type="checkbox"> Personal Care</li>
+                <li><input type="checkbox"> Cleaning Supplies</li>
+            </ul>
+        </div>
+
+        <div class="filter-group">
+            <h4>Minimum Order Quantity</h4>
+            <ul class="filter-options">
+                <li><input type="checkbox"> 10 - 50 Units</li>
+                <li><input type="checkbox"> 50 - 200 Units</li>
+                <li><input type="checkbox"> Full Pallet / Tonne</li>
+            </ul>
+        </div>
+
+        <div class="filter-group">
+            <h4>Brands</h4>
+            <ul class="filter-options">
+                <li><input type="checkbox"> Ajab</li>
+                <li><input type="checkbox"> Coca-Cola</li>
+                <li><input type="checkbox"> Kapa Oil</li>
+                <li><input type="checkbox"> Pembe</li>
+            </ul>
+        </div>
+
+    </aside>
+
+    <!-- PRODUCTS -->
+    <main class="wholesale-main">
+        <div class="wholesale-grid">
+
+            <div class="bulk-card">
+                <div class="bulk-img">
+                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab Bulk">
+                </div>
+                <div class="bulk-content">
+                    <h3>Ajab Wheat Flour (Bulk)</h3>
+                    <ul class="bulk-specs">
+                        <li><i class="fa-solid fa-layer-group"></i> 50 Bales Minimum</li>
+                        <li><i class="fa-solid fa-truck"></i> Free Delivery Within Nairobi</li>
+                        <li><i class="fa-solid fa-clock"></i> Next Day Dispatch</li>
+                    </ul>
+                </div>
+                <div class="bulk-footer">
+                    <div class="bulk-price">KSh 1,850 <span>/ Bale</span></div>
+                    <button class="quote-btn">Add Bulk</button>
+                </div>
+            </div>
+
+            <div class="bulk-card">
+                <div class="bulk-img">
+                    <img src="{% static 'assets/kapa.png' %}" alt="Kapa Oil">
+                </div>
+                <div class="bulk-content">
+                    <h3>Cooking Oil (Pallet)</h3>
+                    <ul class="bulk-specs">
+                        <li><i class="fa-solid fa-layer-group"></i> 20 Boxes Minimum</li>
+                        <li><i class="fa-solid fa-truck"></i> Regional Delivery Available</li>
+                        <li><i class="fa-solid fa-clock"></i> 2-Day Dispatch</li>
+                    </ul>
+                </div>
+                <div class="bulk-footer">
+                    <div class="bulk-price">KSh 3,200 <span>/ Box</span></div>
+                    <button class="quote-btn">Add Bulk</button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+</div>
+
+{% endblock %}

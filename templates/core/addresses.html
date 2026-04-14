@@ -1,0 +1,174 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block title %} My Addresses | Mahitaji {% endblock %}
+
+{% block extra_css %}
+<style>
+    .account-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+    }
+
+    /* Sidebar Styling */
+    .account-sidebar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .user-welcome {
+        padding: 2rem 1.5rem;
+        background: var(--dark-navy);
+        color: white;
+        text-align: center;
+    }
+
+    .user-welcome i { font-size: 3rem; margin-bottom: 10px; color: var(--primary-blue); display: block; }
+    .user-welcome h3 { margin: 0; font-size: 1.2rem; }
+    .user-welcome p { margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem; }
+
+    .account-nav { list-style: none; padding: 0; margin: 0; }
+    .account-nav li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1.2rem 1.5rem;
+        color: #475569;
+        text-decoration: none;
+        border-bottom: 1px solid var(--light-bg);
+        transition: 0.3s;
+    }
+
+    .account-nav li a:hover, .account-nav li a.active {
+        background: #f8fafc;
+        color: var(--primary-blue);
+        border-left: 4px solid var(--primary-blue);
+    }
+
+    .content-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+    
+    /* Address Grid Styling */
+    .address-grid { 
+        display: grid; 
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+        gap: 1.5rem; 
+        margin-top: 1.5rem; 
+    }
+    
+    .address-card { 
+        border: 1px solid var(--border-color); 
+        padding: 1.5rem; 
+        border-radius: 10px; 
+        position: relative; 
+        transition: 0.3s ease;
+    }
+    
+    .address-card.default { 
+        border-color: var(--primary-blue); 
+        background: #f0f7ff; 
+    }
+
+    .address-card h4 { margin-bottom: 10px; color: var(--dark-navy); }
+    .address-card p { font-size: 0.9rem; color: #64748b; line-height: 1.6; }
+
+    .address-actions {
+        margin-top: 15px;
+        display: flex;
+        gap: 15px;
+        font-size: 0.85rem;
+    }
+
+    .btn-add-address {
+        width: 100%;
+        padding: 1.2rem;
+        border: 2px dashed var(--border-color);
+        background: transparent;
+        border-radius: 10px;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-add-address:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: #f0f7ff;
+    }
+
+    @media (max-width: 900px) {
+        .account-container { grid-template-columns: 1fr; gap: 1rem; }
+        .account-nav { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .account-nav li { flex: 0 0 auto; }
+        .account-nav li a { border-bottom: none; border-right: 1px solid var(--light-bg); padding: 1rem; }
+        .account-nav li a.active { border-left: none; border-bottom: 3px solid var(--primary-blue); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="account-container">
+    <aside class="account-sidebar">
+        <div class="user-welcome">
+            <i class="fa-solid fa-circle-user"></i>
+            <h3>James Kamau</h3>
+            <p>Customer ID: #8801</p>
+        </div>
+        <ul class="account-nav">
+            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+            <li><a href="{% url 'transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}"><i class="fa-solid fa-clock-rotate-left"></i> My Orders</a></li>
+            <li><a href="{% url 'addresses' %}" class="{% if request.resolver_match.url_name == 'addresses' %}active{% endif %}"><i class="fa-solid fa-location-dot"></i> My Addresses</a></li>
+            <li><a href="{% url 'payment_methods' %}" class="{% if request.resolver_match.url_name == 'payment_methods' %}active{% endif %}"><i class="fa-solid fa-credit-card"></i> Payment Methods</a></li>
+            <li><a href="{% url 'settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> Account Settings</a></li>
+            <li><a href="{% url 'logout' %}" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="account-main">
+        <section class="content-card">
+            <h2 style="margin-bottom: 0.5rem;">Delivery Addresses</h2>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">Manage your shipping locations for faster checkout.</p>
+            
+            <div class="address-grid">
+                <div class="address-card default">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                        <h4 style="margin: 0;"><i class="fa-solid fa-shop"></i> Main Warehouse</h4>
+                        <span style="background: var(--primary-blue); color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 700;">DEFAULT</span>
+                    </div>
+                    <p>
+                        <strong>James Kamau</strong><br>
+                        Baba Dogo Road, Unit 4B<br>
+                        Nairobi, Kenya<br>
+                        Tel: +254 712 345 678
+                    </p>
+                    <div class="address-actions">
+                        <a href="#" style="color: var(--primary-blue); text-decoration: none; font-weight: 600;">Edit</a>
+                        <a href="#" style="color: #64748b; text-decoration: none;">Delete</a>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-add-address">
+                <i class="fa-solid fa-plus"></i> Add New Delivery Address
+            </button>
+        </section>
+    </main>
+</div>
+{% endblock %}

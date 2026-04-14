@@ -1,0 +1,170 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %} Payment Methods | Mahitaji {% endblock %}
+
+{% block extra_css %}
+<style>
+    .account-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+    }
+
+    /* Sidebar Styling */
+    .account-sidebar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        height: fit-content;
+    }
+
+    .user-welcome {
+        padding: 2rem 1.5rem;
+        background: var(--dark-navy);
+        color: white;
+        text-align: center;
+    }
+
+    .user-welcome i { font-size: 3rem; margin-bottom: 10px; color: var(--primary-blue); display: block; }
+    .user-welcome h3 { margin: 0; font-size: 1.2rem; }
+    .user-welcome p { margin: 5px 0 0; opacity: 0.7; font-size: 0.9rem; }
+
+    .account-nav { list-style: none; padding: 0; margin: 0; }
+    .account-nav li a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 1.2rem 1.5rem;
+        color: #475569;
+        text-decoration: none;
+        border-bottom: 1px solid var(--light-bg);
+        transition: 0.3s;
+    }
+
+    .account-nav li a:hover, .account-nav li a.active {
+        background: #f8fafc;
+        color: var(--primary-blue);
+        border-left: 4px solid var(--primary-blue);
+    }
+
+    /* Content Area Styling */
+    .content-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    .payment-method-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.2rem;
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        transition: 0.2s;
+    }
+
+    .payment-method-item:hover { border-color: var(--primary-blue); }
+
+    .method-info { display: flex; align-items: center; gap: 20px; }
+    .method-logo { width: 60px; height: 40px; object-fit: contain; }
+
+    .method-details p { margin: 0; font-size: 0.95rem; font-weight: 700; color: var(--dark-navy); }
+    .method-details span { font-size: 0.85rem; color: #64748b; }
+
+    .btn-outline-add {
+        width: 100%;
+        padding: 1.2rem;
+        border: 2px dashed var(--border-color);
+        background: transparent;
+        border-radius: 10px;
+        color: #64748b;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.3s;
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .btn-outline-add:hover {
+        border-color: var(--primary-blue);
+        color: var(--primary-blue);
+        background: #f0f7ff;
+    }
+
+    @media (max-width: 900px) {
+        .account-container { grid-template-columns: 1fr; gap: 1rem; }
+        .account-nav { display: flex; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+        .account-nav li { flex: 0 0 auto; }
+        .account-nav li a { border-bottom: none; border-right: 1px solid var(--light-bg); padding: 1rem; }
+        .account-nav li a.active { border-left: none; border-bottom: 3px solid var(--primary-blue); }
+        .content-card { padding: 1.5rem 1rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="account-container">
+    <aside class="account-sidebar">
+        <div class="user-welcome">
+            <i class="fa-solid fa-circle-user"></i>
+            <h3>James Kamau</h3>
+            <p>Customer ID: #8801</p>
+        </div>
+        <ul class="account-nav">
+            <li><a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}"><i class="fa-solid fa-gauge"></i> Dashboard</a></li>
+            <li><a href="{% url 'transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}"><i class="fa-solid fa-clock-rotate-left"></i> My Orders</a></li>
+            <li><a href="{% url 'addresses' %}" class="{% if request.resolver_match.url_name == 'addresses' %}active{% endif %}"><i class="fa-solid fa-location-dot"></i> My Addresses</a></li>
+            <li><a href="{% url 'payment_methods' %}" class="{% if request.resolver_match.url_name == 'payment_methods' %}active{% endif %}"><i class="fa-solid fa-credit-card"></i> Payment Methods</a></li>
+            <li><a href="{% url 'settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}"><i class="fa-solid fa-gear"></i> Account Settings</a></li>
+            <li><a href="{% url 'logout' %}" style="color: #ef4444;"><i class="fa-solid fa-right-from-bracket"></i> Logout</a></li>
+        </ul>
+    </aside>
+
+    <main class="account-main">
+        <section class="content-card">
+            <h2 style="margin-bottom: 0.5rem;">Payment Methods</h2>
+            <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 2rem;">Manage your default payment options for faster checkout.</p>
+
+            <div class="payment-method-item">
+                <div class="method-info">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg" alt="M-Pesa" class="method-logo">
+                    <div class="method-details">
+                        <p>M-Pesa Express</p>
+                        <span>Linked: 254712***678</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <span style="background: #22c55e; color: white; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; font-weight: 700;">DEFAULT</span>
+                    <a href="#" style="color: var(--primary-blue); font-size: 0.85rem; font-weight: 600; text-decoration: none;">Remove</a>
+                </div>
+            </div>
+
+            <div class="payment-method-item">
+                <div class="method-info">
+                    <i class="fa-solid fa-credit-card" style="font-size: 2rem; color: #475569;"></i>
+                    <div class="method-details">
+                        <p>Mastercard Ending in 4421</p>
+                        <span>Expires 08/27</span>
+                    </div>
+                </div>
+                <a href="#" style="color: var(--primary-blue); font-size: 0.85rem; font-weight: 600; text-decoration: none;">Remove</a>
+            </div>
+
+            <button class="btn-outline-add">
+                <i class="fa-solid fa-plus"></i> Add New Payment Method
+            </button>
+        </section>
+    </main>
+</div>
+{% endblock %}

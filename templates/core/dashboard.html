@@ -1,0 +1,328 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Dashboard | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+
+/* =========================
+   BASE LAYOUT (MATCH ALL TEMPLATES)
+========================= */
+.account-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 2rem;
+}
+
+.account-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+}
+
+/* =========================
+   SIDEBAR (MATCH ALL PAGES)
+========================= */
+.account-sidebar {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    height: fit-content;
+}
+
+/* FIXED USER HEADER (IDENTICAL ACROSS ALL PAGES) */
+.user-welcome {
+    padding: 2rem 1.5rem;
+    background: var(--dark-navy);
+    color: white;
+    text-align: center;
+}
+
+.user-welcome i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+    color: var(--primary-blue);
+}
+
+.user-welcome h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.user-welcome p {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* NAV */
+.account-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1.2rem 1.5rem;
+    text-decoration: none;
+    color: #475569;
+    border-bottom: 1px solid var(--light-bg);
+    transition: 0.3s;
+}
+
+.account-nav li a:hover,
+.account-nav li a.active {
+    background: #f8fafc;
+    color: var(--primary-blue);
+    border-left: 4px solid var(--primary-blue);
+}
+
+/* =========================
+   CONTENT CARDS
+========================= */
+.content-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+/* =========================
+   STATS GRID
+========================= */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+/* =========================
+   STAT CARDS
+========================= */
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+}
+
+.stat-info h4 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* =========================
+   TABLE
+========================= */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.order-table th {
+    text-align: left;
+    padding: 12px;
+    background: #f8fafc;
+    font-size: 0.85rem;
+}
+
+.order-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--light-bg);
+    font-size: 0.9rem;
+}
+
+/* =========================
+   MOBILE RESPONSIVENESS
+========================= */
+@media (max-width: 900px) {
+    .account-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .account-main {
+        gap: 1.5rem;
+    }
+
+    .account-nav {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .account-nav li {
+        flex: 0 0 auto;
+    }
+
+    .account-nav li a {
+        border-bottom: none;
+        border-right: 1px solid var(--light-bg);
+        padding: 1rem 1.2rem;
+    }
+
+    .account-nav li a.active {
+        border-left: none;
+        border-bottom: 3px solid var(--primary-blue);
+    }
+
+    .content-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="account-container">
+
+    <aside class="account-sidebar">
+
+        <div class="user-welcome">
+            <i class="fa-solid fa-circle-user"></i>
+            <h3>James Kamau</h3> 
+            <p>Customer ID: #8801</p>
+        </div>
+
+        <ul class="account-nav">
+            <li>
+                <a href="{% url 'dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+                    <i class="fa-solid fa-gauge"></i> Dashboard
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'transactions' %}" class="{% if request.resolver_match.url_name == 'transactions' %}active{% endif %}">
+                    <i class="fa-solid fa-clock-rotate-left"></i> My Orders
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'addresses' %}" class="{% if request.resolver_match.url_name == 'addresses' %}active{% endif %}">
+                    <i class="fa-solid fa-location-dot"></i> My Addresses
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'payment_methods' %}" class="{% if request.resolver_match.url_name == 'payment_methods' %}active{% endif %}">
+                    <i class="fa-solid fa-credit-card"></i> Payment Methods
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'settings' %}" class="{% if request.resolver_match.url_name == 'settings' %}active{% endif %}">
+                    <i class="fa-solid fa-gear"></i> Account Settings
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'home' %}" style="color: #ef4444;">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </li>
+        </ul>
+
+    </aside>
+
+   <main class="account-main">
+
+    <section class="content-card">
+        <h2>Dashboard Overview</h2>
+        <p style="color:#64748b;">Overview of your account activity</p>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-truck-fast"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>3</h4>
+                    <p>Active Orders</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-wallet"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>KSh 42,500</h4>
+                    <p>Total Spent</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fa-solid fa-box"></i>
+                </div>
+                <div class="stat-info">
+                    <h4>1</h4>
+                    <p>Pending Deliveries</p>
+                </div>
+            </div>
+        </div>
+
+        <h3 style="margin-top: 2rem;">Recent Orders</h3>
+
+        <div class="table-responsive">
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <td style="font-weight:700">#ORD-7721</td>
+                        <td>Feb 04, 2026</td>
+                        <td>KSh 16,800</td>
+                        <td>SHIPPED</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+
+</main>
+
+</div>
+
+{% endblock %}

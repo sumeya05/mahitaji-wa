@@ -1,0 +1,283 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Checkout | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+        .checkout-wrapper {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .checkout-form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .checkout-step {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .step-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+            color: var(--dark-navy);
+        }
+
+        .step-number {
+            background: var(--primary-blue);
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* Form Styling */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 1rem;
+        }
+
+        .form-group.full { grid-column: span 2; }
+
+        label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #475569;
+        }
+
+        input, select, textarea {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            outline: none;
+            transition: border 0.3s;
+        }
+
+        input:focus { border-color: var(--primary-blue); }
+
+        /* M-Pesa Section Styling */
+        .mpesa-container {
+            border: 2px solid #81c784;
+            background: #f1f8e9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .mpesa-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1rem;
+        }
+
+        .mpesa-logo {
+            height: 40px;
+            width: auto;
+        }
+
+        .mpesa-instructions {
+            font-size: 0.85rem;
+            color: #2e7d32;
+            line-height: 1.5;
+        }
+
+        .phone-prefix {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding-left: 12px;
+        }
+
+        .phone-prefix span { font-weight: bold; color: #64748b; }
+        .phone-prefix input { border: none; flex-grow: 1; }
+
+        /* Order Summary */
+        .order-summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.95rem;
+        }
+
+        .total-price {
+            border-top: 2px solid var(--light-bg);
+            padding-top: 1rem;
+            margin-top: 1rem;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
+
+        .complete-order-btn {
+            width: 100%;
+            background: #2e7d32; /* Green for M-Pesa / Completion */
+            color: white;
+            border: none;
+            padding: 1.2rem;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: background 0.3s;
+        }
+
+        .complete-order-btn:hover { background: #1b5e20; }
+
+        @media (max-width: 900px) {
+            .checkout-wrapper { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full { grid-column: span 1; }
+        }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="checkout-wrapper">
+    <section class="checkout-form-section">
+        
+        <div class="checkout-step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <h3>Shipping Information</h3>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>First Name</label>
+                    <input type="text" placeholder="e.g. John">
+                </div>
+                <div class="form-group">
+                    <label>Last Name</label>
+                    <input type="text" placeholder="e.g. Doe">
+                </div>
+                <div class="form-group full">
+                    <label>Business / Shop Name</label>
+                    <input type="text" placeholder="As it appears on your signage">
+                </div>
+                <div class="form-group full">
+                    <label>Physical Address (Nairobi / County)</label>
+                    <textarea rows="2" placeholder="Street, Building, Stall Number..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Nearest Landmark</label>
+                    <input type="text" placeholder="e.g. Opposite Stage">
+                </div>
+                <div class="form-group">
+                    <label>City/Town</label>
+                    <select>
+                        <option>Nairobi</option>
+                        <option>Kiambu</option>
+                        <option>Mombasa</option>
+                        <option>Other</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="checkout-step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <h3>Payment Method</h3>
+            </div>
+            
+            <div class="mpesa-container">
+                <div class="mpesa-header">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg" class="mpesa-logo" alt="M-Pesa">
+                    <strong>M-Pesa Express (STK Push)</strong>
+                </div>
+                
+                <div class="form-group">
+                    <label>M-Pesa Phone Number</label>
+                    <div class="phone-prefix">
+                        <span>+254</span>
+                        <input type="text" placeholder="712345678">
+                    </div>
+                </div>
+
+                <div class="mpesa-instructions">
+                    <p><i class="fa-solid fa-circle-info"></i> A payment request will be sent to your phone. Please enter your M-Pesa PIN when prompted to complete the wholesale transaction.</p>
+                </div>
+            </div>
+
+            <div style="margin-top: 1.5rem;">
+                <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                    <input type="radio" name="pay" disabled> 
+                    <span style="color: #94a3b8;">Bank Transfer (Coming Soon)</span>
+                </label>
+            </div>
+        </div>
+
+    </section>
+
+    <aside class="order-summary-card">
+        <h3>Summary</h3>
+        <hr>
+        <div style="margin: 1.5rem 0;">
+            <div class="summary-item">
+                <span>Items (3)</span>
+                <span>KSh 16,800</span>
+            </div>
+            <div class="summary-item">
+                <span>Delivery Fee</span>
+                <span>KSh 350</span>
+            </div>
+            <div class="summary-item">
+                <span style="color: #64748b;">Tax (VAT 16%)</span>
+                <span style="color: #64748b;">Included</span>
+            </div>
+            <div class="total-price summary-item">
+                <span>Total</span>
+                <span>KSh 17,150</span>
+            </div>
+        </div>
+
+        <button class="complete-order-btn">
+            Pay with M-PESA
+        </button>
+
+        <div style="text-align: center; margin-top: 1.5rem; font-size: 0.8rem; color: #94a3b8;">
+            <p><i class="fa-solid fa-lock"></i> Your transaction is encrypted and secure.</p>
+        </div>
+    </aside>
+</div>
+
+{% endblock %}

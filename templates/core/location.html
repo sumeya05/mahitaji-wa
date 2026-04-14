@@ -1,0 +1,179 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Our Location | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .location-hero {
+        background: var(--dark-navy);
+        color: white;
+        padding: 4rem 1rem;
+        text-align: center;
+    }
+
+    .location-container {
+        max-width: 1100px;
+        margin: 3rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 2rem;
+    }
+
+    .details-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        height: fit-content;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
+
+    .details-card h2 {
+        color: var(--dark-navy);
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+
+    .address-box {
+        margin-bottom: 2rem;
+    }
+
+    .address-box p {
+        color: #64748b;
+        line-height: 1.6;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .address-box i {
+        color: var(--primary-blue);
+        width: 20px;
+        font-size: 1.1rem;
+    }
+
+    .pickup-hours {
+        background: #f8fafc;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+        border: 1px inset #f1f5f9;
+    }
+
+    .pickup-hours h4 {
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        color: var(--dark-navy);
+    }
+
+    .pickup-hours p {
+        font-size: 0.9rem;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        color: #475569;
+    }
+
+    .pickup-hours .closed {
+        color: #ef4444;
+        font-weight: 600;
+    }
+
+    .btn-directions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        background: var(--primary-blue);
+        color: white;
+        text-decoration: none;
+        padding: 14px;
+        border-radius: 8px;
+        font-weight: 700;
+        transition: 0.3s;
+    }
+
+    .btn-directions:hover {
+        background: #004494;
+        transform: translateY(-2px);
+    }
+
+    .map-wrapper {
+        border-radius: 15px;
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        height: 550px;
+    }
+
+    .map-wrapper iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+    }
+
+    @media (max-width: 850px) {
+        .location-container {
+            grid-template-columns: 1fr;
+            margin-top: 2rem;
+        }
+
+        .map-wrapper {
+            height: 400px;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<header class="location-hero">
+    <h1>Visit Our Warehouse</h1>
+    <p>The Heart of Bulk Distribution in Nairobi</p>
+</header>
+
+<main class="location-container">
+
+    <div class="details-card">
+
+        <h2>Find Us</h2>
+
+        <div class="address-box">
+            <p><i class="fa-solid fa-location-dot"></i> Baba Dogo Road, Ruaraka</p>
+            <p><i class="fa-solid fa-building"></i> Mahitaji Complex, Block B</p>
+            <p><i class="fa-solid fa-city"></i> Nairobi, Kenya</p>
+            <p><i class="fa-solid fa-phone"></i> +254 750 530 130</p>
+        </div>
+
+        <div class="pickup-hours">
+            <h4>Warehouse Hours</h4>
+            <p><span>Monday - Friday:</span> <span>8:00 AM - 5:00 PM</span></p>
+            <p><span>Saturday:</span> <span>8:00 AM - 1:00 PM</span></p>
+            <p><span class="closed">Sunday:</span> <span class="closed">Closed</span></p>
+        </div>
+
+        <a href="https://www.google.com/maps?q=Mahitaji+Enterprise+Limited+Nairobi"
+           target="_blank"
+           class="btn-directions">
+            <i class="fa-solid fa-location-arrow"></i> Open in Google Maps
+        </a>
+
+    </div>
+
+    <div class="map-wrapper">
+        <iframe
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8762760398636!2d36.8749584!3d-1.2451029999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f151a90f07bfd%3A0x2a64a98d55920546!2sMahitaji%20Enterprises%20Ltd!5e0!3m2!1sen!2ske!4v1770277726004!5m2!1sen!2ske"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+
+</main>
+
+{% endblock %}

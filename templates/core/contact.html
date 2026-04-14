@@ -1,0 +1,232 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Customer Care | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .contact-hero {
+        background: var(--light-bg);
+        padding: 4rem 1rem;
+        text-align: center;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .contact-hero h1 {
+        color: var(--dark-navy);
+        font-size: 2.2rem;
+    }
+
+    .contact-hero p {
+        color: #64748b;
+        margin-top: 10px;
+    }
+
+    .contact-container {
+        max-width: 1100px;
+        margin: -50px auto 4rem;
+        display: grid;
+        grid-template-columns: 1fr 1.5fr;
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+
+    .contact-info-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .info-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .info-card i {
+        background: #eff6ff;
+        color: var(--primary-blue);
+        width: 45px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        font-size: 1.2rem;
+    }
+
+    .info-card h4 {
+        margin-bottom: 5px;
+        color: var(--dark-navy);
+    }
+
+    .info-card p,
+    .info-card a {
+        font-size: 0.9rem;
+        color: #64748b;
+        text-decoration: none;
+    }
+
+    .info-card a:hover {
+        color: var(--primary-blue);
+    }
+
+    .contact-form-card {
+        background: white;
+        padding: 2.5rem;
+        border-radius: 12px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+
+    .contact-form-card h2 {
+        margin-bottom: 1.5rem;
+        color: var(--dark-navy);
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--dark-navy);
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-family: inherit;
+        transition: 0.3s;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.1);
+    }
+
+    textarea.form-control {
+        height: 120px;
+        resize: vertical;
+    }
+
+    .submit-btn {
+        background: var(--dark-navy);
+        color: white;
+        border: none;
+        padding: 14px 25px;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+        transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-blue);
+    }
+
+    @media (max-width: 850px) {
+        .contact-container {
+            grid-template-columns: 1fr;
+            margin-top: 2rem;
+        }
+
+        .contact-hero {
+            padding: 3rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<header class="contact-hero">
+    <h1>Customer Care</h1>
+    <p>How can we help your business today?</p>
+</header>
+
+<main class="contact-container">
+
+    <div class="contact-info-panel">
+
+        <div class="info-card">
+            <i class="fa-solid fa-phone"></i>
+            <div>
+                <h4>Call or WhatsApp</h4>
+                <p><a href="tel:+254750530130">+254 750 530 130</a></p>
+                <p>Mon-Sat: 8:00 AM - 6:00 PM</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <i class="fa-solid fa-envelope"></i>
+            <div>
+                <h4>Email Support</h4>
+                <p><a href="mailto:sales@mahitaji.co.ke">sales@mahitaji.co.ke</a></p>
+                <p>We reply within 2 hours</p>
+            </div>
+        </div>
+
+        <div class="info-card">
+            <i class="fa-solid fa-truck-fast"></i>
+            <div>
+                <h4>Order Tracking</h4>
+                <p>Track your bale delivery status via our WhatsApp bot.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="contact-form-card">
+
+        <h2>Send us a Message</h2>
+
+        <form action="#">
+
+            <div class="form-group">
+                <label>Business Name</label>
+                <input type="text" class="form-control" placeholder="e.g. Mama Bo's Shop" required>
+            </div>
+
+            <div class="form-group">
+                <label>Your Email</label>
+                <input type="email" class="form-control" placeholder="name@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label>How can we help?</label>
+                <select class="form-control">
+                    <option>Inquiry about Bulk Prices</option>
+                    <option>Delivery Issue</option>
+                    <option>Payment Confirmation</option>
+                    <option>General Feedback</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Message</label>
+                <textarea class="form-control" placeholder="Describe your request..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Send Message</button>
+
+        </form>
+
+    </div>
+
+</main>
+
+{% endblock %}

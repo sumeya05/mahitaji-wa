@@ -1,0 +1,275 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Categories | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-layout {
+        max-width: 1200px;
+        margin: 2rem auto;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        padding: 0 1rem;
+    }
+
+    .category-sidebar {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .category-sidebar h2 {
+        font-size: 1.1rem;
+        margin-bottom: 1.2rem;
+        color: var(--dark-navy);
+        border-bottom: 2px solid var(--primary-blue);
+        padding-bottom: 10px;
+    }
+
+    .cat-list { list-style: none; padding: 0; }
+    .cat-list li { margin-bottom: 0.5rem; }
+
+    .cat-list a {
+        text-decoration: none;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 12px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+
+    .cat-list a:hover,
+    .cat-list a.active {
+        background: var(--light-bg);
+        color: var(--primary-blue);
+        font-weight: 600;
+    }
+
+    .mobile-cat-nav {
+        display: none;
+        overflow-x: auto;
+        white-space: nowrap;
+        padding: 10px 1rem;
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .mobile-cat-nav a {
+        display: inline-block;
+        padding: 8px 16px;
+        margin-right: 8px;
+        background: var(--light-bg);
+        border-radius: 20px;
+        text-decoration: none;
+        color: #64748b;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .mobile-cat-nav a.active {
+        background: var(--primary-blue);
+        color: white;
+    }
+
+    .category-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.2rem;
+    }
+
+    .cat-item-card {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 1rem;
+    }
+
+    .item-img {
+        width: 100%;
+        height: 160px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+    }
+
+    .item-img img {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: contain;
+    }
+
+    .item-info h3 {
+        font-size: 0.95rem;
+        margin: 0 0 5px;
+        color: var(--dark-navy);
+    }
+
+    .brand-label {
+        font-size: 0.7rem;
+        color: #94a3b8;
+        text-transform: uppercase;
+        font-weight: bold;
+    }
+
+    .pack-size {
+        font-size: 0.8rem;
+        color: #64748b;
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .item-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: var(--primary-blue);
+    }
+
+    .add-cart-btn {
+        background: var(--light-bg);
+        color: var(--primary-blue);
+        border: none;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+        .category-layout { grid-template-columns: 1fr; }
+        .category-sidebar { display: none; }
+        .mobile-cat-nav {
+            display: block;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<!-- MOBILE CATEGORY NAV (STATIC) -->
+<div class="mobile-cat-nav">
+    <a href="#" class="active">Flour & Grains</a>
+    <a href="#">Beverages</a>
+    <a href="#">Sugar & Salt</a>
+    <a href="#">Oils & Fats</a>
+    <a href="#">Personal Care</a>
+    <a href="#">Cleaning</a>
+</div>
+
+<div class="category-layout">
+
+    <!-- SIDEBAR (STATIC) -->
+    <aside class="category-sidebar">
+        <h2>Categories</h2>
+
+        <ul class="cat-list">
+            <li><a href="#" class="active">Flour & Grains <span>(42)</span></a></li>
+            <li><a href="#">Beverages & Drinks <span>(115)</span></a></li>
+            <li><a href="#">Sugar & Salt <span>(18)</span></a></li>
+            <li><a href="#">Oils & Fats <span>(24)</span></a></li>
+            <li><a href="#">Personal Care <span>(80)</span></a></li>
+            <li><a href="#">Cleaning & Laundry <span>(55)</span></a></li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="category-main">
+
+        <div class="category-section-header">
+            <h1>Flour & Grains</h1>
+            <p>6 items</p>
+        </div>
+
+        <!-- STATIC PRODUCT GRID -->
+        <div class="product-grid">
+
+            <div class="cat-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab">
+                </div>
+                <div class="item-info">
+                    <span class="brand-label">Ajab</span>
+                    <h3>Wheat Flour</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 1,950</span>
+                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cat-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/soko.jpeg' %}" alt="Soko">
+                </div>
+                <div class="item-info">
+                    <span class="brand-label">Soko</span>
+                    <h3>Maize Meal</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 1,680</span>
+                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cat-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/pembe.jpeg' %}" alt="Pembe">
+                </div>
+                <div class="item-info">
+                    <span class="brand-label">Pembe</span>
+                    <h3>Home Baking</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 1,890</span>
+                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cat-item-card">
+                <div class="item-img">
+                    <img src="{% static 'assets/exe.png' %}" alt="EXE">
+                </div>
+                <div class="item-info">
+                    <span class="brand-label">EXE</span>
+                    <h3>Self-Rising Flour</h3>
+                    <span class="pack-size">12 x 2kg Bundle</span>
+                    <div class="item-footer">
+                        <span class="item-price">KSh 2,100</span>
+                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+</div>
+
+{% endblock %}

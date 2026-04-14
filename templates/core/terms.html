@@ -1,0 +1,119 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %} Terms & Conditions | Mahitaji {% endblock %}
+
+{% block extra_css %}
+<style>
+    .help-container { 
+        max-width: 900px; 
+        margin: 3rem auto; 
+        padding: 0 1rem; 
+    }
+    .content-card { 
+        background: white; 
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        padding: 3rem; 
+        line-height: 1.7; 
+    }
+    .terms-header {
+        border-bottom: 2px solid var(--light-bg);
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+    }
+    .terms-header h2 {
+        color: var(--dark-navy);
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+    .last-updated {
+        font-size: 0.85rem;
+        color: #64748b;
+        font-style: italic;
+    }
+    .terms-section { 
+        margin-bottom: 2.5rem; 
+    }
+    .terms-section h3 { 
+        color: var(--dark-navy); 
+        margin-bottom: 1rem; 
+        font-size: 1.2rem;
+        font-weight: 700;
+        display: flex;
+        gap: 10px;
+    }
+    .section-number {
+        color: var(--primary-blue);
+    }
+    .terms-section p {
+        color: #475569;
+        margin-bottom: 1rem;
+    }
+    .terms-section ul {
+        padding-left: 1.5rem;
+        color: #475569;
+        margin-bottom: 1rem;
+    }
+    .terms-section li {
+        margin-bottom: 0.5rem;
+    }
+
+    @media (max-width: 600px) {
+        .content-card { padding: 1.5rem; }
+        .help-container { margin: 1.5rem auto; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-container">
+    <main class="content-card">
+        <div class="terms-header">
+            <h2>Terms & Conditions</h2>
+            <p class="last-updated">Last Updated: April 14, 2026</p>
+        </div>
+        
+        <div class="terms-section">
+            <h3><span class="section-number">1.</span> Introduction</h3>
+            <p>Welcome to Mahitaji. By accessing our website and using our services, you agree to be bound by the following terms and conditions. These terms apply to all visitors, retailers, and wholesalers who access or use the service.</p>
+        </div>
+
+        <div class="terms-section">
+            <h3><span class="section-number">2.</span> Account Registration</h3>
+            <p>To access certain features of the platform, including wholesale pricing, you must register for an account. You agree to:</p>
+            <ul>
+                <li>Provide accurate, current, and complete information.</li>
+                <li>Maintain the security of your password and identification.</li>
+                <li>Promptly update account information to keep it accurate.</li>
+            </ul>
+        </div>
+
+        <div class="terms-section">
+            <h3><span class="section-number">3.</span> Orders and Pricing</h3>
+            <p>All orders are subject to acceptance and availability. Prices for our products are subject to change without notice. We reserve the right to limit the sales of our products to any person, geographic region, or jurisdiction on a case-by-case basis.</p>
+        </div>
+
+        <div class="terms-section">
+            <h3><span class="section-number">4.</span> Payments</h3>
+            <p>Payment must be made through our approved payment gateways (M-Pesa, Card, or Bank Transfer). For verified retailers approved for "Pay on Delivery," payment must be settled immediately upon receipt of goods via M-Pesa Till or Business Cheque.</p>
+        </div>
+
+        <div class="terms-section">
+            <h3><span class="section-number">5.</span> Delivery and Returns</h3>
+            <p>Delivery timelines are estimates and not guarantees. Our return policy is governed by a 48-hour window from the time of delivery. Please refer to our <a href="{% url 'returns' %}" style="color: var(--primary-blue); text-decoration: none;">Return Policy</a> for detailed information.</p>
+        </div>
+
+        <div class="terms-section">
+            <h3><span class="section-number">6.</span> Limitation of Liability</h3>
+            <p>Mahitaji shall not be liable for any indirect, incidental, special, or consequential damages resulting from the use or the inability to use our services or for the cost of procurement of substitute goods.</p>
+        </div>
+
+        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--light-bg); text-align: center;">
+            <p style="font-size: 0.9rem; color: #64748b;">
+                Questions about the Terms of Service should be sent to us at <strong>legal@mahitaji.co.ke</strong>
+            </p>
+        </div>
+    </main>
+</div>
+{% endblock %}

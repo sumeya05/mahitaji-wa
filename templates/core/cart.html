@@ -1,0 +1,227 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Shopping Cart | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cart-wrapper {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+    }
+
+    .cart-items-section {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+    }
+
+    .cart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 2px solid var(--light-bg);
+        padding-bottom: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .cart-item {
+        display: grid;
+        grid-template-columns: 80px 1fr auto auto;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 1.5rem 0;
+        border-bottom: 1px solid var(--light-bg);
+    }
+
+    .cart-item:last-child {
+        border-bottom: none;
+    }
+
+    .cart-item img {
+        width: 80px;
+        height: 80px;
+        object-fit: contain;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .item-details h4 {
+        margin: 0 0 5px 0;
+        color: var(--dark-navy);
+    }
+
+    .item-details p {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .qty-control {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-color);
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .qty-control button {
+        background: white;
+        border: none;
+        padding: 5px 12px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+
+    .qty-control input {
+        width: 40px;
+        text-align: center;
+        border: none;
+        border-left: 1px solid var(--border-color);
+        border-right: 1px solid var(--border-color);
+        outline: none;
+        font-weight: bold;
+    }
+
+    .item-price {
+        font-weight: 700;
+        color: var(--primary-blue);
+        min-width: 100px;
+        text-align: right;
+    }
+
+    .summary-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 1px solid var(--border-color);
+        height: fit-content;
+        position: sticky;
+        top: 20px;
+    }
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        font-size: 0.95rem;
+    }
+
+    .total-row {
+        border-top: 2px solid var(--light-bg);
+        padding-top: 1rem;
+        font-weight: 800;
+        font-size: 1.2rem;
+        color: var(--dark-navy);
+    }
+
+    .checkout-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        background: var(--primary-blue);
+        color: white;
+        padding: 1.2rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        margin-top: 2rem;
+    }
+
+    @media (max-width: 850px) {
+        .cart-wrapper {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<div class="cart-wrapper">
+
+    <!-- CART ITEMS -->
+    <section class="cart-items-section">
+        <div class="cart-header">
+            <h2>Your Cart</h2>
+            <p>2 Items</p>
+        </div>
+
+        <!-- ITEM 1 -->
+        <div class="cart-item">
+            <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab Flour">
+            <div class="item-details">
+                <h4>Ajab Premium Wheat Flour</h4>
+                <p>12 x 2kg Bundle (Bale)</p>
+                <p style="color: #ef4444; font-size: 0.8rem;">
+                    <i class="fa-solid fa-trash-can"></i> Remove
+                </p>
+            </div>
+            <div class="qty-control">
+                <button>-</button>
+                <input type="text" value="2">
+                <button>+</button>
+            </div>
+            <div class="item-price">KSh 3,900</div>
+        </div>
+
+        <!-- ITEM 2 -->
+        <div class="cart-item">
+            <img src="{% static 'assets/kapa.png' %}" alt="Cooking Oil">
+            <div class="item-details">
+                <h4>Cooking Oil (Bulk)</h4>
+                <p>20 Litre Jerrycan</p>
+                <p style="color: #ef4444; font-size: 0.8rem;">
+                    <i class="fa-solid fa-trash-can"></i> Remove
+                </p>
+            </div>
+            <div class="qty-control">
+                <button>-</button>
+                <input type="text" value="1">
+                <button>+</button>
+            </div>
+            <div class="item-price">KSh 4,300</div>
+        </div>
+
+    </section>
+
+    <!-- SUMMARY -->
+    <aside class="summary-card">
+        <h3>Order Summary</h3>
+
+        <div style="margin-top: 1.5rem;">
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>KSh 8,200</span>
+            </div>
+
+            <div class="summary-row">
+                <span>Delivery</span>
+                <span style="color: #22c55e;">Calculated at checkout</span>
+            </div>
+
+            <div class="summary-row total-row">
+                <span>Total</span>
+                <span>KSh 8,200</span>
+            </div>
+        </div>
+
+        <a href="{% url 'checkout' %}" class="checkout-btn">
+            Proceed to Checkout
+        </a>
+
+        <p style="text-align: center; font-size: 0.75rem; color: #94a3b8; margin-top: 1rem;">
+            Secure payment powered by M-Pesa
+        </p>
+    </aside>
+
+</div>
+
+{% endblock %}

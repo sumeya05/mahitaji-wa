@@ -1,0 +1,118 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}About Us | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+    .about-hero {
+        background: linear-gradient(rgba(0, 51, 102, 0.8), rgba(0, 51, 102, 0.8)),
+                    url('https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 5rem 1rem;
+        text-align: center;
+    }
+
+    .about-hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+
+    .about-hero p {
+        font-size: 1.2rem;
+        max-width: 700px;
+        margin: 0 auto;
+        opacity: 0.9;
+    }
+
+    .content-section {
+        max-width: 1000px;
+        margin: 4rem auto;
+        padding: 0 1.5rem;
+        line-height: 1.8;
+        color: var(--dark-navy);
+    }
+
+    .values-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .value-card {
+        background: var(--light-bg);
+        padding: 2rem;
+        border-radius: 12px;
+        border-left: 5px solid var(--primary-blue);
+    }
+
+    .value-card i {
+        font-size: 2rem;
+        color: var(--primary-blue);
+        margin-bottom: 1rem;
+    }
+
+    .value-card h3 {
+        margin-top: 0;
+    }
+
+    .mission-box {
+        background: #fff;
+        border: 2px dashed var(--border-color);
+        padding: 2.5rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-top: 4rem;
+    }
+
+    @media (max-width: 768px) {
+        .about-hero h1 { font-size: 2rem; }
+    }
+</style>
+{% endblock %}
+
+
+{% block content %}
+
+<header class="about-hero">
+    <h1>Our Story</h1>
+    <p>Connecting Kenyan retailers to the best wholesale prices since 2024.</p>
+</header>
+
+<main class="content-section">
+
+    <h2>Who We Are</h2>
+
+    <p>
+        <strong>Mahitaji</strong> was founded with a simple goal: to eliminate the logistical headaches that come with sourcing wholesale goods in Kenya. We realized that small and medium-sized businesses spent too much time chasing suppliers and not enough time serving their customers.
+    </p>
+
+    <div class="values-grid">
+
+        <div class="value-card">
+            <i class="fa-solid fa-shield-check"></i>
+            <h3>Reliability</h3>
+            <p>We ensure that what you order is exactly what gets delivered to your doorstep, on time, every time.</p>
+        </div>
+
+        <div class="value-card">
+            <i class="fa-solid fa-hand-holding-dollar"></i>
+            <h3>Fair Pricing</h3>
+            <p>By working directly with manufacturers, we bypass unnecessary middlemen to keep your margins healthy.</p>
+        </div>
+
+    </div>
+
+    <div class="mission-box">
+        <h2 style="color: var(--primary-blue);">Our Mission</h2>
+        <p style="font-size: 1.4rem; font-style: italic;">
+            "To digitize the Kenyan supply chain, making essential goods accessible and affordable for every shopkeeper in the country."
+        </p>
+    </div>
+
+</main>
+
+{% endblock %}

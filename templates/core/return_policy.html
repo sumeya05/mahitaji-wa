@@ -1,0 +1,100 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %} Return Policy | Mahitaji {% endblock %}
+
+{% block extra_css %}
+<style>
+    .help-container { 
+        max-width: 900px; 
+        margin: 3rem auto; 
+        padding: 0 1rem; 
+    }
+    .content-card { 
+        background: white; 
+        border: 1px solid var(--border-color); 
+        border-radius: 12px; 
+        padding: 2.5rem; 
+        line-height: 1.6; 
+    }
+    .content-card h2 {
+        color: var(--dark-navy);
+        margin-bottom: 1.5rem;
+        font-weight: 700;
+    }
+    .policy-list { 
+        list-style: none; 
+        padding: 0; 
+        margin-top: 1.5rem; 
+    }
+    .policy-list li { 
+        margin-bottom: 1.2rem; 
+        display: flex; 
+        gap: 15px; 
+        align-items: flex-start; 
+        color: #475569;
+    }
+    .policy-list i { 
+        color: var(--primary-blue); 
+        margin-top: 5px; 
+        font-size: 1.1rem;
+    }
+    .policy-list strong {
+        color: var(--dark-navy);
+        display: block;
+        margin-bottom: 2px;
+    }
+
+    @media (max-width: 600px) {
+        .content-card { padding: 1.5rem; }
+        .help-container { margin: 1.5rem auto; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-container">
+    <main class="content-card">
+        <h2>Goods Return Policy</h2>
+        <p>We take pride in the quality of goods we supply to our partners. However, if you receive a damaged, expired, or incorrect item, please follow our standard return procedure:</p>
+        
+        <ul class="policy-list">
+            <li>
+                <i class="fa-solid fa-circle-check"></i> 
+                <div>
+                    <strong>48-Hour Window</strong>
+                    Returns must be initiated within 48 hours of delivery. Beyond this window, we may be unable to verify the claim with our suppliers.
+                </div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i> 
+                <div>
+                    <strong>Original Condition</strong>
+                    Items must be in their original packaging, unopened, and unused. Labels and seals must remain intact.
+                </div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i> 
+                <div>
+                    <strong>Perishables & Fresh Goods</strong>
+                    Fresh or perishable goods must be inspected at the point of delivery. Returns for these specific items are only accepted at the moment of offloading.
+                </div>
+            </li>
+            <li>
+                <i class="fa-solid fa-circle-check"></i> 
+                <div>
+                    <strong>Refunds & Credits</strong>
+                    Once a return is approved, refunds are processed to your original payment method or credited to your Mahitaji account within 5-7 business days.
+                </div>
+            </li>
+        </ul>
+
+        <div style="margin-top: 2rem; padding: 1.5rem; background: #f0f7ff; border-radius: 8px; border-left: 4px solid var(--primary-blue);">
+            <p style="font-size: 0.9rem; color: var(--dark-navy); margin: 0;">
+                <strong>Need help with a return?</strong><br>
+                Contact our claims department immediately at <strong>claims@mahitaji.co.ke</strong> or call <strong>+254 750 530 130</strong>.
+            </p>
+        </div>
+    </main>
+</div>
+{% endblock %}

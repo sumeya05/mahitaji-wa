@@ -1,0 +1,165 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Search | Mahitaji{% endblock %}
+
+{% block extra_css %}
+<style>
+.search-page-header {
+    background: #fff;
+    padding: 2rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-container-wide {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.search-input-wrapper {
+    display: flex;
+    align-items: center;
+    background: var(--light-bg);
+    border: 2px solid var(--border-color);
+    border-radius: 50px;
+    padding: 0.5rem 1.5rem;
+}
+
+.search-input-wrapper input {
+    border: none;
+    background: transparent;
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1.1rem;
+    outline: none;
+}
+
+.search-btn-large {
+    background: var(--primary-blue);
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    cursor: pointer;
+    margin-left: 0.5rem;
+}
+
+.results-meta {
+    max-width: 1200px;
+    margin: 2rem auto 1rem;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    color: #64748b;
+}
+
+.search-grid {
+    max-width: 1200px;
+    margin: 0 auto 5rem;
+    padding: 1rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 2rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+
+<header class="search-page-header">
+    <div class="search-container-wide">
+        <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" placeholder="Search for brands, products..." value="Flour">
+            <button class="search-btn-large">Search</button>
+        </div>
+    </div>
+</header>
+
+<div class="results-meta">
+    <span>Showing <strong>6</strong> results for "Flour"</span>
+
+    <select style="padding:5px; border-radius:5px; border:1px solid var(--border-color);">
+        <option>Sort by: Relevance</option>
+        <option>Price: Low to High</option>
+        <option>Price: High to Low</option>
+    </select>
+</div>
+
+<main class="search-grid">
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">EXE Wheat Flour</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 2,150</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">Pembe Maize Flour</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 1,850</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">Ajab All Purpose</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 2,050</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">EXE Wheat Flour</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 2,150</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">Pembe Maize Flour</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 1,850</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="product-card">
+        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
+        <div class="product-info">
+            <p class="product-name">Ajab All Purpose</p>
+            <p class="product-sku">12 X 2KG (Bale)</p>
+            <div class="price-box">
+                <span class="price">KSh 2,050</span>
+                <button class="add-btn">Add</button>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+{% endblock %}
