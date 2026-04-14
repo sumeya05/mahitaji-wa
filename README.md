@@ -64,8 +64,8 @@ project_root/
 ### 1. Clone the repository
 
 ```
-git clone https://github.com/yourusername/mahitaji.git
-cd mahitaji
+git clone https://github.com/isuba-ian-k/mahitaji-wa.git
+cd mahitaji-wa
 ```
 
 ### 2. Create virtual environment
