@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'core',
+    'django_daraja',
 ]
 
 MIDDLEWARE = [
@@ -145,8 +146,35 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # MPESA Settings (to be used in services.py)
 # M-Pesa Settings from .env
+MPESA_ENVIRONMENT = os.getenv('MPESA_ENVIRONMENT')
+MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
+MPESA_EXPRESS_SHORTCODE = os.getenv('MPESA_EXPRESS_SHORTCODE')
 MPESA_CONSUMER_KEY = os.getenv('MPESA_CONSUMER_KEY')
 MPESA_CONSUMER_SECRET = os.getenv('MPESA_CONSUMER_SECRET')
 MPESA_PASSKEY = os.getenv('MPESA_PASSKEY')
-MPESA_SHORTCODE = os.getenv('MPESA_SHORTCODE', '174379')
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL')
+
+
+
+
+
+# --- AUTHENTICATION REDIRECTS ---
+# Where to go after a successful login
+LOGIN_REDIRECT_URL = 'dashboard'
+
+# Where to go after logging out
+LOGOUT_REDIRECT_URL = 'index'
+
+# Where to send users who try to access a @login_required page
+LOGIN_URL = 'login'
+
+
+# --- MESSAGE TAGS (For Bootstrap-style alerts in your modern UI) ---
+from django.contrib.messages import constants as messages
+MESSAGE_TAGS = {
+    messages.DEBUG: 'secondary',
+    messages.INFO: 'info',
+    messages.SUCCESS: 'success',
+    messages.WARNING: 'warning',
+    messages.ERROR: 'danger',
+}

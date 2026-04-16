@@ -26,7 +26,7 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
 
     # user routes
-    path('login/', views.login, name='login'),
+    path('login/', views.login_view, name='login'),
     path('signup/', views.signup, name='signup'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('transactions/', views.transactions, name='transactions'),
@@ -53,5 +53,9 @@ urlpatterns = [
     
     # accessed via /api/ - i.e products will be at /api/data/products
     path('data/', include(router.urls)), 
+
+    # mpesa
+    path('pay/', views.initiate_stk_push, name='pay'),
+    path('mpesa/callback/', views.mpesa_callback, name='callback'),
 
 ]

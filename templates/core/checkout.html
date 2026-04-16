@@ -270,7 +270,7 @@
             </div>
         </div>
 
-        <button class="complete-order-btn">
+        <button id="pay-button" class="complete-order-btn">
             Pay with M-PESA
         </button>
 
@@ -279,5 +279,47 @@
         </div>
     </aside>
 </div>
+
+{% endblock %}
+
+{% block extra_js %}
+    
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const payBtn = document.getElementById('pay-button');
+    
+    // Check if button exists before adding listener to avoid the error
+    if (payBtn) {
+        payBtn.addEventListener('click', function() {
+            const btn = this;
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+            btn.innerHTML = "Processing...";
+            btn.disabled = true;
+
+            fetch("{% url 'pay' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Check your phone for the M-PESA prompt.");
+                btn.innerHTML = "Pay with M-PESA";
+                btn.disabled = false;
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                btn.innerHTML = "Pay with M-PESA";
+                btn.disabled = false;
+            });
+        });
+    } else {
+        console.error("Pay button not found! Check if the ID 'pay-button' matches your HTML.");
+    }
+});
+</script>
 
 {% endblock %}
