@@ -122,13 +122,17 @@ class StockLedger(models.Model):
 
 class CustomerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    # Fields added to support business registration requirements
+    business_name = models.CharField(max_length=255) 
+    contact_person = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15)
+    
     is_wholesaler = models.BooleanField(default=False)
     focus_erp_id = models.CharField(max_length=50, null=True, blank=True)
 
     def __str__(self):
         role = "Wholesaler" if self.is_wholesaler else "Retailer"
-        return f"{self.user.get_full_name()} ({role})"
+        return f"{self.business_name} ({role})"
 
 class Address(models.Model):
     customer = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='addresses')

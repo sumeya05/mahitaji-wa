@@ -1,41 +1,25 @@
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions
-from django.contrib.auth import logout
+from django.contrib.auth import logout, login, authenticate
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_daraja.mpesa.core import MpesaClient
 import json
 from datetime import datetime
+
+
+
+from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.utils.encoding import force_bytes
 
 
 # --- Protected Views ---
 from django.contrib.auth.decorators import login_required
-
-# Import models and serializers
-from .models import (
-    Product, Category, Order, CustomerProfile, 
-    MpesaTransaction
-)
-from .serializers import (
-    ProductSerializer, CategorySerializer, OrderSerializer
-)
-
-
-
-from django.shortcuts import render, redirect
-from rest_framework import viewsets, permissions
-from django.contrib.auth import logout, login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib import messages
-from django_daraja.mpesa.core import MpesaClient
-import json
-from datetime import datetime
-
-
-
-
 
 # Import models, serializers, and the RegisterForm we'll create
 from .models import (
@@ -46,6 +30,7 @@ from .serializers import (
     ProductSerializer, CategorySerializer, OrderSerializer
 )
 from .forms import RegisterForm  # Make sure to create this in core/forms.py
+
 
 # 1. Template & Auth Views
 
@@ -77,46 +62,72 @@ def checkout(request):
 
 # Auth Views
 def login_view(request):
-    """Hybrid Login: Handles both AJAX and standard POST"""
+    """Hybrid Login: Handles both AJAX and standard POST for Username/Email"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            user = authenticate(
-                username=form.cleaned_data.get('username'),
-                password=form.cleaned_data.get('password')
-            )
-            if user is not None:
-                login(request, user)
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"success": True, "redirect_url": "/dashboard/"})
-                return redirect('dashboard')
+        login_input = request.POST.get('username')
+        password = request.POST.get('password')
         
-        # If invalid
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({"success": False, "error": "Invalid username or password."}, status=400)
-        messages.error(request, "Invalid username or password.")
-    
-    return render(request, 'core/login.html', {'form': AuthenticationForm()})
+        # 1. Try to find the user by email first
+        if '@' in login_input:
+            try:
+                user_obj = User.objects.get(email=login_input)
+                username = user_obj.username
+            except User.DoesNotExist:
+                username = login_input  # Fallback to the input string
+        else:
+            username = login_input
 
-def signup(request):
-    """Hybrid Signup: Creates User + CustomerProfile"""
-    if request.method == "POST":
-        form = RegisterForm(request.POST)
-        if form.is_valid():
-            user = form.save()
+        # 2. Use the resolved username to authenticate
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
             login(request, user)
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
                 return JsonResponse({"success": True, "redirect_url": "/dashboard/"})
             return redirect('dashboard')
         
+        # 3. Handle Invalid Credentials
+        error_msg = "Invalid username/email or password."
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            errors = form.errors.get_json_data()
-            return JsonResponse({"success": False, "errors": errors}, status=400)
+            return JsonResponse({"success": False, "error": error_msg}, status=400)
+        
+        messages.error(request, error_msg)
     
-    return render(request, 'core/signup.html', {'form': RegisterForm()})
+    return render(request, 'core/login.html', {'form': AuthenticationForm()})
+
+def signup(request):
+    """Hybrid Signup: Creates User + CustomerProfile with AJAX support"""
+    if request.user.is_authenticated:
+        return redirect('dashboard')
+
+    if request.method == "POST":
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({
+                    "success": True, 
+                    "redirect_url": "/dashboard/"
+                })
+            return redirect('dashboard')
+        
+        # If form is invalid and it's an AJAX request
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+            # .get_json_data() provides a clean dictionary of error messages
+            return JsonResponse({
+                "success": False, 
+                "errors": form.errors.get_json_data()
+            }, status=400)
+    
+    else:
+        form = RegisterForm()
+    
+    return render(request, 'core/signup.html', {'form': form})
 
 def logout_view(request):
     logout(request)
@@ -291,3 +302,72 @@ def mpesa_callback(request):
             return JsonResponse({"ResultCode": 1, "ResultDesc": str(e)}, status=500)
 
     return JsonResponse({"status": "error"}, status=400)
+
+
+
+
+
+
+def custom_password_reset(request):
+    if request.method == "POST":
+        form = PasswordResetForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            users = User.objects.filter(email=email)
+            if users.exists():
+                form.save(
+                    request=request,
+                    use_https=request.is_secure(),
+                    email_template_name='core/password_reset_email.html',
+                    subject_template_name='core/password_reset_subject.txt',
+                )
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({"success": True, "redirect_url": "/password-reset/done/"})
+                return redirect('password_reset_done')
+            else:
+                error_msg = "No account found with that email."
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({"success": False, "error": error_msg}, status=400)
+                messages.error(request, error_msg)
+        else:
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                return JsonResponse({"success": False, "errors": form.errors}, status=400)
+    
+    return render(request, 'core/password_reset.html', {'form': PasswordResetForm()})
+
+def custom_password_reset_confirm(request, uidb64, token):
+    user = None  # Initialize user here
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist, UnicodeDecodeError):
+        user = None
+
+    # Now 'user' is guaranteed to be defined (either as a User object or None)
+    if user is not None and default_token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = SetPasswordForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({"success": True, "redirect_url": "/reset/done/"})
+                return redirect('password_reset_complete')
+            else:
+                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+                    return JsonResponse({"success": False, "errors": form.errors}, status=400)
+        else:
+            form = SetPasswordForm(user)
+        return render(request, 'core/password_reset_confirm.html', {'form': form})
+    else:
+        # Link is invalid or expired
+        return render(request, 'core/password_reset_invalid.html')
+
+
+
+
+# Simple Template Views
+def password_reset_done(request):
+    return render(request, 'core/password_reset_done.html')
+
+def password_reset_complete(request):
+    return render(request, 'core/password_reset_complete.html')

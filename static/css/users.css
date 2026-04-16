@@ -1,0 +1,383 @@
+/* ================================================================
+   MAHITAJI UNIFIED USERS STYLESHEET
+   Handles: Login, Signup, Password Reset, Dashboard, Profile
+================================================================ 
+*/
+
+/* --- AUTHENTICATION FLOW (Login, Signup, Reset) --- */
+.auth-wrapper {
+    min-height: 85vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    width: 100%;
+    max-width: 480px;
+    padding: 2.5rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+}
+
+.auth-header { 
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+
+.auth-header img { 
+    height: 50px; 
+    margin-bottom: 10px; 
+}
+
+.auth-header h2 { 
+    color: var(--dark-navy); 
+    margin-bottom: 5px;
+}
+
+.auth-header p { 
+    color: #64748b; 
+    font-size: 0.95rem; 
+    line-height: 1.5; 
+}
+
+/* Success/Icon States for Password Done/Invalid */
+.auth-icon-circle { 
+    width: 70px; 
+    height: 70px; 
+    background: #f1f5f9; 
+    color: var(--primary-blue); 
+    border-radius: 50%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    font-size: 2rem; 
+    margin: 0 auto 1.5rem; 
+}
+
+.auth-icon-circle.success { 
+    background: #ecfdf5; 
+    color: #10b981; 
+}
+
+/* --- FORM ELEMENTS --- */
+.form-group { 
+    margin-bottom: 1.2rem; 
+    position: relative; 
+}
+
+.form-grid { 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 1rem; 
+}
+
+.form-group.full { 
+    grid-column: span 2; 
+}
+
+label { 
+    display: block; 
+    margin-bottom: 8px; 
+    font-size: 0.9rem; 
+    font-weight: 600; 
+    color: #475569; 
+}
+
+input, select { 
+    width: 100%; 
+    padding: 12px; 
+    padding-right: 40px; /* Space for eye icon */
+    border: 1px solid var(--border-color); 
+    border-radius: 8px; 
+    outline: none; 
+    box-sizing: border-box; 
+    font-family: inherit;
+    transition: 0.3s;
+}
+
+input:focus, select:focus { 
+    border-color: var(--primary-blue); 
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Eye Icon Styling */
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 40px; 
+    cursor: pointer;
+    color: #64748b;
+    z-index: 10;
+    font-size: 1rem;
+}
+
+/* --- BUTTONS --- */
+.auth-btn { 
+    width: 100%; 
+    padding: 12px; 
+    background: var(--primary-blue); 
+    color: white; 
+    border: none; 
+    border-radius: 8px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    margin-top: 1rem; 
+    transition: 0.3s; 
+    text-align: center;
+    text-decoration: none;
+    display: block;
+}
+
+.auth-btn:hover { 
+    background: var(--dark-navy); 
+}
+
+.auth-btn:disabled { 
+    background: #cbd5e1; 
+    cursor: not-allowed; 
+}
+
+/* --- MESSAGES & ERRORS --- */
+#loginError, #signupErrors, .error-box {
+    display: none;
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    font-size: 0.85rem;
+    border: 1px solid #fecaca;
+}
+
+.error-list { 
+    color: #dc2626; 
+    font-size: 0.8rem; 
+    margin-top: 5px; 
+    list-style: disc inside; 
+    padding: 0; 
+}
+
+/* --- FOOTER LINKS --- */
+.auth-footer { 
+    text-align: center; 
+    margin-top: 1.5rem; 
+    font-size: 0.9rem; 
+    color: #64748b; 
+}
+
+.auth-footer a, .forgot-link { 
+    color: var(--primary-blue); 
+    text-decoration: none; 
+    font-weight: 600; 
+}
+
+.forgot-link { 
+    display: block; 
+    text-align: right; 
+    font-size: 0.8rem; 
+    margin-top: 5px; 
+}
+
+/* ================================================================
+   DASHBOARD & ACCOUNT LAYOUT (MAHITAJI ORIGINAL STYLES)
+================================================================ */
+
+.account-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 2rem;
+}
+
+.account-main {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    min-width: 0;
+}
+
+/* --- SIDEBAR --- */
+.account-sidebar {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    height: fit-content;
+}
+
+/* FIXED USER HEADER */
+.user-welcome {
+    padding: 2rem 1.5rem;
+    background: var(--dark-navy);
+    color: white;
+    text-align: center;
+}
+
+.user-welcome i {
+    font-size: 3rem;
+    margin-bottom: 10px;
+    display: block;
+    color: var(--primary-blue);
+}
+
+.user-welcome h3 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.user-welcome p {
+    margin: 5px 0 0;
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+/* NAV */
+.account-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.account-nav li a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 1.2rem 1.5rem;
+    text-decoration: none;
+    color: #475569;
+    border-bottom: 1px solid var(--light-bg);
+    transition: 0.3s;
+}
+
+.account-nav li a:hover,
+.account-nav li a.active {
+    background: #f8fafc;
+    color: var(--primary-blue);
+    border-left: 4px solid var(--primary-blue);
+}
+
+/* --- CONTENT AREA --- */
+.content-card {
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    color: var(--primary-blue);
+}
+
+.stat-info h4 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.stat-info p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* --- TABLE --- */
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.order-table th {
+    text-align: left;
+    padding: 12px;
+    background: #f8fafc;
+    font-size: 0.85rem;
+}
+
+.order-table td {
+    padding: 12px;
+    border-bottom: 1px solid var(--light-bg);
+    font-size: 0.9rem;
+}
+
+/* ================================================================
+   MOBILE RESPONSIVENESS (900PX BREAKPOINT)
+================================================================ */
+@media (max-width: 900px) {
+    .account-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .account-main {
+        gap: 1.5rem;
+    }
+
+    .account-nav {
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        background: white;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .account-nav li {
+        flex: 0 0 auto;
+    }
+
+    .account-nav li a {
+        border-bottom: none;
+        border-right: 1px solid var(--light-bg);
+        padding: 1rem 1.2rem;
+    }
+
+    .account-nav li a.active {
+        border-left: none;
+        border-bottom: 3px solid var(--primary-blue);
+    }
+
+    .content-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    /* Ensure the auth grid also collapses on mobile within the same breakpoint */
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-group.full {
+        grid-column: span 1;
+    }
+}
