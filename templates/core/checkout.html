@@ -47,12 +47,16 @@
         </div>
 
         <div class="checkout-step">
+
             <div class="step-header">
                 <div class="step-number">2</div>
                 <h3>Payment Method</h3>
             </div>
-            
+
             <div class="mpesa-container">
+                
+                {% csrf_token %}
+
                 <div class="mpesa-header">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/1/15/M-PESA_LOGO-01.svg" class="mpesa-logo" alt="M-Pesa">
                     <strong>M-Pesa Express (STK Push)</strong>
@@ -62,7 +66,7 @@
                     <label>M-Pesa Phone Number</label>
                     <div class="phone-prefix">
                         <span>+254</span>
-                        <input type="text" placeholder="712345678">
+                        <input type="text" id="phone-input" placeholder="712345678">
                     </div>
                 </div>
 
@@ -117,40 +121,60 @@
 
 {% block extra_js %}
     
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const payBtn = document.getElementById('pay-button');
-    
-    // Check if button exists before adding listener to avoid the error
-    if (payBtn) {
-        payBtn.addEventListener('click', function() {
-            const btn = this;
-            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-            btn.innerHTML = "Processing...";
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const payBtn = document.getElementById('pay-button');
+
+    if (payBtn) {
+        payBtn.addEventListener('click', function () {
+            const btn = this;
+            const phoneInput = document.getElementById('phone-input');
+            const csrfElement = document.querySelector('[name=csrfmiddlewaretoken]');
+
+            // 1. Validation
+            if (!phoneInput || !phoneInput.value.trim()) {
+                alert("Please enter your M-Pesa phone number.");
+                return;
+            }
+
+            const phoneNumber = phoneInput.value.trim();
+            const csrftoken = csrfElement ? csrfElement.value : "";
+
+            // 2. Visual Feedback
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Prompt...';
             btn.disabled = true;
 
+            // 3. Fetch Request
             fetch("{% url 'pay' %}", {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": csrftoken,
                     "Content-Type": "application/json"
-                }
+                },
+                body: JSON.stringify({
+                    "phone": phoneNumber,
+                    "amount": "1"  // Sent from frontend as requested
+                })
             })
             .then(response => response.json())
             .then(data => {
-                alert("Check your phone for the M-PESA prompt.");
+                console.log("Server Response:", data);
+                if (data.status === 'success') {
+                    alert("Check your phone for the M-PESA prompt.");
+                } else {
+                    alert("Error: " + (data.message || "Failed to initiate."));
+                }
                 btn.innerHTML = "Pay with M-PESA";
                 btn.disabled = false;
             })
             .catch(error => {
-                console.error("Error:", error);
+                console.error("Fetch Error:", error);
+                alert("Request failed. check console.");
                 btn.innerHTML = "Pay with M-PESA";
                 btn.disabled = false;
             });
         });
-    } else {
-        console.error("Pay button not found! Check if the ID 'pay-button' matches your HTML.");
     }
 });
 </script>

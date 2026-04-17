@@ -215,39 +215,60 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 # 3. MPESA
+import json
+from django.http import JsonResponse
+from django.urls import reverse
+from django_daraja.mpesa.core import MpesaClient
+
 def initiate_stk_push(request):
     if request.method == "POST":
-        cl = MpesaClient()
-        
-        # Current Setup for Trial
-        phone_number = '254794076386' 
-        account_reference = 'Trial'
-        transaction_desc = 'Payment Trial'
-        callback_url = 'https://abc6-185-177-124-199.ngrok-free.app/mpesa/callback/'
-        
         try:
-            # Fetch the latest order to link the transaction
-            order_instance = Order.objects.latest('id')
+            # 1. Parse data from frontend
+            data = json.loads(request.body)
+            raw_phone = data.get('phone')
+            # Ensure amount is an integer for Safaricom's API
+            amount = int(data.get('amount', 1))
+
+            # 2. Format phone (ensures 254... format)
+            if raw_phone.startswith('0'):
+                phone_number = '254' + raw_phone[1:]
+            elif raw_phone.startswith('7'):
+                phone_number = '254' + raw_phone
+            else:
+                phone_number = raw_phone
+
+            # 3. Handle the Order
+            try:
+                order_instance = Order.objects.latest('id')
+            except Order.DoesNotExist:
+                order_instance = None 
+
+            # 4. M-Pesa Configuration
+            cl = MpesaClient()
+            account_reference = 'Mahitaji_Order'
+            transaction_desc = 'Wholesale Payment'
+            # Use ngrok URL for local testing or request.build_absolute_uri(reverse('callback'))
+            callback_url = 'https://abc6-185-177-124-199.ngrok-free.app/mpesa/callback/'
             
-            # Use the order's total_amount if available, otherwise default to 1 for trial
-            amount = int(order_instance.total_amount) if order_instance.total_amount else 1
-            
+            # Trigger the STK Push
             response = cl.stk_push(phone_number, amount, account_reference, transaction_desc, callback_url)
 
-            # FIX: Use 'order=' instead of 'order_id=' when passing an object instance
-            MpesaTransaction.objects.create(
-                order=order_instance,
-                checkout_request_id=response.checkout_request_id,
-                merchant_request_id=response.merchant_request_id,
-                amount=amount,
-                phone_number=phone_number,
-                is_success=False 
-            )
+            # 5. Prevent Duplicate Entry error
+            # If a transaction for this order exists, update it; otherwise, create it.
+            if order_instance:
+                MpesaTransaction.objects.update_or_create(
+                    order=order_instance,
+                    defaults={
+                        'checkout_request_id': response.checkout_request_id,
+                        'merchant_request_id': response.merchant_request_id,
+                        'amount': amount,
+                        'phone_number': phone_number,
+                        'is_success': False 
+                    }
+                )
             
             return JsonResponse({"status": "success", "response": str(response)})
         
-        except Order.DoesNotExist:
-            return JsonResponse({"status": "error", "message": "No orders found in database"}, status=404)
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
     

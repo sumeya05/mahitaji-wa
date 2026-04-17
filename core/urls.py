@@ -61,7 +61,7 @@ urlpatterns = [
     path('data/', include(router.urls)), 
 
     # mpesa
-    path('pay/', views.initiate_stk_push, name='pay'),
+    path('mpesa/pay/', views.initiate_stk_push, name='pay'),
     path('mpesa/callback/', views.mpesa_callback, name='callback'),
 
 ]

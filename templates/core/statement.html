@@ -3,93 +3,8 @@
 
 {% block title %}Our Statement | Mahitaji{% endblock %}
 
-{% block extra_css %}
-<style>
-    .statement-header {
-        background: var(--light-bg);
-        padding: 4rem 1rem;
-        text-align: center;
-        border-bottom: 1px solid var(--border-color);
-    }
-
-    .statement-header h1 {
-        color: var(--dark-navy);
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .statement-container {
-        max-width: 900px;
-        margin: 4rem auto;
-        padding: 0 1rem;
-    }
-
-    .statement-card {
-        background: white;
-        border: 1px solid var(--border-color);
-        border-radius: 15px;
-        padding: 3rem;
-        margin-bottom: 3rem;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-    }
-
-    .statement-card h2 {
-        color: var(--primary-blue);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 1rem;
-        margin-bottom: 1.5rem;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .statement-card p {
-        font-size: 1.5rem;
-        line-height: 1.6;
-        color: var(--dark-navy);
-        font-weight: 500;
-    }
-
-    .values-list {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2rem;
-        margin-top: 2rem;
-    }
-
-    .value-item h4 {
-        color: var(--primary-blue);
-        margin-bottom: 0.5rem;
-        font-size: 1.1rem;
-    }
-
-    .value-item p {
-        font-size: 1rem;
-        color: #64748b;
-        font-weight: normal;
-    }
-
-    .quote-banner {
-        background: var(--dark-navy);
-        color: white;
-        padding: 4rem 2rem;
-        text-align: center;
-        border-radius: 15px;
-        margin-top: 4rem;
-    }
-
-    @media (max-width: 768px) {
-        .values-list { grid-template-columns: 1fr; }
-        .statement-card { padding: 2rem; }
-        .statement-card p { font-size: 1.2rem; }
-    }
-</style>
-{% endblock %}
-
-
 {% block content %}
-
+<div class="info-page">
 <header class="statement-header">
     <h1>Our Statement</h1>
     <p>Defining the standard for wholesale excellence in East Africa.</p>
@@ -100,12 +15,12 @@
     <div class="statement-card">
         <h2><i class="fa-solid fa-eye"></i> Our Vision</h2>
         <p>To be the most reliable digital bridge between manufacturers and the vibrant community of Kenyan retailers.</p>
-    </div>
+    </div><br>
 
     <div class="statement-card">
         <h2><i class="fa-solid fa-bullseye"></i> Our Mission</h2>
         <p>Providing seamless access to quality inventory through technology, ensuring business growth for every partner we serve.</p>
-    </div>
+    </div><br>
 
     <div class="statement-card">
         <h2><i class="fa-solid fa-gem"></i> Core Values</h2>
@@ -142,5 +57,5 @@
     </div>
 
 </main>
-
+</div>
 {% endblock %}
