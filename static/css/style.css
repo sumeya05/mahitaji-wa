@@ -2961,6 +2961,9 @@ textarea:focus {
 	background: #fed700 ;
 }
 /*Social Link Color Variations*/
+.whatsapp {
+	background: #21b60e;
+}
 .twitter {
 	background: #40c1df;
 }
@@ -3425,17 +3428,18 @@ li.right-menu .cat-mega-menu-2 > li {
 /*Li's Breadcrumb*/
 .breadcrumb-area {
 	padding: 21px 0 22px;
-	background: #313761;
+	background: #b4b7cd;
 }
 .breadcrumb-content li {
-	color: #ffffff;
+	color: #0363cd;
 	display: inline-block;
 	font-size: 14px;
+	font-weight: 500;
 	margin-right: 28px;
 	position: relative;
 }
 .breadcrumb-content li a {
-	color: #c0bbff;
+	color: #ffffff;
 }
 .breadcrumb-content li a:hover {
 	color: #ffffff;

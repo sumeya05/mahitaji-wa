@@ -44,17 +44,17 @@ def retailers(request):
 def wholesalers(request):
     return render(request, 'core/wholesalers.html') 
 
-def categories(request):
-    return render(request, 'core/categories.html')
+def products(request):
+    return render(request, 'core/products.html')
 
-def brands(request):
-    return render(request, 'core/brands.html')
+def product_detail(request, pk):
+    return render(request, 'core/product-detail.html')
 
 def search(request):
     return render(request, 'core/search.html')
 
-def cart(request):
-    return render(request, 'core/cart.html')
+def shopping_cart(request):
+    return render(request, 'core/shopping-cart.html')
 
 def checkout(request):
     return render(request, 'core/checkout.html')
@@ -98,8 +98,8 @@ def login_view(request):
     
     return render(request, 'core/login.html', {'form': AuthenticationForm()})
 
-def signup(request):
-    """Hybrid Signup: Creates User + CustomerProfile with AJAX support"""
+def register_view(request):
+    """Hybrid Register: Creates User + CustomerProfile with AJAX support"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
@@ -127,7 +127,7 @@ def signup(request):
     else:
         form = RegisterForm()
     
-    return render(request, 'core/signup.html', {'form': form})
+    return render(request, 'core/register.html', {'form': form})
 
 def logout_view(request):
     logout(request)
@@ -135,7 +135,11 @@ def logout_view(request):
         return JsonResponse({"success": True, "redirect_url": "/"})
     return redirect('home')
 
-# Dashboard views
+# User views
+@login_required
+def wishlist(request):
+    return render(request, 'core/wishlist.html')
+
 @login_required
 def dashboard(request):
     return render(request, 'core/dashboard.html')
@@ -150,7 +154,7 @@ def addresses(request):
 
 @login_required
 def payment_methods(request):
-    return render(request, 'core/payment_methods.html')
+    return render(request, 'core/payment-methods.html')
 
 @login_required
 def settings(request):
@@ -159,13 +163,13 @@ def settings(request):
 
 # Helpdesk & Informational Views
 def pickups(request):
-    return render(request, 'core/pickups_deliveries.html')
+    return render(request, 'core/pickups-deliveries.html')
 
 def payment_info(request):
-    return render(request, 'core/payment_info.html')
+    return render(request, 'core/payment-info.html')
 
 def returns(request):
-    return render(request, 'core/return_policy.html')
+    return render(request, 'core/return-policy.html')
 
 def faqs(request):
     return render(request, 'core/faqs.html')
@@ -174,16 +178,16 @@ def terms(request):
     return render(request, 'core/terms.html')   
 
 def contact(request):
-    return render(request, 'core/contact.html') 
+    return render(request, 'core/contact-us.html') 
 
 def about(request):
-    return render(request, 'core/about.html')
+    return render(request, 'core/about-us.html')
 
 def statement(request):
-    return render(request, 'core/statement.html')
+    return render(request, 'core/our-statement.html')
 
 def location(request):
-    return render(request, 'core/location.html')
+    return render(request, 'core/our-location.html')
 
 
 # 2. API Endpoints

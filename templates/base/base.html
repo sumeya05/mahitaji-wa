@@ -52,8 +52,8 @@
 
                     <div class="col-lg-3"> 
                         <!-- Logo Area -->                               
-                        <a href="index.html">
-                            <img class="logo-img" src="static/assets/logos/logo.png" alt="Logo">
+                        <a href="{% url 'home' %}">
+                            <img class="logo-img" src="{% static 'assets/logos/logo.png' %}" alt="Logo">
                         </a> <!-- End of Logo Area -->                               
                     </div>
 
@@ -81,7 +81,7 @@
 
                                 <!-- Wishlist Area -->
                                 <li class="hm-wishlist">
-                                    <a href="wishlist.html">
+                                    <a href="{% url 'wishlist' %}">
                                         <span class="cart-item-count wishlist-item-count">2</span>
                                         <i class="fa fa-heart-o"></i>
                                     </a>
@@ -102,16 +102,16 @@
 
                                         <ul class="minicart-product-list">
                                             <li>
-                                                <a href="product-detail.html" class="minicart-product-image"><img src="media/alpa_fat_100x50g.webp" alt="cart products"></a>
+                                                <a href="{% url 'product_detail' 1 %}" class="minicart-product-image"><img src="/media/alpa_fat_100x50g.webp" alt="cart products"></a>
                                                 <div class="minicart-product-details">
-                                                    <h6><a href="product-detail.html">Alpa Fat 100x50gm Satchet</a></h6><span>ksh 1030.00 x 1</span>
+                                                    <h6><a href="{% url 'product_detail' 1 %}">Alpa Fat 100x50gm Satchet</a></h6><span>ksh 1030.00 x 1</span>
                                                 </div>
                                                 <button class="close" title="Remove"><i class="fa fa-close"></i></button>
                                             </li>
                                             <li>
-                                                <a href="product-detail.html" class="minicart-product-image"><img src="media/alpa_fat_10kg.webp" alt="cart products"></a>
+                                                <a href="{% url 'product_detail' 1 %}" class="minicart-product-image"><img src="/media/alpa_fat_10kg.webp" alt="cart products"></a>
                                                 <div class="minicart-product-details">
-                                                    <h6><a href="product-detail.html">Alpa Fat 10kg Carton</a></h6><span>ksh 1790.00 x 1</span>
+                                                    <h6><a href="{% url 'product_detail' 1 %}">Alpa Fat 10kg Carton</a></h6><span>ksh 1790.00 x 1</span>
                                                 </div>
                                                 <button class="close" title="Remove"><i class="fa fa-close"></i></button>
                                             </li>
@@ -120,8 +120,8 @@
                                         <p class="minicart-total">SUBTOTAL:<span>ksh 2820.00</span></p>
 
                                         <div class="minicart-button">
-                                            <a href="shopping-cart.html" class="li-button li-button-fullwidth li-button-dark"><span>View Full Cart</span></a>
-                                            <a href="checkout.html" class="li-button li-button-fullwidth"><span>Checkout</span></a>
+                                            <a href="{% url 'shopping-cart' %}" class="li-button li-button-fullwidth li-button-dark"><span>View Full Cart</span></a>
+                                            <a href="{% url 'checkout' %}" class="li-button li-button-fullwidth"><span>Checkout</span></a>
                                         </div>
 
                                     </div>
@@ -152,49 +152,49 @@
                                 <ul class="nav-links-custom">  
 
                                     <li class="dropdown-holder">
-                                        <a href="#"><i class="zmdi zmdi-view-list-alt"></i> All Categories</a>
+                                        <a href="{% url 'products' %}"><i class="zmdi zmdi-view-list-alt"></i> All Categories</a>
                                         <ul class="hb-dropdown">
-                                            <li><a href="#">Flour</a></li>
-                                            <li><a href="#">Cooking Oil</a></li>
-                                            <li><a href="#">Toiletries</a></li>
-                                            <li><a href="#">Detergents</a></li>
-                                            <li><a href="#">Bar Soaps</a></li>
-                                            <li><a href="#">Cereals</a></li>
-                                            <li><a href="#">Sugar</a></li>
-                                            <li><a href="#">Soft Drinks</a></li> 
-                                            <li><a href="#">Baking Additives</a></li>                                         
+                                            <li><a href="{% url 'products' %}?filter=flour">Flour</a></li>
+                                            <li><a href="{% url 'products' %}?filter=cooking-oil">Cooking Oil</a></li>
+                                            <li><a href="{% url 'products' %}?filter=toiletries">Toiletries</a></li>
+                                            <li><a href="{% url 'products' %}?filter=detergents">Detergents</a></li>
+                                            <li><a href="{% url 'products' %}?filter=bar-soaps">Bar Soaps</a></li>
+                                            <li><a href="{% url 'products' %}?filter=cereals">Cereals</a></li>
+                                            <li><a href="{% url 'products' %}?filter=sugar">Sugar</a></li>
+                                            <li><a href="{% url 'products' %}?filter=soft-drinks">Soft Drinks</a></li>
+                                            <li><a href="{% url 'products' %}?filter=baking-additives">Baking Additives</a></li>
                                         </ul>
                                     </li>    
 
                                     <li class="dropdown-holder">
                                         <a href="#">Shop</a>
                                         <ul class="hb-dropdown">
-                                            <li><a href="retailers.html">Retailers Shop</a></li>
-                                            <li><a href="wholesalers.html">Wholesalers Shop</a></li>                                                        
+                                            <li><a href="{% url 'retailers' %}">Retailers Shop</a></li>
+                                            <li><a href="{% url 'wholesalers' %}">Wholesalers Shop</a></li>                                                        
                                         </ul>
                                     </li>
 
                                     <li class="dropdown-holder">
                                         <a href="#">Products Catalog</a>
                                         <ul class="hb-dropdown">                                                    
-                                            <li><a href="products.html?filter=brand">By Brand</a></li>
-                                            <li><a href="products.html?filter=category">By Category</a></li>                                                        
+                                            <li><a href="{% url 'products' %}?filter=brand">By Brand</a></li>
+                                            <li><a href="{% url 'products' %}?filter=category">By Category</a></li>                                                        
                                         </ul>
                                     </li>
 
                                     <li class="dropdown-holder">
                                         <a href="#">Mahitaji</a>
                                         <ul class="hb-dropdown">
-                                            <li><a href="about-us.html">About Us</a></li>
-                                            <li><a href="our-statement.html">Our Statement</a></li>
+                                            <li><a href="{% url 'about' %}">About Us</a></li>
+                                            <li><a href="{% url 'statement' %}">Our Statement</a></li>
                                         </ul>
                                     </li>
 
                                     <li class="dropdown-holder">
                                         <a href="#">Contact Us</a>
                                         <ul class="hb-dropdown">
-                                            <li><a href="contact-us.html">Contact Us</a></li>
-                                            <li><a href="our-location.html">Our Location</a></li>
+                                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                                            <li><a href="{% url 'location' %}">Our Location</a></li>
                                         </ul>
                                     </li>
 
@@ -237,7 +237,7 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="static/assets/logos/1.png" alt="Shipping Icon">
+                                        <img src="{% static 'assets/logos/1.png' %}" alt="Shipping Icon">
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Free Delivery</h2>
@@ -250,7 +250,7 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="static/assets/logos/2.png" alt="Shipping Icon">
+                                        <img src="{% static 'assets/logos/2.png' %}" alt="Shipping Icon">
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Safe Payment</h2>
@@ -263,7 +263,7 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="static/assets/logos/3.png" alt="Shipping Icon">
+                                        <img src="{% static 'assets/logos/3.png' %}" alt="Shipping Icon">
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Shop with Confidence</h2>
@@ -276,7 +276,7 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="static/assets/logos/4.png" alt="Shipping Icon">
+                                        <img src="{% static 'assets/logos/4.png' %}" alt="Shipping Icon">
                                     </div>
                                     <div class="shipping-text">
                                         <h2>24/7 Help Center</h2>
@@ -299,7 +299,7 @@
                             <!-- Begin Footer Logo Area -->
                             <div class="col-lg-4 col-md-6">
                                 <div class="footer-logo">
-                                    <img src="static/assets/logos/logo.png" style="height: 3.5em; width: auto;" alt="Footer Logo">
+                                    <img src="{% static 'assets/logos/logo.png' %}" style="height: 3.5em; width: auto;" alt="Footer Logo">
                                     <p class="info">
                                         We are the most trusted retail/wholesale supplier of fast moving consumer goods in Kenya. We are committed to providing our customers with the best products and services at competitive prices.
                                     </p>
@@ -307,7 +307,7 @@
                                 <ul class="des">
                                     <li>
                                         <span>Address: </span>
-                                        Prabhaki Industrial Park, Baba Dogo Road, QV3F+XJ Nairobi, Kenya
+                                        Mahitaji Complex, Block B, Prabhaki Industrial Park, Baba Dogo Road, Ruraka, QV3F+XJ Nairobi, Kenya
                                     </li>
                                     <li>
                                         <span>Phone: </span>
@@ -351,6 +351,11 @@
                                 <div class="footer-block">
                                     <h3 class="footer-block-title">Follow Us</h3>
                                     <ul class="social-link">
+                                        <li class="whatsapp">
+                                            <a href="wa.me//254750530130" data-toggle="tooltip" target="_blank" title="WhatsApp">
+                                                <i class="fa fa-whatsapp"></i>
+                                            </a>
+                                        </li>
                                         <li class="twitter">
                                             <a href="https://twitter.com/" data-toggle="tooltip" target="_blank" title="Twitter">
                                                 <i class="fa fa-twitter"></i>

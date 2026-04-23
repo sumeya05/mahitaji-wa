@@ -3,6 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import ProductViewSet, CategoryViewSet, OrderViewSet
 from . import views
 from django.contrib.auth import views as auth_views
+from django.conf import settings
+from django.conf.urls.static import static
 
 router = DefaultRouter()
 router.register(r'products', ProductViewSet)
@@ -20,15 +22,16 @@ urlpatterns = [
     # sales routes
     path('retailers/', views.retailers, name='retailers'),
     path('wholesalers/', views.wholesalers, name='wholesalers'),
-    path('categories/', views.categories, name='categories'),
-    path('brands/', views.brands, name='brands'),
+    path('products/', views.products, name='products'),
+    path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('search/', views.search, name='search'),
-    path('cart/', views.cart, name='cart'),
+    path('shopping-cart/', views.shopping_cart, name='shopping-cart'),
     path('checkout/', views.checkout, name='checkout'),
 
     # user routes
     path('login/', views.login_view, name='login'),
-    path('signup/', views.signup, name='signup'),
+    path('register/', views.register_view, name='register'),
+    path('wishlist/', views.wishlist, name='wishlist'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('transactions/', views.transactions, name='transactions'),
     path('addresses/', views.addresses, name='addresses'),
@@ -65,3 +68,8 @@ urlpatterns = [
     path('mpesa/callback/', views.mpesa_callback, name='callback'),
 
 ]
+
+
+# Add this at the very end
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
