@@ -240,7 +240,7 @@ span.tooltip-content {
 	max-width: 100%;
 }
 .nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus {
-	background-color: #7880c3;
+	background-color: #313761;
 }
 .nice-select .option:hover {
 	color: #ffffff;
@@ -328,7 +328,7 @@ button.li-btn {
 	cursor: pointer;
 }
 button.li-btn:hover {
-	background: #7880c3;
+	background: #313761;
 	color: #ffffff;
 }
 a.links, 
@@ -1159,9 +1159,9 @@ textarea:focus {
 .cart-quantity .add-to-cart {
 	border: none;
 	font-size: 14px;
-	color: #242424;
+	color: #ffffff;
 	position: relative;
-	background: #fed700;
+	background: #313761;
 	cursor: pointer;
 	font-weight: 500;
 	text-transform: capitalize;
@@ -1170,7 +1170,7 @@ textarea:focus {
 	transition: all 0.3s ease-in-out;
 }
 .cart-quantity .add-to-cart:hover {
-  background: #242424;
+  background: #3b944a;
   color: #ffffff;
 }
 .cart-plus-minus {
@@ -1529,8 +1529,8 @@ textarea:focus {
 	border-radius: 16px;
 }
 .hm-wishlist > a:hover {
-	border-color: #7880c3;
-	color: #7880c3;
+	border-color: #35a812;
+	color: #35a812;
 }
 /*Header Middle Minicart*/
 .hm-minicart {
@@ -1549,7 +1549,7 @@ textarea:focus {
 }
 
 .hm-minicart-trigger:hover {
-		background: #7880c3;
+		background: #313761;
 }
 .item-icon::before {
 		content: "\f07a";
@@ -1639,7 +1639,7 @@ textarea:focus {
 	align-self: flex-start;
 }
 .minicart .minicart-product-list li .minicart-product-image:hover {
-	border-color: #7880c3;
+	border-color: #417e2e;
 }
 .minicart .minicart-product-list li .minicart-product-image span.quantity {
 	background: -webkit-gradient(linear, left top, left bottom, from(#626262), to(#2f2f2f));
@@ -1679,7 +1679,7 @@ textarea:focus {
 	color: #333333;
 }
 .minicart .minicart-product-list li .minicart-product-details h6 a:hover {
-	color: #7880c3;
+	color: #313761;
 }
 .minicart > ul > li > a > img {
 	width: 100%;
@@ -1735,7 +1735,7 @@ textarea:focus {
 	height: 50px;
 }
 .li-button:hover {
-	background: #7880c3;
+	background: #35a812;
 	color: #ffffff;
 }
 .li-button-fullwidth {
@@ -1747,7 +1747,7 @@ textarea:focus {
 	color: #ffffff;
 }
 .li-button-dark:hover {
-	background: #7880c3;
+	background: #35a812;
 	color: #ffffff;
 }
 /*Header Bottom Menu*/
@@ -2237,7 +2237,7 @@ textarea:focus {
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 }
 .product-image > span.sticker {
-	background: #9297c5;
+	background: #ff0000;
 	border-radius: 100%;
 	color: #fff;
 	right: 15px;
@@ -2285,7 +2285,7 @@ textarea:focus {
 }
 .rating li i {
   font-size: 12px;
-  color: #7880c3;
+  color: #28a745;
 }
 .rating li.no-star i {
   color: #e3e3e3;
@@ -2316,7 +2316,7 @@ textarea:focus {
   position: relative;
 }
 .product_desc .product_desc_info .product_name {
-	color: #0363cd;
+	color: #0b155d;
 	display: block;
 	font-size: 14px;
 	font-weight: 500;
@@ -2327,7 +2327,7 @@ textarea:focus {
   text-decoration: underline;
 }
 .product_desc .manufacturer a {
-	color: #a4a4a4;
+	color: #256f3c;
 	font-size: 13px;
 	margin-top: 9px;
 	text-transform: capitalize;
@@ -2339,7 +2339,7 @@ textarea:focus {
 .product_desc .product_desc_info .new-price ,
 .featured-price-box .new-price,
 .featured-price-box .new-price-2{
-  color: #2f333a;
+  color: #1b7d1a;
   font-size: 14px;
   font-weight: 500;
   padding-right: 10px;
@@ -2410,8 +2410,11 @@ textarea:focus {
 	width: 120px;
 }
 .add-actions-link li:hover {
-	background: #7880c3;
-	border-color: #7880c3;
+	color: #35a812;
+}
+.add-actions-link li.add-cart:hover {
+	background: #3e9118;
+	border-color: #3e9118;
 	color: #ffffff;
 }
 .add-actions-link li a {
@@ -2428,7 +2431,10 @@ textarea:focus {
 .add-actions-link li.add-cart.active a {
 	color: #242424;
 }
-.add-actions-link li:hover a, 
+.add-actions-link li:hover a {
+	color: #35a812;
+}
+
 .add-actions-link li.add-cart:hover a {
 	color: #ffffff;
 }
@@ -2714,7 +2720,7 @@ textarea:focus {
 .li-section-title > h2 > span {
 	display: inline-block;
 	position: relative;
-	color: #2567cd
+	color: #0b155d
 }
 .li-section-title > h2 > span::before {
 	opacity: 1;
@@ -2798,7 +2804,7 @@ textarea:focus {
 .li-trending-product-tab > h2 > span {
 	position: relative;
 	z-index: 999;
-	color: #2567cd;
+	color: #0b155d;
 }
 .li-trending-product-tab > h2 > span::before {
 	content: "";
