@@ -145,7 +145,7 @@ body {
     box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
 
-.center-logo { width: 100%; height: auto; object-fit: contain; }
+.center-logo { width: 95%; height: auto; object-fit: contain; }
 
 .categories-container,
 .suppliers-container {
@@ -281,3 +281,24 @@ body {
     padding: 12px; object-fit: contain;
 }
 
+
+
+
+/* ==========================================================================
+   ADDITIONAL REFINEMENTS & OVERRIDES
+   ========================================================================== */
+
+.banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 48px;
+}
+
+.banner img {
+    max-width: 1200px;
+    height: 100%;
+    width: auto;
+    object-fit: contain;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}

@@ -52,7 +52,7 @@
 
                     <div class="col-lg-3"> 
                         <!-- Logo Area -->                               
-                        <a href="{% url 'home' %}">
+                        <a href="{% url 'home' %}" title="Home">
                             <img class="logo-img" src="{% static 'assets/logos/logo.png' %}" alt="Logo">
                         </a> <!-- End of Logo Area -->                               
                     </div>
@@ -73,14 +73,14 @@
                                 <option value="8">Soft Drinks</option>
                             </select>
                             <input type="text" placeholder="Enter your search key ...">
-                            <button class="li-btn" type="submit"><i class="fa fa-search"></i></button>
+                            <button class="li-btn" type="submit" title="Search"><i class="fa fa-search"></i></button>
                         </form> <!-- End of Searchbox Area -->                                  
                         
                         <div class="header-middle-right">
                             <ul class="hm-menu">
 
                                 <!-- Wishlist Area -->
-                                <li class="hm-wishlist">
+                                <li class="hm-wishlist" title="My Wishlist">
                                     <a href="{% url 'wishlist' %}">
                                         <span class="cart-item-count wishlist-item-count">2</span>
                                         <i class="fa fa-heart-o"></i>
@@ -88,7 +88,7 @@
                                 </li> <!-- End of Wishlist Area -->
 
                                 <!-- Mini Cart Area -->
-                                <li class="hm-minicart">
+                                <li class="hm-minicart" title="My Shopping Cart">
 
                                     <div class="hm-minicart-trigger">
                                         <span class="item-icon"></span>
@@ -328,7 +328,6 @@
                                         <li><a href="#">Prices drop</a></li>
                                         <li><a href="#">New products</a></li>
                                         <li><a href="#">Best sales</a></li>
-                                        <li><a href="#">Contact us</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -352,7 +351,7 @@
                                     <h3 class="footer-block-title">Follow Us</h3>
                                     <ul class="social-link">
                                         <li class="whatsapp">
-                                            <a href="wa.me//254750530130" data-toggle="tooltip" target="_blank" title="WhatsApp">
+                                            <a href="https://wa.me/254750530130" data-toggle="tooltip" target="_blank" title="WhatsApp">
                                                 <i class="fa fa-whatsapp"></i>
                                             </a>
                                         </li>

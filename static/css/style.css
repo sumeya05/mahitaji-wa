@@ -4751,7 +4751,7 @@ span.required {
   margin-bottom: 50px;
 }
 .about-image-wrap::after {
-	border: 5px solid #2a4677;
+	border: 5px solid #772a2a;
 	content: "";
 	position: absolute;
 	left: 0;
