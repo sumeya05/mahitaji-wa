@@ -1441,8 +1441,13 @@ textarea:focus {
 }
 
 .logo-img {
-	height: 5em; 
+	height: 6em; 
 	width: auto;
+}
+
+.logo-img:hover {
+	transform: scale(1.05);
+	transition: transform 0.3s ease;
 }
 
 .hm-searchbox {

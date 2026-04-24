@@ -295,10 +295,17 @@ body {
     margin: 48px;
 }
 
+.banner img:hover {
+    transform: scale(1.02);
+    transition: transform 0.3s ease;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+
+}
+
 .banner img {
     max-width: 1200px;
     height: 100%;
     width: auto;
     object-fit: contain;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
