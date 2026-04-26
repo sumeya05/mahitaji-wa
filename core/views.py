@@ -136,7 +136,6 @@ def logout_view(request):
     return redirect('home')
 
 # User views
-@login_required
 def wishlist(request):
     return render(request, 'core/wishlist.html')
 

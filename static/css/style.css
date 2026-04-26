@@ -1508,7 +1508,7 @@ textarea:focus {
 /*Header Middle Right*/
 .header-middle-right {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: flex-end;		
 }
 /*Header Middle Wishlist*/
 .hm-wishlist {
@@ -1529,8 +1529,8 @@ textarea:focus {
 	border-radius: 16px;
 }
 .hm-wishlist > a:hover {
-	border-color: #35a812;
-	color: #35a812;
+	border-color: #313761;
+	color: #313761;
 }
 /*Header Middle Minicart*/
 .hm-minicart {
@@ -2615,7 +2615,7 @@ textarea:focus {
 }
 
 .single-banner-header-r {
-	background-color: #c9c9c9;
+	background-color: #7880c3;
 }
 
 .single-banner-header-w {

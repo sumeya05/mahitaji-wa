@@ -309,3 +309,47 @@ body {
     object-fit: contain;
     box-shadow: 0 15px 35px rgba(0,0,0,0.2);
 }
+
+/* Styling the "or" separator with lines on the sides */
+.or-separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #888;
+    margin: 20px 0;
+}
+
+.or-separator::before,
+.or-separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.or-separator:not(:empty)::before {
+    margin-right: .5em;
+}
+
+.or-separator:not(:empty)::after {
+    margin-left: .5em;
+}
+
+/* Google Button Styling */
+.google-btn {
+    background-color: #ffffff;
+    border: 1px solid #dadce0;
+    color: #3c4043;
+    padding: 10px;
+    border-radius: 4px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color .3s;
+    cursor: pointer;
+}
+
+.google-btn:hover {
+    background-color: #f8f9fa;
+    border-color: #d2d2d2;
+}

@@ -77,13 +77,13 @@
                         </form> <!-- End of Searchbox Area -->                                  
                         
                         <div class="header-middle-right">
-                            <ul class="hm-menu">
+                            <ul class="hm-menu" style="display: flex;">
 
                                 <!-- Wishlist Area -->
-                                <li class="hm-wishlist" title="My Wishlist">
-                                    <a href="{% url 'wishlist' %}">
+                                <li class="hm-wishlist" title="My Account">
+                                    <a href="{% url 'login' %}">
                                         <span class="cart-item-count wishlist-item-count">2</span>
-                                        <i class="fa fa-heart-o"></i>
+                                        <i class="fa fa-user-o"></i>
                                     </a>
                                 </li> <!-- End of Wishlist Area -->
 
