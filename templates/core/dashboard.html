@@ -1,438 +1,328 @@
-<!doctype html>
-<html class="no-js" lang="zxx">
-    
-<!-- about-us32:04-->
-<head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Mahitaji</title>
-        <meta name="description" content="">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <!-- Favicon -->
-        <link rel="shortcut icon" href="static/assets/logos/favicon.ico" type="image/x-icon">
+{% extends 'base/base.html' %}
+{% load static %}
 
-        <!-- Material Design Iconic Font-V2.2.0 -->
-        <link rel="stylesheet" href="css/material-design-iconic-font.min.css">
-        <!-- Font Awesome -->
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        <!-- Font Awesome Stars-->
-        <link rel="stylesheet" href="css/fontawesome-stars.css">
-        <!-- Meanmenu CSS -->
-        <link rel="stylesheet" href="css/meanmenu.css">
-        <!-- owl carousel CSS -->
-        <link rel="stylesheet" href="css/owl.carousel.min.css">
-        <!-- Slick Carousel CSS -->
-        <link rel="stylesheet" href="css/slick.css">
-        <!-- Animate CSS -->
-        <link rel="stylesheet" href="css/animate.css">
-        <!-- Jquery-ui CSS -->
-        <link rel="stylesheet" href="css/jquery-ui.min.css">
-        <!-- Venobox CSS -->
-        <link rel="stylesheet" href="css/venobox.css">
-        <!-- Nice Select CSS -->
-        <link rel="stylesheet" href="css/nice-select.css">
-        <!-- Magnific Popup CSS -->
-        <link rel="stylesheet" href="css/magnific-popup.css">
-        <!-- Bootstrap V4.1.3 Fremwork CSS -->
-        <link rel="stylesheet" href="css/bootstrap.min.css">
-        <!-- Helper CSS -->
-        <link rel="stylesheet" href="css/helper.css">
-        <!-- Main Style CSS -->
-        <link rel="stylesheet" href="css/style.css">
-        <!-- Responsive CSS -->
-        <link rel="stylesheet" href="css/responsive.css">
+{% block title %} Mahitaji | My Account {% endblock %}
 
-        <!-- Main Style CSS -->
-        <link rel="stylesheet" href="css/main.css">
-        <link rel="stylesheet" href="css/responsive_custom.css">
+{% block content %}
 
-        <!-- Modernizr js -->
-        <script src="js/vendor/modernizr-2.8.3.min.js"></script>
+<main class="body-wrapper">
 
-        <script src="js/custom_main.js"></script>
-    </head>
-    <body>
-    <!--[if lt IE 8]>
-		<p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-	<![endif]-->
-        <!-- Begin Body Wrapper -->
-        <div class="body-wrapper">
-            <!-- Begin Header Area -->
-            <header>
-                <!-- Begin Header Middle Area -->
-                <div class="header-middle pl-sm-0 pr-sm-0 pl-xs-0 pr-xs-0">
-                    <div class="container">
-                        <div class="row">
-                            <!-- Begin Header Logo Area -->
-                            <div class="col-lg-3">                                
-                                <a href="index.html">
-                                    <img class="logo-img" src="static/assets/logos/logo.png" alt="Logo">
-                                </a>                                
-                            </div>
-                            <!-- Header Logo Area End Here -->
-                            <!-- Begin Header Middle Right Area -->
-                            <div class="col-lg-9 pl-0 ml-sm-15 ml-xs-15">
-                                <!-- Begin Header Middle Searchbox Area -->
-                                <form action="#" class="hm-searchbox">
-                                    <select class="nice-select select-search-category">
-                                        <option value="0">All</option>                         
-                                        <option value="10">Flour</option>                
-                                        <option value="11">Cooking Oil</option>                              
-                                        <option value="12">Toiletries</option>            
-                                        <option value="13">Detergents</option>                          
-                                        <option value="14">Bar Soaps</option>                                
-                                        <option value="15">Cereals</option>                           
-                                        <option value="16">Baking Additives</option>
-                                        <option value="16">Soft Drinks</option>
-                                    </select>
-                                    <input type="text" placeholder="Enter your search key ...">
-                                    <button class="li-btn" type="submit"><i class="fa fa-search"></i></button>
-                                </form>
-                                <!-- Header Middle Searchbox Area End Here -->
-                                <!-- Begin Header Middle Right Area -->
-                                <div class="header-middle-right">
-                                    <ul class="hm-menu">
-                                        <!-- Begin Header Middle Wishlist Area -->
-                                        <li class="hm-wishlist">
-                                            <a href="wishlist.html">
-                                                <span class="cart-item-count wishlist-item-count">0</span>
-                                                <i class="fa fa-heart-o"></i>
-                                            </a>
-                                        </li>
-                                        <!-- Header Middle Wishlist Area End Here -->
-                                        <!-- Begin Header Mini Cart Area -->
-                                        <li class="hm-minicart">
-                                            <div class="hm-minicart-trigger">
-                                                <span class="item-icon"></span>
-                                                <span class="item-text">ksh 2820.00
-                                                    <span class="cart-item-count">2</span>
-                                                </span>
-                                            </div>
-                                            <span></span>
-                                            <div class="minicart">
-                                                <ul class="minicart-product-list">
-                                                    <li>
-                                                        <a href="product-detail.html" class="minicart-product-image">
-                                                            <img src="images/product/small-size/alpa_fat_100x50g.webp" alt="cart products">
-                                                        </a>
-                                                        <div class="minicart-product-details">
-                                                            <h6><a href="product-detail.html">Alpa Fat 100x50gm satchet (5KG Carton)</a></h6>
-                                                            <span>ksh 1030.00 x 1</span>
-                                                        </div>
-                                                        <button class="close" title="Remove">
-                                                            <i class="fa fa-close"></i>
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <a href="product-detail.html" class="minicart-product-image">
-                                                            <img src="images/product/small-size/alpa_fat_10kg.webp" alt="cart products">
-                                                        </a>
-                                                        <div class="minicart-product-details">
-                                                            <h6><a href="product-detail.html">Alpa Fat 10kg Carton</a></h6>
-                                                            <span>ksh 1790.00 x 1</span>
-                                                        </div>
-                                                        <button class="close" title="Remove">
-                                                            <i class="fa fa-close"></i>
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                                <p class="minicart-total">SUBTOTAL: <span>ksh 2820.00</span></p>
-                                                <div class="minicart-button">
-                                                    <a href="shopping-cart.html" class="li-button li-button-fullwidth li-button-dark">
-                                                        <span>View Full Cart</span>
-                                                    </a>
-                                                    <a href="checkout.html" class="li-button li-button-fullwidth">
-                                                        <span>Checkout</span>
-                                                    </a>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <!-- Header Mini Cart Area End Here -->
-                                    </ul>
-                                </div>
-                                <!-- Header Middle Right Area End Here -->
-                            </div>
-                            <!-- Header Middle Right Area End Here -->
-                        </div>
-                    </div>
-                </div>
-                <!-- Header Middle Area End Here -->
-                <!-- Begin Mobile Menu Area -->
-                <div class="mobile-menu-area d-lg-none d-xl-none col-12">
-                    <div class="container"> 
-                        <div class="row">
-                            <div class="mobile-menu">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Mobile Menu Area End Here -->
-            </header>
-            <!-- Header Area End Here -->
             <!-- Begin Li's Breadcrumb Area -->
             <div class="breadcrumb-area">
                 <div class="container">
                     <div class="breadcrumb-content">
                         <ul>
-                            <li><a href="index.html">Home</a></li>
-                            <li class="active">Dashboard</li>
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            <li class="active">My Account</li>
                         </ul>
                     </div>
                 </div>
             </div>
             <!-- Li's Breadcrumb Area End Here -->
             
+            <div class="my-account-area pb-60 pt-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="row">
+                    <div class="col-lg-3 col-md-4">
+                        <div class="myaccount-tab-menu nav" role="tablist">
+                            <a href="#dashboad" class="active" data-toggle="tab"><i class="fa fa-dashboard"></i> Dashboard</a>
+                            <a href="#orders" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Orders</a>
+                            <a href="#address-edit" data-toggle="tab"><i class="fa fa-map-marker"></i> Address</a>
+                            <a href="#payment-method" data-toggle="tab"><i class="fa fa-credit-card"></i> Payment Methods</a>
+                            <a href="#account-info" data-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
+                            <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
+                        </div>                              
+                    </div>
+                    
+                    <div class="col-lg-9 col-md-8 mt-xs-30 mt-sm-30">
+
+                        <div class="tab-content" id="myaccountContent">
+
+                            <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+
+                               <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+                                    <div class="myaccount-content">
+                                        <h3>Dashboard</h3>
+                                        
+                                        <div class="welcome mb-20">
+                                            <p>Hello, <strong>{{ user.username }}</strong></p>
+                                        </div>
+                                        
+                                        <p class="mb-30">From your account dashboard, you can easily manage your activity and track your latest purchases.</p>
+
+                                        <div class="row">
+                                            <div class="col-lg-4 col-md-6">
+                                                <a href="#orders" data-toggle="tab" class="stat-link" onclick="$('.myaccount-tab-menu a[href=\'#orders\']').tab('show');">
+                                                    <div class="stat-card">
+                                                        <i class="fa fa-cart-arrow-down"></i>
+                                                        <h4>05</h4>
+                                                        <p>Total Orders</p>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="col-lg-4 col-md-6">
+                                                <a href="{% url 'wishlist' %}" class="stat-link">
+                                                    <div class="stat-card">
+                                                        <i class="fa fa-heart-o"></i>
+                                                        <h4>12</h4>
+                                                        <p>Wishlist Items</p>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                            <div class="col-lg-4 col-md-6">
+                                                <a href="{% url 'shopping-cart' %}" class="stat-link">
+                                                    <div class="stat-card">
+                                                        <i class="fa fa-shopping-bag"></i>
+                                                        <h4>02</h4>
+                                                        <p>In Your Cart</p>
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="recent-orders-wrapper mt-30">
+                                            <div class="row align-items-center mb-10">
+                                                <div class="col-6">
+                                                    <h4 style="margin-bottom: 0; border: none;">Recent Orders</h4>
+                                                </div>
+                                                <div class="col-6 text-right">
+                                                    <a href="#orders" data-toggle="tab" onclick="$('.myaccount-tab-menu a[href=\'#orders\']').tab('show');" style="color: #fed700; font-size: 14px; font-weight: 600;">View All Orders →</a>
+                                                </div>
+                                            </div>
+                                            <div class="myaccount-table table-responsive">
+                                                <table class="table table-bordered text-center">
+                                                    <thead class="thead-light">
+                                                        <tr>
+                                                            <th>Order ID</th>
+                                                            <th>Product</th>
+                                                            <th>Date</th>
+                                                            <th>Status</th>
+                                                            <th>Total</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>#10592</td>
+                                                            <td class="text-left">Alpa Fat 10kg Carton...</td>
+                                                            <td>April 22, 2026</td>
+                                                            <td><span class="badge badge-success" style="background-color: #28a745;">Delivered</span></td>
+                                                            <td>ksh 2,820.00</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+
+
+
+
+                            <div class="tab-pane fade" id="orders" role="tabpanel">
+                                <div class="myaccount-content">
+                                    <h3>Orders</h3>
+                                    <div class="myaccount-table table-responsive text-center">
+                                        <table class="table table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Order</th>
+                                                    <th>Date</th>
+                                                    <th>Status</th>
+                                                    <th>Total</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>1</td>
+                                                    <td>Aug 22, 2026</td>
+                                                    <td>Pending</td>
+                                                    <td>ksh 2820.00</td>
+                                                    <td><a href="#" class="li-btn-2"><span>View</span></a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="tab-pane fade" id="address-edit" role="tabpanel">
+                                <div class="myaccount-content">
+                                    <h3>Billing Address</h3>
+                                    <div class="account-details-form">
+                                        <form id="addressDetailsForm" method="POST">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">Business / Full Name</label>
+                                                    <input type="text" name="billing_full_name" class="auth-input" 
+                                                        value="{{ user.get_full_name|default:user.customerprofile.business_name }}" placeholder="Recipient Name">
+                                                </div>
+
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">Physical Address</label>
+                                                    <input type="text" name="billing_street" class="auth-input" 
+                                                        value="" placeholder="e.g Trial Traders, Park Road, Ngara, Nairobi" required>
+                                                </div>
+
+                                                <div class="col-lg-6 col-12 mb-30">
+                                                    <label class="auth-label">Town / City</label>
+                                                    <input type="text" name="billing_city" class="auth-input" 
+                                                        value="Nairobi" placeholder="Town / City">
+                                                </div>
+
+                                                <div class="col-lg-6 col-12 mb-30">
+                                                    <label class="auth-label">Mobile Number</label>
+                                                    <input type="text" name="billing_phone" class="auth-input" 
+                                                        value="+254 700 000 000" placeholder="Mobile Number">
+                                                </div>
+
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">Country</label>
+                                                    <input type="text" class="auth-input" value="Kenya" readonly style="background-color: #f5f5f7; cursor: not-allowed;">
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <button type="submit" id="saveAddressBtn" class="register-button mt-0">Update Address</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="payment-method" role="tabpanel">
+                                <div class="myaccount-content">
+                                    <h3>Payment Methods</h3>
+                                    <p class="mb-20">Manage your preferred payment options for faster checkout.</p>
+                                    
+                                    <div class="account-details-form">
+                                        <form id="paymentDetailsForm" method="POST">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-12 mb-30">
+                                                    <div style="background: #f9f9f9; padding: 20px; border-radius: 12px; border: 1px solid #eaeaea;">
+                                                        <div class="d-flex align-items-center mb-15">
+                                                            <div style="width: 40px; height: 40px; background: #34c759; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px;">
+                                                                <span style="color: white; font-weight: bold; font-size: 10px;">M-PESA</span>
+                                                            </div>
+                                                            <h5 class="mb-0">Lipa na Mpesa</h5>
+                                                        </div>
+                                                        
+                                                        <label class="auth-label">M-Pesa Number for Checkout</label>
+                                                        <input type="text" name="mpesa_number" class="auth-input" 
+                                                            value="{{ user.customerprofile.phone_number }}" placeholder="07XXXXXXXX">
+                                                        <small class="text-muted d-block mt-2">This number will be used for STK push prompts during checkout.</small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12 mb-30">
+                                                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; border: 1px solid #eaeaea; display: flex; justify-content: space-between; align-items: center;">
+                                                        <div class="d-flex align-items-center">
+                                                            <i class="fa fa-money" style="font-size: 24px; color: #1d1d1f; margin-right: 15px;"></i>
+                                                            <div>
+                                                                <h5 class="mb-0" style="font-size: 16px;">Cash on Delivery</h5>
+                                                                <small class="text-muted">Available for all wholesale orders.</small>
+                                                            </div>
+                                                        </div>
+                                                        <span style="color: #34c759; font-size: 12px; font-weight: 600;">Enabled</span>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <button type="submit" class="register-button mt-0">Save Payment Preferences</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="account-info" role="tabpanel">
+                                <div class="myaccount-content">
+                                    <h3>Account Details</h3>
+                                    <div class="account-details-form">
+                                        <form id="accountDetailsForm" method="POST">
+                                            {% csrf_token %}
+                                            <div class="row">
+                                                <div class="col-lg-6 col-12 mb-30">
+                                                    <label class="auth-label">First Name</label>
+                                                    <input id="first-name" name="first_name" class="auth-input" placeholder="First Name" type="text" value="{{ user.first_name }}">
+                                                </div>
+                                                <div class="col-lg-6 col-12 mb-30">
+                                                    <label class="auth-label">Last Name</label>
+                                                    <input id="last-name" name="last_name" class="auth-input" placeholder="Last Name" type="text" value="{{ user.last_name }}">
+                                                </div>
+
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">User Name</label>
+                                                    <input id="display-name" name="username" class="auth-input" placeholder="Display Name" type="text" value="{{ user.username }}">
+                                                </div>
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">Email Address</label>
+                                                    <input id="email" name="email" class="auth-input" placeholder="Email Address" type="email" value="{{ user.email }}">
+                                                </div>
+
+                                                <div class="col-12 mb-30">
+                                                    <label class="auth-label">KRA PIN Number</label>
+                                                    <input id="tax-id" name="tax_id" class="auth-input" placeholder="e.g. A012345678Z" type="text" value="{{ user.customerprofile.tax_id|default:'' }}">
+                                                    <small class="text-muted mt-2 d-block">Required for eTIMS compliant invoice generation.</small>
+                                                </div>
+
+                                                <div class="col-12">
+                                                    <button type="submit" id="saveAccountBtn" class="register-button mt-0">Save Changes</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            </div>
+                    </div>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 
             
-            <!-- Begin Footer Area -->
-            <footer>  
-            <div class="footer">
-                <!-- Begin Footer Static Top Area -->
-                <div class="footer-static-top">
-                    <div class="container">
-                        <!-- Begin Footer Shipping Area -->
-                        <div class="footer-shipping pt-60 pb-55 pb-xs-25">
-                            <div class="row">
-                                <!-- Begin Li's Shipping Inner Box Area -->
-                                <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
-                                    <div class="li-shipping-inner-box">
-                                        <div class="shipping-icon">
-                                            <img src="images/shipping-icon/1.png" alt="Shipping Icon">
-                                        </div>
-                                        <div class="shipping-text">
-                                            <h2>Free Delivery</h2>
-                                            <p>And free returns. See checkout for delivery dates.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Li's Shipping Inner Box Area End Here -->
-                                <!-- Begin Li's Shipping Inner Box Area -->
-                                <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
-                                    <div class="li-shipping-inner-box">
-                                        <div class="shipping-icon">
-                                            <img src="images/shipping-icon/2.png" alt="Shipping Icon">
-                                        </div>
-                                        <div class="shipping-text">
-                                            <h2>Safe Payment</h2>
-                                            <p>Pay with the world's most popular and secure payment methods.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Li's Shipping Inner Box Area End Here -->
-                                <!-- Begin Li's Shipping Inner Box Area -->
-                                <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
-                                    <div class="li-shipping-inner-box">
-                                        <div class="shipping-icon">
-                                            <img src="images/shipping-icon/3.png" alt="Shipping Icon">
-                                        </div>
-                                        <div class="shipping-text">
-                                            <h2>Shop with Confidence</h2>
-                                            <p>Our Buyer Protection covers your purchasefrom click to delivery.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Li's Shipping Inner Box Area End Here -->
-                                <!-- Begin Li's Shipping Inner Box Area -->
-                                <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
-                                    <div class="li-shipping-inner-box">
-                                        <div class="shipping-icon">
-                                            <img src="images/shipping-icon/4.png" alt="Shipping Icon">
-                                        </div>
-                                        <div class="shipping-text">
-                                            <h2>24/7 Help Center</h2>
-                                            <p>Have a question? Call a Specialist or chat online.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- Li's Shipping Inner Box Area End Here -->
-                            </div>
-                        </div>
-                        <!-- Footer Shipping Area End Here -->
-                    </div>
-                </div>
-                <!-- Footer Static Top Area End Here -->
-                <!-- Begin Footer Static Middle Area -->
-                <div class="footer-static-middle">
-                    <div class="container">
-                        <div class="footer-logo-wrap pt-50 pb-35">
-                            <div class="row">
-                                <!-- Begin Footer Logo Area -->
-                                <div class="col-lg-4 col-md-6">
-                                    <div class="footer-logo">
-                                        <img src="static/assets/logos/logo.png" style="height: 3.5em; width: auto;" alt="Footer Logo">
-                                        <p class="info">
-                                            We are the most trusted retail/wholesale supplier of fast moving consumer goods in Kenya. We are committed to providing our customers with the best products and services at competitive prices.
-                                        </p>
-                                    </div>
-                                    <ul class="des">
-                                        <li>
-                                            <span>Address: </span>
-                                            Prabhaki Industrial Park, Baba Dogo Road, QV3F+XJ Nairobi, Kenya
-                                        </li>
-                                        <li>
-                                            <span>Phone: </span>
-                                            <a href="#">+254 750 530 130</a>
-                                        </li>
-                                        <li>
-                                            <span>Email: </span>
-                                            <a href="mailto://info@mahitaji.co.ke">info@mahitaji.co.ke</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                                <!-- Footer Logo Area End Here -->
-                                <!-- Begin Footer Block Area -->
-                                <div class="col-lg-2 col-md-3 col-sm-6">
-                                    <div class="footer-block">
-                                        <h3 class="footer-block-title">Product</h3>
-                                        <ul>
-                                            <li><a href="#">Prices drop</a></li>
-                                            <li><a href="#">New products</a></li>
-                                            <li><a href="#">Best sales</a></li>
-                                            <li><a href="#">Contact us</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Footer Block Area End Here -->
-                                <!-- Begin Footer Block Area -->
-                                <div class="col-lg-2 col-md-3 col-sm-6">
-                                    <div class="footer-block">
-                                        <h3 class="footer-block-title">Our company</h3>
-                                        <ul>
-                                            <li><a href="#">Delivery</a></li>
-                                            <li><a href="#">Legal Notice</a></li>
-                                            <li><a href="#">About us</a></li>
-                                            <li><a href="#">Contact us</a></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                                <!-- Footer Block Area End Here -->
-                                <!-- Begin Footer Block Area -->
-                                <div class="col-lg-4">
-                                    <div class="footer-block">
-                                        <h3 class="footer-block-title">Follow Us</h3>
-                                        <ul class="social-link">
-                                            <li class="twitter">
-                                                <a href="https://twitter.com/" data-toggle="tooltip" target="_blank" title="Twitter">
-                                                    <i class="fa fa-twitter"></i>
-                                                </a>
-                                            </li>
-                                            <li class="rss">
-                                                <a href="https://rss.com/" data-toggle="tooltip" target="_blank" title="RSS">
-                                                    <i class="fa fa-rss"></i>
-                                                </a>
-                                            </li>
-                                            <li class="google-plus">
-                                                <a href="https://www.plus.google.com/discover" data-toggle="tooltip" target="_blank" title="Google Plus">
-                                                    <i class="fa fa-google-plus"></i>
-                                                </a>
-                                            </li>
-                                            <li class="facebook">
-                                                <a href="https://www.facebook.com/" data-toggle="tooltip" target="_blank" title="Facebook">
-                                                    <i class="fa fa-facebook"></i>
-                                                </a>
-                                            </li>
-                                            <li class="youtube">
-                                                <a href="https://www.youtube.com/" data-toggle="tooltip" target="_blank" title="Youtube">
-                                                    <i class="fa fa-youtube"></i>
-                                                </a>
-                                            </li>
-                                            <li class="instagram">
-                                                <a href="https://www.instagram.com/" data-toggle="tooltip" target="_blank" title="Instagram">
-                                                    <i class="fa fa-instagram"></i>
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <!-- Begin Footer Newsletter Area -->
-                                    <div class="footer-newsletter">
-                                        <h4>Sign up to newsletter</h4>
-                                        <form action="#" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="footer-subscribe-form validate" target="_blank" novalidate>
-                                           <div id="mc_embed_signup_scroll">
-                                              <div id="mc-form" class="mc-form subscribe-form form-group" >
-                                                <input id="mc-email" type="email" autocomplete="off" placeholder="Enter your email" />
-                                                <button  class="btn" id="mc-submit">Subscribe</button>
-                                              </div>
-                                           </div>
-                                        </form>
-                                    </div>
-                                    <!-- Footer Newsletter Area End Here -->
-                                </div>
-                                <!-- Footer Block Area End Here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer Static Middle Area End Here -->
-                <!-- Begin Footer Static Bottom Area -->
-                <div class="footer-static-bottom pt-55 pb-55">
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-lg-12">
-                                <!-- Begin Copyright Area -->
-                                <div class="copyright text-center pt-25">
-                                    <span><a target="_blank" href="#">Mahitaji Enterprises Limited</a></span>
-                                </div>
-                                <!-- Copyright Area End Here -->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Footer Static Bottom Area End Here -->
-            </div>
-            <!-- Footer Area End Here -->  
-             
-            <div class="footer-bottom">
+         </main>
 
-            </div>
+{% endblock %}
 
-        </footer>
-            <!-- Footer Area End Here -->
-        </div>
-        <!-- Body Wrapper End Here -->
-        <!-- jQuery-V1.12.4 -->
-        <script src="js/vendor/jquery-1.12.4.min.js"></script>
-        <!-- Popper js -->
-        <script src="js/vendor/popper.min.js"></script>
-        <!-- Bootstrap V4.1.3 Fremwork js -->
-        <script src="js/bootstrap.min.js"></script>
-        <!-- Ajax Mail js -->
-        <script src="js/ajax-mail.js"></script>
-        <!-- Meanmenu js -->
-        <script src="js/jquery.meanmenu.min.js"></script>
-        <!-- Wow.min js -->
-        <script src="js/wow.min.js"></script>
-        <!-- Slick Carousel js -->
-        <script src="js/slick.min.js"></script>
-        <!-- Owl Carousel-2 js -->
-        <script src="js/owl.carousel.min.js"></script>
-        <!-- Magnific popup js -->
-        <script src="js/jquery.magnific-popup.min.js"></script>
-        <!-- Isotope js -->
-        <script src="js/isotope.pkgd.min.js"></script>
-        <!-- Imagesloaded js -->
-        <script src="js/imagesloaded.pkgd.min.js"></script>
-        <!-- Mixitup js -->
-        <script src="js/jquery.mixitup.min.js"></script>
-        <!-- Countdown -->
-        <script src="js/jquery.countdown.min.js"></script>
-        <!-- Counterup -->
-        <script src="js/jquery.counterup.min.js"></script>
-        <!-- Waypoints -->
-        <script src="js/waypoints.min.js"></script>
-        <!-- Barrating -->
-        <script src="js/jquery.barrating.min.js"></script>
-        <!-- Jquery-ui -->
-        <script src="js/jquery-ui.min.js"></script>
-        <!-- Venobox -->
-        <script src="js/venobox.min.js"></script>
-        <!-- Nice Select js -->
-        <script src="js/jquery.nice-select.min.js"></script>
-        <!-- ScrollUp js -->
-        <script src="js/scrollUp.min.js"></script>
-        <!-- Main/Activator js -->
-        <script src="js/main.js"></script>
-    </body>
+{% block extra_css %}
+<style>
+    /* Force the hover effect for the register-button in the dashboard */
+    .account-details-form .register-button {
+        /* Ensure base state matches your theme */
+        background-color: #1d1d1f; /* Adjust to your specific theme dark/brand color */
+        color: #fff;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
 
-<!-- about-us32:14-->
-</html>
+    .account-details-form .register-button:hover {
+        background-color: #0071e3 !important; /* Apple Blue hover, or your theme color */
+        color: #fff !important;
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+    }
+    
+    /* Ensure it doesn't look weird when clicked */
+    .account-details-form .register-button:active {
+        transform: translateY(0);
+    }
+</style>
+
+{% endblock %}

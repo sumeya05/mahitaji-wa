@@ -68,6 +68,19 @@ class Product(models.Model):
     focus_item_id = models.CharField(max_length=100, null=True, blank=True)
     last_sync_time = models.DateTimeField(auto_now=True)
 
+    # NEW: To support the "Old Price" in the template
+    discount_price = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        null=True, 
+        blank=True, 
+        help_text="The original price before sale (Market Price)"
+    )
+
+    # NEW: Ratings (If you aren't using a separate Review model yet)
+    # Alternatively, keep it hardcoded if you aren't ready for a review system
+    average_rating = models.PositiveIntegerField(default=0) 
+
     @property
     def current_stock(self):
         """Calculates current stock level in base units from ledger."""
@@ -79,7 +92,22 @@ class Product(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.sku} - {self.name}"
+        return f"{self.sku} - {self.name}"   
+       
+
+    # --- Properties to match your template logic ---
+
+    @property
+    def discount_percentage(self):
+        """Calculates the -7% shown in your template"""
+        if self.discount_price and self.retail_price < self.discount_price:
+            discount = ((self.discount_price - self.retail_price) / self.discount_price) * 100
+            return f"-{int(discount)}%"
+        return None
+
+    @property
+    def has_discount(self):
+        return self.discount_price is not None and self.discount_price > self.retail_price
 
 class StockLedger(models.Model):
     TRANSACTION_TYPES = [
@@ -119,13 +147,15 @@ class StockLedger(models.Model):
         verbose_name_plural = "Stock Ledger"
 
 # --- 2. USER & CUSTOMER MODELS ---
-
 class CustomerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customerprofile')
     # Fields added to support business registration requirements
-    business_name = models.CharField(max_length=255) 
+    business_name = models.CharField(max_length=255, blank=True, null=True) 
     contact_person = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15)
+    
+    # New Tax ID field for KRA/eTIMS integration
+    tax_id = models.CharField(max_length=15, null=True, blank=True, verbose_name="KRA PIN")
     
     is_wholesaler = models.BooleanField(default=False)
     focus_erp_id = models.CharField(max_length=50, null=True, blank=True)
@@ -134,12 +164,13 @@ class CustomerProfile(models.Model):
         role = "Wholesaler" if self.is_wholesaler else "Retailer"
         return f"{self.business_name} ({role})"
 
+
 class Address(models.Model):
     customer = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='addresses')
     label = models.CharField(max_length=50) 
     physical_address = models.TextField()
     city = models.CharField(max_length=100, default="Nairobi")
-    is_primary = models.BooleanField(default=False)
+    is_primary = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "Addresses"

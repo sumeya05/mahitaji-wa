@@ -4,9 +4,14 @@ from django.utils.text import slugify
 from .models import CustomerProfile
 
 class RegisterForm(forms.ModelForm):
-    business_name = forms.CharField(max_length=255, required=True)
-    contact_person = forms.CharField(max_length=255, required=True)
+    # Individual name fields to match the new front-end
+    first_name = forms.CharField(max_length=150, required=True)
+    last_name = forms.CharField(max_length=150, required=True)
+    
+    business_name = forms.CharField(max_length=255, required=False)
     phone_number = forms.CharField(max_length=15, required=True)
+    tax_id = forms.CharField(max_length=15, required=False, label="KRA PIN") 
+    
     password = forms.CharField(widget=forms.PasswordInput())
     confirm_password = forms.CharField(widget=forms.PasswordInput())
 
@@ -21,13 +26,24 @@ class RegisterForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError("Passwords do not match")
-        return cleaned_data
-
+        return cleaned_data    
+    
     def save(self, commit=True):
         user = super().save(commit=False)
-        # Convert "Trial Shop" to "trial-shop" for the User model
-        base_username = slugify(self.cleaned_data['business_name'])
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         
+        # Use business_name if it exists
+        # Otherwise, combine first and last name for the slug
+        business_name = self.cleaned_data.get('business_name')
+        if business_name:
+            name_for_slug = business_name
+        else:
+            name_for_slug = f"{user.first_name} {user.last_name}"
+        
+        base_username = slugify(name_for_slug)
+        
+        # Handle potential duplicates
         username = base_username
         counter = 1
         while User.objects.filter(username=username).exists():
@@ -39,11 +55,11 @@ class RegisterForm(forms.ModelForm):
         
         if commit:
             user.save()
-            # Successfully create profile with the now-existing fields
             CustomerProfile.objects.create(
                 user=user,
-                business_name=self.cleaned_data['business_name'],
-                contact_person=self.cleaned_data['contact_person'],
-                phone_number=self.cleaned_data['phone_number']
+                business_name=business_name,
+                contact_person=f"{user.first_name} {user.last_name}",
+                phone_number=self.cleaned_data['phone_number'],
+                tax_id=self.cleaned_data.get('tax_id')
             )
         return user

@@ -36,7 +36,6 @@ urlpatterns = [
     path('transactions/', views.transactions, name='transactions'),
     path('addresses/', views.addresses, name='addresses'),
     path('payment_methods/', views.payment_methods, name='payment_methods'),
-    path('settings/', views.settings, name='settings'),
     path('logout/', views.logout_view, name='logout'),
 
     path('password-reset/', views.custom_password_reset, name='password_reset'),

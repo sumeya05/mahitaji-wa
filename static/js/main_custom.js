@@ -1,9 +1,65 @@
 /**
+    * main_custom.js - Custom JavaScript for Mahitaji's interactive features, including:
+    * - Chat widget toggle and message handling
+    * - Circular icon arrangement with radiating spokes
+    * - Hero slider functionality
+    * - Auto-scrolling supplier carousel
+ */
+
+// Chat Widget Logic
+    const chatToggle = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    const chatInput = document.getElementById('chatInput');
+    const sendMsg = document.getElementById('sendMsg');
+    const chatBody = document.getElementById('chatBody');
+
+    // Toggle Window
+    chatToggle.addEventListener('click', () => {
+        chatWindow.classList.toggle('d-none');
+    });
+
+    closeChat.addEventListener('click', () => {
+        chatWindow.classList.add('d-none');
+    });
+
+    // Send Message Logic
+    function appendMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`;
+        msgDiv.innerText = text;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight;
+    }
+
+    sendMsg.addEventListener('click', () => {
+        const text = chatInput.value.trim();
+        if (text) {
+            appendMessage(text, 'user');
+            chatInput.value = '';
+            
+            // Fake Assistant Response for now
+            setTimeout(() => {
+                appendMessage("Thanks for your query. An agent will be with you shortly.", "assistant");
+            }, 1000);
+        }
+    });
+
+    chatInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMsg.click();
+    });
+
+
+
+
+
+/**
  * arrangeCircle: Mathematically distributes icons and draws radiating spokes.
  * @param {string} containerId - The ID of the container to arrange
  * @param {number} radius - The orbital radius in pixels
  * @param {boolean} drawLines - Whether to draw spokes for this ring
  */
+
 function arrangeCircle(containerId, radius, drawLines = false) {
     const container = document.getElementById(containerId);
     if (!container) return;
@@ -110,5 +166,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
     document.querySelectorAll('.cards-container').forEach(track => {
         new AutoCarousel(track);
+    });
+});
+
+
+
+$(document).ready(function() {
+    const $chatToggle = $('#chatToggle');
+    const $chatWindow = $('#chatWindow');
+    const $closeChat = $('#closeChat');
+    const $chatInput = $('#chatInput');
+    const $sendBtn = $('#sendMsg');
+    const $chatBody = $('#chatBody');
+
+    // 1. Toggle Visibility using jQuery (more reliable with your theme)
+    $chatToggle.on('click', function(e) {
+        e.preventDefault();
+        $chatWindow.toggleClass('d-none');
+        if (!$chatWindow.hasClass('d-none')) {
+            $chatInput.focus();
+        }
+    });
+
+    $closeChat.on('click', function() {
+        $chatWindow.addClass('d-none');
+    });
+
+    // 2. Messaging Helper
+    function appendMessage(text, sender) {
+        const msgHtml = `<div class="message ${sender}">${text}</div>`;
+        $chatBody.append(msgHtml);
+        $chatBody.scrollTop($chatBody[0].scrollHeight);
+    }
+
+    // 3. AI Fetch Logic
+    async function sendMessage() {
+        const message = $chatInput.val().trim();
+        if (!message) return;
+
+        appendMessage(message, 'user');
+        $chatInput.val('');
+
+        const $loading = $('<div class="message assistant">...</div>').appendTo($chatBody);
+
+        try {
+            const response = await fetch('/ai-assistant-chat/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ 'message': message })
+            });
+
+            const data = await response.json();
+            $loading.remove();
+            appendMessage(data.reply, 'assistant');
+
+        } catch (error) {
+            $loading.remove();
+            appendMessage("Connection error. Please check your backend.", "assistant");
+        }
+    }
+
+    $sendBtn.on('click', sendMessage);
+    $chatInput.on('keypress', function(e) {
+        if (e.which === 13) sendMessage();
     });
 });

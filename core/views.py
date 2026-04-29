@@ -1,3 +1,5 @@
+from urllib import request
+
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions
 from django.contrib.auth import logout, login, authenticate
@@ -45,7 +47,14 @@ def wholesalers(request):
     return render(request, 'core/wholesalers.html') 
 
 def products(request):
-    return render(request, 'core/products.html')
+    # Fetch all active products from the database
+    # select_related('brand') optimizes the query for the "Manufacturer" field
+    all_products = Product.objects.filter(is_active=True).select_related('brand')
+    
+    context = {
+        'products': all_products
+    }
+    return render(request, 'core/products.html', context)
 
 def product_detail(request, pk):
     return render(request, 'core/product-detail.html')
@@ -86,8 +95,11 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({"success": True, "redirect_url": "/dashboard/"})
-            return redirect('dashboard')
+                # reverse('dashboard') looks up the actual URL path automatically
+                return JsonResponse({
+                    "success": True, 
+                    "redirect_url": reverse('dashboard') 
+                })
         
         # 3. Handle Invalid Credentials
         error_msg = "Invalid username/email or password."
@@ -242,7 +254,8 @@ def initiate_stk_push(request):
 
             # 3. Handle the Order
             try:
-                order_instance = Order.objects.latest('id')
+                # In views.py Step 3
+                order_instance = Order.objects.filter(customer__user=request.user).latest('id')
             except Order.DoesNotExist:
                 order_instance = None 
 
@@ -395,3 +408,28 @@ def password_reset_done(request):
 
 def password_reset_complete(request):
     return render(request, 'core/password_reset_complete.html')
+
+
+import google.generativeai as genai
+from django.conf import settings
+
+# Setup your API Key (Get one from Google AI Studio)
+genai.configure(api_key="GEMINI_API_KEY")
+
+def ai_assistant_chat(request):
+    if request.method == "POST":
+        user_message = request.POST.get('message')
+        
+        # Initialize the model (Gemini 3 Flash is great for speed)
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Optional: Feed me Mahitaji context so I know who I am
+        context = (
+            f"You are the Mahitaji Wholesale Assistant. "
+            f"The user is {request.user.first_name} {request.user.last_name} "
+            f"representing {request.user.customerprofile.business_name or 'their business'}."
+        )
+        
+        response = model.generate_content(f"{context}\n\nUser: {user_message}")
+        
+        return JsonResponse({'reply': response.text})

@@ -224,6 +224,36 @@
 
     {% endblock %}
 
+    <section class="chat-widget" id="chatWidget">
+        <button class="chat-toggle" id="chatToggle" aria-label="Open Assistant">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+        </button>
+
+        <div class="chat-window d-none" id="chatWindow">
+            <div class="chat-header">
+                <div class="d-flex align-items-center">
+                    <div class="assistant-avatar">M</div>
+                    <div>
+                        <h6 class="mb-0">Mahitaji Assistant</h6>
+                        <small>Online | AI Powered</small>
+                    </div>
+                </div>
+                <button class="close-chat" id="closeChat">&times;</button>
+            </div>
+            <div class="chat-body" id="chatBody">
+                <div class="message assistant">
+                    Hello! How can I help with you today?
+                </div>
+            </div>
+            <div class="chat-footer">
+                <input type="text" placeholder="Type a message..." id="chatInput">
+                <button id="sendMsg">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
     <footer>  
 
         <div class="footer">
@@ -339,8 +369,8 @@
                                     <ul>
                                         <li><a href="#">Delivery</a></li>
                                         <li><a href="#">Legal Notice</a></li>
-                                        <li><a href="#">About us</a></li>
-                                        <li><a href="#">Contact us</a></li>
+                                        <li><a href="{% url 'about' %}">About us</a></li>
+                                        <li><a href="{% url 'contact' %}">Contact us</a></li>
                                     </ul>
                                 </div>
                             </div>
@@ -453,7 +483,86 @@
     <script src="{% static 'js/scrollUp.min.js' %}"></script>
     <!-- Custom JS -->
     <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/custom_main.js' %}"></script>
+    <script src="{% static 'js/main_custom.js' %}"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Select the correct IDs from your new widget
+    const chatToggle = document.getElementById('chatToggle');
+    const chatWindow = document.getElementById('chatWindow');
+    const closeChat = document.getElementById('closeChat');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendMsg');
+    const chatBody = document.getElementById('chatBody');
+
+    // 1. Toggle Visibility (The fix for the "not popping up" issue)
+    if (chatToggle && chatWindow) {
+        chatToggle.addEventListener('click', function() {
+            // This directly toggles the d-none class you used in the HTML
+            chatWindow.classList.toggle('d-none');
+            if (!chatWindow.classList.contains('d-none')) {
+                chatInput.focus();
+            }
+        });
+    }
+
+    if (closeChat) {
+        closeChat.addEventListener('click', function() {
+            chatWindow.classList.add('d-none');
+        });
+    }
+
+    // 2. Message Rendering Helper
+    function appendMessage(text, sender) {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `message ${sender}`; // Uses 'user' or 'assistant'
+        msgDiv.textContent = text;
+        chatBody.appendChild(msgDiv);
+        chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll
+        return msgDiv;
+    }
+
+    // 3. AI Fetch Logic
+    async function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        appendMessage(message, 'user');
+        chatInput.value = '';
+
+        // Add a temporary typing indicator
+        const loadingDiv = appendMessage('...', 'assistant');
+
+        try {
+            const response = await fetch('/ai-assistant-chat/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}',
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({ 'message': message })
+            });
+
+            const data = await response.json();
+            chatBody.removeChild(loadingDiv);
+            appendMessage(data.reply, 'assistant');
+
+        } catch (error) {
+            if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
+            appendMessage("I'm having trouble connecting. Check your API key or internet.", "assistant");
+            console.error('Chat Error:', error);
+        }
+    }
+
+    // 4. Listeners for Sending
+    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
+});
+    </script>
 
     {% block extra_js %}
 
@@ -461,6 +570,8 @@
 
     
     {% endblock %}
+
+    
 
 </body>
 </html>
