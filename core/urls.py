@@ -66,6 +66,9 @@ urlpatterns = [
     path('mpesa/pay/', views.initiate_stk_push, name='pay'),
     path('mpesa/callback/', views.mpesa_callback, name='callback'),
 
+    # AI
+    path('ai-assistant-chat/', views.ai_assistant_chat, name='ai_assistant_chat'),
+
 ]
 
 

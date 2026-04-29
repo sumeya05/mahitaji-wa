@@ -3,7 +3,6 @@ from urllib import request
 from django.shortcuts import render, redirect
 from rest_framework import viewsets, permissions
 from django.contrib.auth import logout, login, authenticate
-from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -12,12 +11,14 @@ import json
 from datetime import datetime
 
 
-
 from django.contrib.auth.models import User
-from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
+
+import google.generativeai as genai
+from django.conf import settings
 
 
 # --- Protected Views ---
@@ -166,10 +167,6 @@ def addresses(request):
 @login_required
 def payment_methods(request):
     return render(request, 'core/payment-methods.html')
-
-@login_required
-def settings(request):
-    return render(request, 'core/settings.html')
 
 
 # Helpdesk & Informational Views
@@ -410,26 +407,46 @@ def password_reset_complete(request):
     return render(request, 'core/password_reset_complete.html')
 
 
-import google.generativeai as genai
-from django.conf import settings
+
 
 # Setup your API Key (Get one from Google AI Studio)
-genai.configure(api_key="GEMINI_API_KEY")
+# genai.configure(api_key="AIzaSyDb8cKq0rjT8FQLWeSthBIj7pqevFIvaW8")
+# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+genai.configure(api_key=settings.GEMINI_API_KEY)
 
+# In views.py
 def ai_assistant_chat(request):
     if request.method == "POST":
         user_message = request.POST.get('message')
         
-        # Initialize the model (Gemini 3 Flash is great for speed)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # Change from 'gemini-1.5-flash' to:
+        # In views.py, update this line:
+        #model = genai.GenerativeModel('models/gemini-1.5-flash')
+
+        # Safe way to get business name even if customerprofile is missing
+        # Change this line:
+        business = request.user.customerprofile.business_name
+
+        # To this (Safer):
+        business = getattr(request.user, 'customerprofile', None)
+        business_name = business.business_name if business else "their business"
         
-        # Optional: Feed me Mahitaji context so I know who I am
         context = (
             f"You are the Mahitaji Wholesale Assistant. "
             f"The user is {request.user.first_name} {request.user.last_name} "
-            f"representing {request.user.customerprofile.business_name or 'their business'}."
+            f"representing {business_name}."
         )
-        
-        response = model.generate_content(f"{context}\n\nUser: {user_message}")
-        
-        return JsonResponse({'reply': response.text})
+        # Wrap in a try-except to catch API errors (like quota or invalid key)
+        try:
+            # Use the EXACT name from your terminal output
+            model = genai.GenerativeModel('models/gemini-2.0-flash')
+            
+            context = "You are the Mahitaji Wholesale Assistant."
+            response = model.generate_content(f"{context}\n\nUser: {user_message}")
+            
+            return JsonResponse({'reply': response.text})
+            
+        except Exception as e:
+            if "429" in str(e):
+                return JsonResponse({'reply': "I'm a bit busy helping other retailers. Please wait 30 seconds and try again!"})
+            return JsonResponse({'reply': f"Error: {str(e)}"})

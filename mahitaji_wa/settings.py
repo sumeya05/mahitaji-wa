@@ -188,3 +188,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # EMAIL_USE_TLS = True
 # EMAIL_HOST_USER = 'your-email@gmail.com'
 # EMAIL_HOST_PASSWORD = 'your-app-password'
+
+# AI API Key
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')

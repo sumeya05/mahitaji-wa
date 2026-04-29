@@ -487,82 +487,100 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    // Select the correct IDs from your new widget
-    const chatToggle = document.getElementById('chatToggle');
-    const chatWindow = document.getElementById('chatWindow');
-    const closeChat = document.getElementById('closeChat');
-    const chatInput = document.getElementById('chatInput');
-    const sendBtn = document.getElementById('sendMsg');
-    const chatBody = document.getElementById('chatBody');
+            const chatToggle = document.getElementById('chatToggle');
+            const chatWindow = document.getElementById('chatWindow');
+            const closeChat = document.getElementById('closeChat');
+            const chatInput = document.getElementById('chatInput');
+            const sendBtn = document.getElementById('sendMsg');
+            const chatBody = document.getElementById('chatBody');
 
-    // 1. Toggle Visibility (The fix for the "not popping up" issue)
-    if (chatToggle && chatWindow) {
-        chatToggle.addEventListener('click', function() {
-            // This directly toggles the d-none class you used in the HTML
-            chatWindow.classList.toggle('d-none');
-            if (!chatWindow.classList.contains('d-none')) {
-                chatInput.focus();
+            // --- 1. Helper to add messages to the UI ---
+            function appendToUI(text, role) {
+                const msgDiv = document.createElement('div');
+                msgDiv.className = `message ${role}`;
+                msgDiv.textContent = text;
+                chatBody.appendChild(msgDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+                return msgDiv;
             }
-        });
-    }
 
-    if (closeChat) {
-        closeChat.addEventListener('click', function() {
-            chatWindow.classList.add('d-none');
-        });
-    }
-
-    // 2. Message Rendering Helper
-    function appendMessage(text, sender) {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`; // Uses 'user' or 'assistant'
-        msgDiv.textContent = text;
-        chatBody.appendChild(msgDiv);
-        chatBody.scrollTop = chatBody.scrollHeight; // Auto-scroll
-        return msgDiv;
-    }
-
-    // 3. AI Fetch Logic
-    async function sendMessage() {
-        const message = chatInput.value.trim();
-        if (!message) return;
-
-        appendMessage(message, 'user');
-        chatInput.value = '';
-
-        // Add a temporary typing indicator
-        const loadingDiv = appendMessage('...', 'assistant');
-
-        try {
-            const response = await fetch('/ai-assistant-chat/', {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': '{{ csrf_token }}',
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                body: new URLSearchParams({ 'message': message })
+            // --- 2. Load History from LocalStorage ---
+            const savedChat = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
+            savedChat.forEach(msg => {
+                appendToUI(msg.text, msg.role);
             });
 
-            const data = await response.json();
-            chatBody.removeChild(loadingDiv);
-            appendMessage(data.reply, 'assistant');
+            // --- 3. Toggle Logic ---
+            if (chatToggle && chatWindow) {
+                chatToggle.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    chatWindow.classList.toggle('d-none');
+                    if (!chatWindow.classList.contains('d-none')) {
+                        chatInput.focus();
+                    }
+                });
+            }
 
-        } catch (error) {
-            if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
-            appendMessage("I'm having trouble connecting. Check your API key or internet.", "assistant");
-            console.error('Chat Error:', error);
-        }
-    }
+            if (closeChat) {
+                closeChat.addEventListener('click', () => chatWindow.classList.add('d-none'));
+            }
 
-    // 4. Listeners for Sending
-    if (sendBtn) sendBtn.addEventListener('click', sendMessage);
-    if (chatInput) {
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
+            // --- 4. Clone Button to Wipe Theme Baggage ---
+            let activeSendBtn = sendBtn;
+            if (sendBtn) {
+                activeSendBtn = sendBtn.cloneNode(true);
+                sendBtn.parentNode.replaceChild(activeSendBtn, sendBtn);
+            }
+
+            // --- 5. AI Chat Logic ---
+            async function startAiChat() {
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                // Show user message in UI
+                appendToUI(message, 'user');
+                chatInput.value = '';
+
+                // Show typing indicator
+                const loadingDiv = appendToUI('Thinking...', 'assistant');
+
+                try {
+                    const response = await fetch('/ai-assistant-chat/', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams({ 'message': message })
+                    });
+
+                    const data = await response.json();
+                    chatBody.removeChild(loadingDiv);
+                    
+                    // Show AI message in UI
+                    appendToUI(data.reply, 'assistant');
+
+                    // --- 6. SAVE TO LOCALSTORAGE ---
+                    const chatData = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
+                    chatData.push({role: 'user', text: message});
+                    chatData.push({role: 'assistant', text: data.reply});
+                    localStorage.setItem('mahitaji_chat', JSON.stringify(chatData));
+
+                } catch (error) {
+                    if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
+                    appendToUI("Connection error. Please try again.", "assistant");
+                }
+            }
+
+            // --- 7. Event Listeners ---
+            if (activeSendBtn) activeSendBtn.addEventListener('click', startAiChat);
+            if (chatInput) {
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') startAiChat();
+                });
+            }
         });
-    }
-});
-    </script>
+        </script>
 
     {% block extra_js %}
 
