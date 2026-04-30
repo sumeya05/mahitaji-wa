@@ -13,6 +13,8 @@
     <title>{% block title %}  {% endblock %}</title>           
     <link rel="shortcut icon" href="{% static 'assets/logos/favicon.ico' %}" type="image/x-icon">
 
+    <!-- Add this to your base.html <head> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{% static 'css/material-design-iconic-font.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
     <link rel="stylesheet" href="{% static 'css/fontawesome-stars.css' %}">
@@ -486,6 +488,7 @@
     <script src="{% static 'js/main_custom.js' %}"></script>
 
     <script>
+
         document.addEventListener('DOMContentLoaded', function() {
             const chatToggle = document.getElementById('chatToggle');
             const chatWindow = document.getElementById('chatWindow');

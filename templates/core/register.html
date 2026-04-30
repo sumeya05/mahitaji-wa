@@ -3,120 +3,6 @@
 
 {% block title %} Mahitaji | Register {% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Auth Card Styling */
-    .auth-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #eaeaea;
-        padding: 40px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
-    }
-
-    /* Input Field Styling */
-    .auth-input {
-        width: 100%;
-        height: 52px !important;
-        border: 1px solid #d2d2d7 !important;
-        border-radius: 10px !important;
-        padding: 0 16px !important;
-        font-size: 15px !important;
-        outline: none;
-        transition: all 0.2s ease-in-out;
-    }
-
-    .auth-input:focus {
-        border-color: #0071e3 !important;
-        box-shadow: 0 0 0 4px rgba(0,113,227,0.1) !important;
-    }
-
-    /* Labels */
-    .auth-label {
-        font-size: 13px;
-        font-weight: 600;
-        color: #1d1d1f;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    /* Password Wrapper */
-    .password-wrapper {
-        position: relative;
-    }
-
-    .toggle-password {
-        position: absolute;
-        right: 16px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #0071e3;
-        font-size: 12px;
-        font-weight: 600;
-        cursor: pointer;
-        z-index: 10;
-        outline: none;
-        text-transform: uppercase;
-    }
-
-    /* Separator */
-    .auth-separator {
-        display: flex;
-        align-items: center;
-        text-align: center;
-        margin: 25px 0;
-    }
-
-    .auth-separator::before,
-    .auth-separator::after {
-        content: '';
-        flex: 1;
-        border-bottom: 1px solid #eee;
-    }
-
-    .auth-separator span {
-        padding: 0 15px;
-        color: #888;
-        font-size: 14px;
-    }
-
-    /* Buttons */
-    .btn-apple-dark {
-        height: 52px;
-        background-color: #1d1d1f;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: opacity 0.2s;
-    }
-
-    .btn-apple-dark:hover {
-        opacity: 0.9;
-        color: #fff;
-    }
-
-    .btn-google {
-        height: 52px;
-        border: 1px solid #d2d2d7;
-        background-color: #fff;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 500;
-        color: #555;
-        transition: background 0.2s;
-    }
-
-    .btn-google:hover {
-        background-color: #f5f5f7;
-    }
-</style>
-{% endblock %}
-
 {% block content %}
 <main class="body-wrapper">
     <div class="breadcrumb-area">
@@ -214,23 +100,121 @@
 </main>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Auth Card Styling */
+    .auth-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #eaeaea;
+        padding: 40px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+    }
+
+    /* Input Field Styling */
+    .auth-input {
+        width: 100%;
+        height: 52px !important;
+        border: 1px solid #d2d2d7 !important;
+        border-radius: 10px !important;
+        padding: 0 16px !important;
+        font-size: 15px !important;
+        outline: none;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .auth-input:focus {
+        border-color: #0071e3 !important;
+        box-shadow: 0 0 0 4px rgba(0,113,227,0.1) !important;
+    }
+
+    /* Labels */
+    .auth-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1d1d1f;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    /* Password Wrapper */
+    .password-wrapper {
+        position: relative;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #0071e3;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        z-index: 10;
+        outline: none;
+    }
+
+    /* Separator */
+    .auth-separator {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 25px 0;
+    }
+
+    .auth-separator::before,
+    .auth-separator::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid #eee;
+    }
+
+    .auth-separator span {
+        padding: 0 15px;
+        color: #888;
+        font-size: 14px;
+    }
+
+    /* Buttons */
+    .btn-apple-dark {
+        height: 52px;
+        background-color: #1d1d1f;
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: opacity 0.2s;
+    }
+
+    .btn-apple-dark:hover {
+        opacity: 0.9;
+        color: #fff;
+    }
+
+    .btn-google {
+        height: 52px;
+        border: 1px solid #d2d2d7;
+        background-color: #fff;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 500;
+        color: #555;
+        transition: background 0.2s;
+    }
+
+    .btn-google:hover {
+        background-color: #f5f5f7;
+    }
+</style>
+{% endblock %}
+
 {% block extra_js %}
 <script>
-    // 1. Universal Toggle Password Logic
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.innerText = 'Hide';
-            } else {
-                input.type = 'password';
-                this.innerText = 'Show';
-            }
-        });
-    });
 
     // 2. Fetch API Registration Logic
     document.getElementById('registerForm').addEventListener('submit', function(e) {

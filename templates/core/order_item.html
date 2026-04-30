@@ -1,0 +1,33 @@
+<div class="order-details-content">
+    <div class="row mb-3">
+        <div class="col-6">
+            <p><strong>Order Number:</strong> #{{ order.order_number }}</p>
+            <p><strong>Date:</strong> {{ order.created_at|date:"F d, Y" }}</p>
+        </div>
+        <div class="col-6 text-right">
+            <p><strong>Status:</strong> {{ order.get_status_display }}</p>
+            <p><strong>Total:</strong> ksh {{ order.total_amount }}</p>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in order.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>ksh {{ item.price }}</td>
+                <td>ksh {{ item.get_total_item_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

@@ -6,50 +6,42 @@
 {% block content %}
 
 <main class="body-wrapper">
-
-            <!-- Begin Li's Breadcrumb Area -->
-            <div class="breadcrumb-area">
-                <div class="container">
-                    <div class="breadcrumb-content">
-                        <ul>
-                            <li><a href="{% url 'home' %}">Home</a></li>
-                            <li class="active">My Account</li>
-                        </ul>
-                    </div>
-                </div>
+    <!-- Begin Li's Breadcrumb Area -->
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="active">My Account</li>
+                </ul>
             </div>
-            <!-- Li's Breadcrumb Area End Here -->
-            
-            <div class="my-account-area pb-60 pt-30">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="row">
-                    <div class="col-lg-3 col-md-4">
-                        <div class="myaccount-tab-menu nav" role="tablist">
-                            <a href="#dashboad" class="active" data-toggle="tab"><i class="fa fa-dashboard"></i> Dashboard</a>
-                            <a href="#orders" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Orders</a>
-                            <a href="#address-edit" data-toggle="tab"><i class="fa fa-map-marker"></i> Address</a>
-                            <a href="#payment-method" data-toggle="tab"><i class="fa fa-credit-card"></i> Payment Methods</a>
-                            <a href="#account-info" data-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
-                            <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
-                        </div>                              
-                    </div>
-                    
-                    <div class="col-lg-9 col-md-8 mt-xs-30 mt-sm-30">
-
-                        <div class="tab-content" id="myaccountContent">
-
-                            <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
-
-                               <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
+        </div>
+    </div>
+    
+    <div class="my-account-area pb-60 pt-30">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4">
+                            <div class="myaccount-tab-menu nav" role="tablist">
+                                <a href="#dashboad" class="active" data-toggle="tab"><i class="fa fa-dashboard"></i> Dashboard</a>
+                                <a href="#orders" data-toggle="tab"><i class="fa fa-cart-arrow-down"></i> Orders</a>
+                                <a href="#address-edit" data-toggle="tab"><i class="fa fa-map-marker"></i> Address</a>
+                                <a href="#payment-method" data-toggle="tab"><i class="fa fa-credit-card"></i> Payment Methods</a>
+                                <a href="#account-info" data-toggle="tab"><i class="fa fa-user"></i> Account Details</a>
+                                <a href="{% url 'logout' %}"><i class="fa fa-sign-out"></i> Logout</a>
+                            </div>                              
+                        </div>
+                        
+                        <div class="col-lg-9 col-md-8 mt-xs-30 mt-sm-30">
+                            <div class="tab-content" id="myaccountContent">
+                                <div class="tab-pane fade show active" id="dashboad" role="tabpanel">
                                     <div class="myaccount-content">
                                         <h3>Dashboard</h3>
-                                        
                                         <div class="welcome mb-20">
                                             <p>Hello, <strong>{{ user.username }}</strong></p>
                                         </div>
-                                        
                                         <p class="mb-30">From your account dashboard, you can easily manage your activity and track your latest purchases.</p>
 
                                         <div class="row">
@@ -57,13 +49,14 @@
                                                 <a href="#orders" data-toggle="tab" class="stat-link" onclick="$('.myaccount-tab-menu a[href=\'#orders\']').tab('show');">
                                                     <div class="stat-card">
                                                         <i class="fa fa-cart-arrow-down"></i>
-                                                        <h4>05</h4>
+                                                        <h4>{{ user_orders.count|default:"0" }}</h4>
                                                         <p>Total Orders</p>
                                                     </div>
                                                 </a>
                                             </div>
                                             <div class="col-lg-4 col-md-6">
-                                                <a href="{% url 'wishlist' %}" class="stat-link">
+                                                <!-- FIXED: javascript:void(0) prevents redirection -->
+                                                <a href="javascript:void(0)" class="stat-link">
                                                     <div class="stat-card">
                                                         <i class="fa fa-heart-o"></i>
                                                         <h4>12</h4>
@@ -72,7 +65,8 @@
                                                 </a>
                                             </div>
                                             <div class="col-lg-4 col-md-6">
-                                                <a href="{% url 'shopping-cart' %}" class="stat-link">
+                                                <!-- FIXED: javascript:void(0) prevents redirection -->
+                                                <a href="javascript:void(0)" class="stat-link">
                                                     <div class="stat-card">
                                                         <i class="fa fa-shopping-bag"></i>
                                                         <h4>02</h4>
@@ -96,61 +90,86 @@
                                                     <thead class="thead-light">
                                                         <tr>
                                                             <th>Order ID</th>
-                                                            <th>Product</th>
                                                             <th>Date</th>
                                                             <th>Status</th>
                                                             <th>Total</th>
+                                                            <th>Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody>
+                                                        <!-- FIXED: Now uses dynamic loop and onclick trigger -->
+                                                        {% for order in recent_orders %}
                                                         <tr>
-                                                            <td>#10592</td>
-                                                            <td class="text-left">Alpa Fat 10kg Carton...</td>
-                                                            <td>April 22, 2026</td>
-                                                            <td><span class="badge badge-success" style="background-color: #28a745;">Delivered</span></td>
-                                                            <td>ksh 2,820.00</td>
+                                                            <td>#{{ order.order_number }}</td>
+                                                            <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                                            <td>
+                                                                <span class="badge badge-success" style="background-color: #28a745;">{{ order.get_status_display }}</span>
+                                                            </td>
+                                                            <td>ksh {{ order.total_amount }}</td>
+                                                            <td>
+                                                                <a href="javascript:void(0)" onclick="viewOrderDetails('{{ order.id }}')" style="color: #0071e3; font-weight: 600;">View</a>
+                                                            </td>
                                                         </tr>
+                                                        {% empty %}
+                                                        <tr>
+                                                            <td colspan="5">No recent orders found.</td>
+                                                        </tr>
+                                                        {% endfor %}
                                                     </tbody>
                                                 </table>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
-                            </div>
 
-
-
-
-                            <div class="tab-pane fade" id="orders" role="tabpanel">
-                                <div class="myaccount-content">
-                                    <h3>Orders</h3>
-                                    <div class="myaccount-table table-responsive text-center">
-                                        <table class="table table-bordered">
-                                            <thead class="thead-light">
-                                                <tr>
-                                                    <th>Order</th>
-                                                    <th>Date</th>
-                                                    <th>Status</th>
-                                                    <th>Total</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>Aug 22, 2026</td>
-                                                    <td>Pending</td>
-                                                    <td>ksh 2820.00</td>
-                                                    <td><a href="#" class="li-btn-2"><span>View</span></a></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                <!-- Rest of the tabs (Orders, Address, Payment, Account) remain as in dashboard_4.html -->
+                                <div class="tab-pane fade" id="orders" role="tabpanel">
+                                    <div class="myaccount-content">
+                                        <h3>Orders</h3>
+                                        <div class="myaccount-table table-responsive text-center">
+                                            <table class="table table-bordered">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Order #</th>
+                                                        <th>Date</th>
+                                                        <th>Status</th>
+                                                        <th>Total</th>
+                                                        <th>Action</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for order in user_orders %}
+                                                    <tr>
+                                                        <td>{{ order.order_number }}</td>
+                                                        <td>{{ order.created_at|date:"M d, Y" }}</td>
+                                                        <td>
+                                                            {% if order.status == 'DELIVERED' %}
+                                                                <span class="badge badge-success" style="background-color: #28a745;">{{ order.get_status_display }}</span>
+                                                            {% elif order.status == 'PENDING' %}
+                                                                <span class="badge badge-warning" style="background-color: #ffc107; color: #000;">{{ order.get_status_display }}</span>
+                                                            {% else %}
+                                                                <span class="badge badge-info" style="background-color: #17a2b8;">{{ order.get_status_display }}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>ksh {{ order.total_amount }}</td>
+                                                        <td>
+                                                            <a href="javascript:void(0)" onclick="viewOrderDetails('{{ order.id }}')" class="li-btn-2">
+                                                                <span>View Details</span>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% empty %}
+                                                    <tr>
+                                                        <td colspan="5" class="text-center">You haven't placed any orders yet.</td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div class="tab-pane fade" id="address-edit" role="tabpanel">
+
+                                <div class="tab-pane fade" id="address-edit" role="tabpanel">
                                 <div class="myaccount-content">
                                     <h3>Billing Address</h3>
                                     <div class="account-details-form">
@@ -160,25 +179,25 @@
                                                 <div class="col-12 mb-30">
                                                     <label class="auth-label">Business / Full Name</label>
                                                     <input type="text" name="billing_full_name" class="auth-input" 
-                                                        value="{{ user.get_full_name|default:user.customerprofile.business_name }}" placeholder="Recipient Name">
+                                                        value="{{ user.customerprofile.business_name|default:user.get_full_name }}" placeholder="Recipient Name">
                                                 </div>
 
                                                 <div class="col-12 mb-30">
                                                     <label class="auth-label">Physical Address</label>
-                                                    <input type="text" name="billing_street" class="auth-input" 
-                                                        value="" placeholder="e.g Trial Traders, Park Road, Ngara, Nairobi" required>
+                                                    <input type="text" name="address" class="auth-input" 
+                                                        value="{{ primary_address.physical_address|default:'' }}" placeholder="e.g Trial Traders, Park Road, Ngara, Nairobi" required>
                                                 </div>
 
                                                 <div class="col-lg-6 col-12 mb-30">
                                                     <label class="auth-label">Town / City</label>
-                                                    <input type="text" name="billing_city" class="auth-input" 
-                                                        value="Nairobi" placeholder="Town / City">
+                                                    <input type="text" name="city" class="auth-input" 
+                                                        value="{{ primary_address.city|default:'Nairobi' }}" placeholder="Town / City">
                                                 </div>
 
                                                 <div class="col-lg-6 col-12 mb-30">
-                                                    <label class="auth-label">Mobile Number</label>
-                                                    <input type="text" name="billing_phone" class="auth-input" 
-                                                        value="+254 700 000 000" placeholder="Mobile Number">
+                                                    <label class="auth-label">Mobile Number (Delivery)</label>
+                                                    <input type="text" name="delivery_phone" class="auth-input" 
+                                                        value="{{ user.customerprofile.phone_number }}" placeholder="Mobile Number">
                                                 </div>
 
                                                 <div class="col-12 mb-30">
@@ -186,8 +205,11 @@
                                                     <input type="text" class="auth-input" value="Kenya" readonly style="background-color: #f5f5f7; cursor: not-allowed;">
                                                 </div>
 
+                                                <!-- THE SAVING GRACE BUTTON -->
                                                 <div class="col-12">
-                                                    <button type="submit" id="saveAddressBtn" class="register-button mt-0">Update Address</button>
+                                                    <button type="submit" id="saveAddressBtn" class="register-button mt-0">
+                                                        Save Address Details
+                                                    </button>
                                                 </div>
                                             </div>
                                         </form>
@@ -195,12 +217,14 @@
                                 </div>
                             </div>
 
+                            <!-- Payment Methods Tab -->
                             <div class="tab-pane fade" id="payment-method" role="tabpanel">
                                 <div class="myaccount-content">
                                     <h3>Payment Methods</h3>
                                     <p class="mb-20">Manage your preferred payment options for faster checkout.</p>
                                     
                                     <div class="account-details-form">
+                                        <!-- Form ID updated for the script to target -->
                                         <form id="paymentDetailsForm" method="POST">
                                             {% csrf_token %}
                                             <div class="row">
@@ -214,7 +238,8 @@
                                                         </div>
                                                         
                                                         <label class="auth-label">M-Pesa Number for Checkout</label>
-                                                        <input type="text" name="mpesa_number" class="auth-input" 
+                                                        <!-- Name matches your profile model field -->
+                                                        <input type="text" name="mpesa_number" id="mpesa-number" class="auth-input" 
                                                             value="{{ user.customerprofile.phone_number }}" placeholder="07XXXXXXXX">
                                                         <small class="text-muted d-block mt-2">This number will be used for STK push prompts during checkout.</small>
                                                     </div>
@@ -234,7 +259,7 @@
                                                 </div>
 
                                                 <div class="col-12">
-                                                    <button type="submit" class="register-button mt-0">Save Payment Preferences</button>
+                                                    <button type="submit" id="savePaymentBtn" class="register-button mt-0">Save Payment Preferences</button>
                                                 </div>
                                             </div>
                                         </form>
@@ -260,8 +285,16 @@
 
                                                 <div class="col-12 mb-30">
                                                     <label class="auth-label">User Name</label>
-                                                    <input id="display-name" name="username" class="auth-input" placeholder="Display Name" type="text" value="{{ user.username }}">
+                                                    <input id="display-name" 
+                                                        name="username" 
+                                                        class="auth-input readonly-input" 
+                                                        type="text" 
+                                                        value="{{ user.username }}" 
+                                                        readonly 
+                                                        tabindex="-1">
+                                                    <small class="text-muted mt-2 d-block">Username is unique and cannot be changed.</small>
                                                 </div>
+
                                                 <div class="col-12 mb-30">
                                                     <label class="auth-label">Email Address</label>
                                                     <input id="email" name="email" class="auth-input" placeholder="Email Address" type="email" value="{{ user.email }}">
@@ -272,7 +305,44 @@
                                                     <input id="tax-id" name="tax_id" class="auth-input" placeholder="e.g. A012345678Z" type="text" value="{{ user.customerprofile.tax_id|default:'' }}">
                                                     <small class="text-muted mt-2 d-block">Required for eTIMS compliant invoice generation.</small>
                                                 </div>
+                                                
+                                                <!-- Password Change Section -->
+                                                <div class="col-12 mb-30">
+                                                    <div class="mb-20"> <!-- Container for header and instruction -->
+                                                        <h4 class="mt-4 mb-1">Change Password</h4>
+                                                        <small class="text-muted d-block">Leave blank to keep current.</small>
+                                                    </div>
 
+                                                    <div class="row">
+                                                        <!-- Current Password -->
+                                                        <div class="col-lg-4 col-12 mb-20">
+                                                            <label class="auth-label">Current Password</label>
+                                                            <div class="password-wrapper" style="position: relative;">
+                                                                <input id="current_password_db" name="current_password" class="auth-input password-field" type="password" placeholder="********">
+                                                                <span class="toggle-password" data-target="current_password_db" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 12px; font-weight: bold; text-transform: none;">Show</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- New Password -->
+                                                        <div class="col-lg-4 col-12 mb-20">
+                                                            <label class="auth-label">New Password</label>
+                                                            <div class="password-wrapper" style="position: relative;">
+                                                                <input id="new_password_db" name="new_password" class="auth-input password-field" type="password" placeholder="********">
+                                                                <span class="toggle-password" data-target="new_password_db" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 12px; font-weight: bold; text-transform: none;">Show</span>
+                                                            </div>
+                                                        </div>
+
+                                                        <!-- Confirm New Password -->
+                                                        <div class="col-lg-4 col-12 mb-20">
+                                                            <label class="auth-label">Confirm New Password</label>
+                                                            <div class="password-wrapper" style="position: relative;">
+                                                                <input id="confirm_password_db" name="confirm_password" class="auth-input password-field" type="password" placeholder="********">
+                                                                <span class="toggle-password" data-target="confirm_password_db" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #666; font-size: 12px; font-weight: bold; text-transform: none;">Show</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
                                                 <div class="col-12">
                                                     <button type="submit" id="saveAccountBtn" class="register-button mt-0">Save Changes</button>
                                                 </div>
@@ -282,47 +352,91 @@
                                 </div>
                             </div>
 
+                                <!-- Order Details Modal -->
+                                <div class="modal fade" id="orderModal" tabindex="-1" role="dialog" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Order Details: <span id="modalOrderNumber"></span></h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body" id="modalOrderBody">
+                                                <div class="text-center p-5">
+                                                    <div class="spinner-border text-primary" role="status"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-
-            
-         </main>
-
+</main>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-    /* Force the hover effect for the register-button in the dashboard */
-    .account-details-form .register-button {
-        /* Ensure base state matches your theme */
-        background-color: #1d1d1f; /* Adjust to your specific theme dark/brand color */
-        color: #fff;
-        border: none;
-        padding: 15px 40px;
-        border-radius: 10px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        cursor: pointer;
+{% block extra_js %}
+<script>
+    // Global Scope for HTML onclick
+    function viewOrderDetails(orderId) {
+        const body = document.getElementById('modalOrderBody');
+        const title = document.getElementById('modalOrderNumber');
+        
+        $('#orderModal').modal('show');
+        body.innerHTML = '<div class="text-center p-5"><div class="spinner-border"></div></div>';
+
+        fetch(`/get-order-details/${orderId}/`)
+            .then(response => response.text())
+            .then(html => {
+                body.innerHTML = html;
+                title.innerText = '#' + orderId;
+            })
+            .catch(err => {
+                body.innerHTML = '<p class="text-danger">Error loading details. Please try again.</p>';
+            });
     }
 
-    .account-details-form .register-button:hover {
-        background-color: #0071e3 !important; /* Apple Blue hover, or your theme color */
-        color: #fff !important;
-        opacity: 0.9;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
-    }
-    
-    /* Ensure it doesn't look weird when clicked */
-    .account-details-form .register-button:active {
-        transform: translateY(0);
-    }
-</style>
+    document.addEventListener('DOMContentLoaded', function() {        
+        async function handleFormSubmit(formId, buttonId, url) {
+            const form = document.getElementById(formId);
+            const btn = document.getElementById(buttonId);
+            if (!form) return;
 
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const originalBtnText = btn.textContent;
+                btn.disabled = true;
+                btn.textContent = 'Processing...';
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        },
+                        body: new FormData(form)
+                    });
+                    const data = await response.json();
+                    if (response.ok) alert('Success: ' + (data.message || 'Updated!'));
+                    else alert('Error: ' + (data.error || 'Failed.'));
+                } catch (error) {
+                    alert('Connection error.');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = originalBtnText;
+                }
+            });
+        }
+
+        handleFormSubmit('accountDetailsForm', 'saveAccountBtn', '/update-account/');
+        handleFormSubmit('paymentDetailsForm', 'savePaymentBtn', '/update-account/');
+        handleFormSubmit('addressDetailsForm', 'saveAddressBtn', '/update-account/');
+    });
+</script>
 {% endblock %}

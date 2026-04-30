@@ -163,7 +163,7 @@ MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL')
 LOGIN_REDIRECT_URL = 'dashboard'
 
 # Where to go after logging out
-LOGOUT_REDIRECT_URL = 'index'
+LOGOUT_REDIRECT_URL = 'home'
 
 # Where to send users who try to access a @login_required page
 LOGIN_URL = 'login'

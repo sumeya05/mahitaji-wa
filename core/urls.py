@@ -69,6 +69,11 @@ urlpatterns = [
     # AI
     path('ai-assistant-chat/', views.ai_assistant_chat, name='ai_assistant_chat'),
 
+    # non-sorted
+    path('update-account/', views.update_account, name='update_account'),
+    # URL for the Order Details Modal popup
+    path('get-order-details/<int:order_id>/', views.get_order_details, name='get_order_details'),
+
 ]
 
 

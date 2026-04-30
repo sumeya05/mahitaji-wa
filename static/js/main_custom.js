@@ -125,4 +125,31 @@ document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll('.cards-container').forEach(track => {
         new AutoCarousel(track);
     });
+
+
+    /**
+     * Mahitaji Global UI Components
+     * Unified Password Visibility Toggle (Sentence Case)
+     */
+    document.addEventListener('click', function (e) {
+        const button = e.target.closest('.toggle-password');
+        
+        if (button) {
+            e.preventDefault();
+            
+            const targetId = button.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            
+            if (input) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    button.innerText = 'Hide'; // Unified to sentence case
+                } else {
+                    input.type = 'password';
+                    button.innerText = 'Show'; // Unified to sentence case
+                }
+            }
+        }
+    });
+
 });

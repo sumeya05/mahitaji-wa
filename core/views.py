@@ -1,6 +1,6 @@
 from urllib import request
 
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions
 from django.contrib.auth import logout, login, authenticate
 from django.contrib import messages
@@ -9,6 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django_daraja.mpesa.core import MpesaClient
 import json
 from datetime import datetime
+from django.urls import reverse
 
 
 from django.contrib.auth.models import User
@@ -24,10 +25,12 @@ from django.conf import settings
 # --- Protected Views ---
 from django.contrib.auth.decorators import login_required
 
+from django.contrib.auth import update_session_auth_hash
+
 # Import models, serializers, and the RegisterForm we'll create
 from .models import (
     Product, Category, Order, CustomerProfile, 
-    MpesaTransaction
+    MpesaTransaction, Address
 )
 from .serializers import (
     ProductSerializer, CategorySerializer, OrderSerializer
@@ -154,7 +157,26 @@ def wishlist(request):
 
 @login_required
 def dashboard(request):
-    return render(request, 'core/dashboard.html')
+    user = request.user
+    profile = user.customerprofile
+    
+    # Fetch real orders for this customer
+    user_orders = profile.orders.all().order_by('-created_at')
+    
+    # Optional: Get the 5 most recent for a "Recent Orders" summary
+    recent_orders = user_orders[:5]
+    
+    # Get primary address for the Address tab
+    primary_address = profile.addresses.filter(is_primary=True).first()
+    
+    context = {
+        'user': user,
+        'profile': profile,
+        'user_orders': user_orders,
+        'recent_orders': recent_orders,
+        'primary_address': primary_address,
+    }
+    return render(request, 'core/dashboard.html', context)
 
 @login_required
 def transactions(request):
@@ -229,7 +251,7 @@ class OrderViewSet(viewsets.ModelViewSet):
 # 3. MPESA
 import json
 from django.http import JsonResponse
-from django.urls import reverse
+
 from django_daraja.mpesa.core import MpesaClient
 
 def initiate_stk_push(request):
@@ -369,6 +391,8 @@ def custom_password_reset(request):
     
     return render(request, 'core/password_reset.html', {'form': PasswordResetForm()})
 
+
+
 def custom_password_reset_confirm(request, uidb64, token):
     user = None  # Initialize user here
     try:
@@ -450,3 +474,73 @@ def ai_assistant_chat(request):
             if "429" in str(e):
                 return JsonResponse({'reply': "I'm a bit busy helping other retailers. Please wait 30 seconds and try again!"})
             return JsonResponse({'reply': f"Error: {str(e)}"})
+        
+
+from django.contrib.auth import update_session_auth_hash
+
+
+@login_required
+def update_account(request):
+    if request.method == 'POST':
+        user = request.user
+        profile, created = CustomerProfile.objects.get_or_create(user=user)
+
+        # 1. Update Basic User Info
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+
+        # 2. Profile Specific Info
+        profile.business_name = request.POST.get('billing_full_name', profile.business_name)
+        profile.tax_id = request.POST.get('tax_id', profile.tax_id)
+        
+        # M-Pesa / Phone Update
+        if 'mpesa_number' in request.POST:
+            profile.phone_number = request.POST.get('mpesa_number')
+        elif 'delivery_phone' in request.POST:
+            profile.phone_number = request.POST.get('delivery_phone')
+
+        # 3. Address Logic (Fixing the AttributeError)
+        new_address_text = request.POST.get('address')
+        new_city = request.POST.get('city')
+        
+        if new_address_text:
+            # Get existing primary address or create a new one for this customer
+            address_obj, addr_created = Address.objects.get_or_create(
+                customer=profile,
+                is_primary=True,
+                defaults={'label': 'Billing Address', 'physical_address': new_address_text, 'city': new_city or 'Nairobi'}
+            )
+            
+            if not addr_created:
+                # If it already existed, update the fields
+                address_obj.physical_address = new_address_text
+                if new_city:
+                    address_obj.city = new_city
+                address_obj.save()
+
+        # 4. Password Logic (Remains the same)
+        new_pass = request.POST.get('new_password')
+        if new_pass:
+            current_pass = request.POST.get('current_password')
+            confirm_pass = request.POST.get('confirm_password')
+            if not user.check_password(current_pass):
+                return JsonResponse({'error': 'Current password incorrect'}, status=400)
+            if new_pass != confirm_pass:
+                return JsonResponse({'error': 'Passwords do not match'}, status=400)
+            user.set_password(new_pass)
+            user.save()
+            update_session_auth_hash(request, user)
+
+        user.save()
+        profile.save()
+
+        return JsonResponse({'message': 'Profile updated successfully!'})
+
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+
+@login_required
+def get_order_details(request, order_id):
+    order = get_object_or_404(Order, id=order_id, customer=request.user.customerprofile)
+    # This should return a small HTML snippet of a table with the items
+    return render(request, 'core/order_item.html', {'order': order})

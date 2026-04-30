@@ -161,7 +161,7 @@
                                     </div>
                                 </div>
                                 <div class="col-6 text-right">
-                                    <a href="#" style="font-size: 13px; color: #0071e3; font-weight: 500;">Forgot Password?</a>
+                                    <a href="{% url 'password_reset' %}" style="font-size: 13px; color: #0071e3; font-weight: 500;">Forgot Password?</a>
                                 </div>
                             </div>
 
@@ -190,22 +190,6 @@
 
 {% block extra_js %}
 <script>
-    // 1. Toggle Password Visibility Logic
-    document.querySelectorAll('.toggle-password').forEach(button => {
-        button.addEventListener('click', function() {
-            const targetId = this.getAttribute('data-target');
-            const input = document.getElementById(targetId);
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                this.innerText = 'Hide';
-            } else {
-                input.type = 'password';
-                this.innerText = 'Show';
-            }
-        });
-    });
-
     // 2. Fetch API Login Logic
     document.getElementById('loginForm').addEventListener('submit', function(e) {
         e.preventDefault();
