@@ -24,18 +24,22 @@
                     <form id="registerForm" method="POST">
                         {% csrf_token %}
                         <div class="auth-card">
-                            <h4 style="font-weight: 700; font-size: 26px; margin-bottom: 25px;">Create Account</h4>
-                            
+
+                            <div>
+                                <h4 style="font-weight: 700; font-size: 26px; margin-bottom: 25px;">Create Account</h4>
+                                <p><span style="color: red;">*</span> - Mandatory fields</p>
+                            </div>
+
                             <div id="error-container" class="alert alert-danger d-none" style="border-radius: 8px; font-size: 14px;"></div>
 
                             <div class="row">
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">First Name*</label>
+                                    <label class="auth-label">First Name<span style="color: red;">*</span></label>
                                     <input type="text" name="first_name" class="auth-input" placeholder="First Name" required>
                                 </div>
 
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">Last Name*</label>
+                                    <label class="auth-label">Last Name<span style="color: red;">*</span></label>
                                     <input type="text" name="last_name" class="auth-input" placeholder="Last Name" required>
                                 </div>
 
@@ -45,13 +49,19 @@
                                 </div>
 
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">Phone Number*</label>
+                                    <label class="auth-label">Phone Number<span style="color: red;">*</span></label>
                                     <input type="text" name="phone_number" class="auth-input" placeholder="07XXXXXXXX" required>
                                 </div>
 
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">Email Address*</label>
+                                    <label class="auth-label">Email Address<span style="color: red;">*</span></label>
                                     <input type="email" name="email" class="auth-input" placeholder="email@example.com" required>
+                                </div>
+
+                                <div class="col-md-6 mb-20">
+                                    <label class="auth-label">Billing Address<span style="color: red;">*</span></label>
+                                    <!-- FIXED: Added name="billing_address" and REMOVED required attribute -->
+                                    <input type="text" name="billing_address" class="auth-input" placeholder="e.g Trial Address, Park Road, Ngara" required>
                                 </div>
 
                                 <div class="col-12 mb-20">
@@ -61,7 +71,7 @@
                                 </div>
                                 
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">Password*</label>
+                                    <label class="auth-label">Password<span style="color: red;">*</span></label>
                                     <div class="password-wrapper">
                                         <input type="password" name="password" id="reg_password" class="auth-input" placeholder="Min 8 characters" required>
                                         <button type="button" class="toggle-password" data-target="reg_password">Show</button>
@@ -69,7 +79,7 @@
                                 </div>
 
                                 <div class="col-md-6 mb-20">
-                                    <label class="auth-label">Confirm Password*</label>
+                                    <label class="auth-label">Confirm Password<span style="color: red;">*</span></label>
                                     <div class="password-wrapper">
                                         <input type="password" name="confirm_password" id="confirm_password" class="auth-input" placeholder="Repeat Password" required>
                                         <button type="button" class="toggle-password" data-target="confirm_password">Show</button>

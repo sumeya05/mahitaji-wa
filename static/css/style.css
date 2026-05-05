@@ -72,13 +72,18 @@
 /*  1.1 Basic
 /*----------------------------------------*/
 body {
-	color: #242424;
-	font-family: 'Rubik', sans-serif;
-	font-size: 14px;
-	font-style: normal;
-	font-weight: normal;
-	overflow-x: hidden;
+    color: #242424;
+    /* Updated to the Finspree logo font 
+    font-family: 'Montserrat', sans-serif; 
+	font-family: 'Times New Roman', Times, serif;
+	font-family: 'Libre Baskerville', serif;*/
+	font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400; /* Standard weight */
+    overflow-x: hidden;
 }
+
 a {
 	color: #a4a4a4;
 	transition: 0.3s ease-in-out;
@@ -240,6 +245,7 @@ span.tooltip-content {
 	max-width: 100%;
 }
 .nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus {
+	color: #ffffff;
 	background-color: #313761;
 }
 .nice-select .option:hover {
@@ -312,13 +318,12 @@ textarea {
 /*----------------------------------------*/
 /*  1.4 Default Button
 /*----------------------------------------*/
+
 button.li-btn {
 	border: none;
-	background: #a71e0f;
-	color: #242424;
 	font-size: 20px;
 	width: 45px;
-	border-radius: 0 16px 16px 0;
+	border-radius: 0 8px 8px 0;
 	height: 45px;
 	line-height: 45px;
 	position: absolute;
@@ -327,10 +332,7 @@ button.li-btn {
 	transition: all 0.3s ease-in-out;
 	cursor: pointer;
 }
-button.li-btn:hover {
-	background: #313761;
-	color: #ffffff;
-}
+
 a.links, 
 a.links-2, 
 a.review-links {
@@ -1092,7 +1094,7 @@ textarea:focus {
   font-weight: 500;
   font-size: 24px;
   line-height: 27px;
-  color: #e80f0f;
+  color: #FFA500;
 }
 .product-details-view-content .content-center .product-variants {
   display: -webkit-box;
@@ -1443,6 +1445,7 @@ textarea:focus {
 .logo-img {
 	height: 6em; 
 	width: auto;
+	margin-left: 25px;
 }
 
 .logo-img:hover {
@@ -1459,7 +1462,7 @@ textarea:focus {
 	min-width: 638px;
 	height: 45px;
 	float: left;
-	border-radius: 16px;
+	border-radius: 8px;
 }
 .hm-searchbox .nice-select.select-search-category {
 	width: auto;
@@ -1529,7 +1532,7 @@ textarea:focus {
 	border-radius: 16px;
 }
 .hm-wishlist > a:hover {
-	border-color: #313761;
+	border: solid 1px #ffffff;
 	color: #313761;
 }
 /*Header Middle Minicart*/
@@ -1538,8 +1541,8 @@ textarea:focus {
 		position: relative;
 }
 .hm-minicart-trigger {
-		border-radius: 16px;
-		background: #a71e0f;
+		border: solid 2px #ffffff;
+		border-radius: 8px;
 		color: #fff;
 		height: 45px;
 		cursor: pointer;
@@ -1577,17 +1580,18 @@ textarea:focus {
 .cart-item-count {
 		position: absolute;
 		top: -25px;
-		left: -60px;
+		left: 85px;
 		display: block;
 		overflow: hidden;
 		min-width: 26px;
 		line-height: 26px;
 		font-size: 12px;
 		font-weight: 400;
-		color: #242424;
-		background: #7880c3;
+		color: #ffffff;
+		background: #313761;
 		text-align: center;
 		border-radius: 100%;
+		border: solid 1px white;
 }
 .wishlist-item-count {
 		top: -10px;
@@ -1773,7 +1777,7 @@ textarea:focus {
 	text-transform: uppercase;
 	font-size: 14px;
 	line-height: 35px;
-	font-weight: 500;
+	font-weight: 550;
 	padding: 8px 0;
 }
 .hb-menu-2 nav > ul > li > a {
@@ -1788,6 +1792,7 @@ textarea:focus {
 .hb-menu nav > ul > li:hover > a, 
 .hb-menu nav > ul > li:hover > a::after {
 		color: #ffffff;
+		font-size: larger;
 }
 .hb-menu nav > ul > li > a::after {
 	content: "\f107";
@@ -2339,14 +2344,14 @@ textarea:focus {
 .product_desc .product_desc_info .new-price ,
 .featured-price-box .new-price,
 .featured-price-box .new-price-2{
-  color: #1b7d1a;
+  color: #FFA500;
   font-size: 14px;
   font-weight: 500;
   padding-right: 10px;
 }
 .product_desc .product_desc_info .price-box .new-price-2,
 .featured-price-box .new-price-2 {
-	color: #e80f0f !important;
+	color: #FFA500 !important;
 }
 .product_desc .product_desc_info .price-box .discount-percentage,
 .featured-price-box .discount-percentage {
@@ -5533,12 +5538,15 @@ span.required {
 /*------------------------------------------> Custom <-----------------------------------------------*/
 
 .fa-search {
-	color: #ffffff;
+	color: #3644bb;
+}
+
+.fa-search:hover {
+	font-size: larger;
 }
 
 .nav-links-custom {
 	display: flex;
-	gap: 1em;	
 	
 }
 

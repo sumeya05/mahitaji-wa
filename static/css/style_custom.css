@@ -181,8 +181,8 @@ body {
 
 .category-item, .supplier-link {
     position: absolute;
-    width: var(--icon-size);
-    height: var(--icon-size);
+    width: 72px;
+    height: 72px;
 }
 
 .category-item { animation: rotateCounter var(--inner-speed) linear infinite; }
@@ -292,7 +292,7 @@ body {
     .chat-widget {
         position: fixed;
         bottom: 90px;
-        right: 20px;
+        right: 25px;
         z-index: 1000;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
@@ -646,4 +646,53 @@ body {
     padding: 5px 10px;
     font-weight: 500;
     border-radius: 30px;
+}
+
+/* Custom colorful style for your shipping icon */
+.shipping-icon i {
+    font-size: 50px;
+    background: linear-gradient(135deg, #007AFF, #00C6FF); /* Vibrant Blue Gradient */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Styling for the Safe Payment Icon */
+.shipping-icon .fa-shield-halved {
+    font-size: 50px;
+    /* Vibrant Green Gradient for Trust/Safety */
+    background: linear-gradient(135deg, #28a745, #85e085); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Styling for the Confidence/Protection Icon */
+.shipping-icon .fa-handshake-angle {
+    font-size: 50px;
+    /* Sophisticated Purple/Indigo Gradient */
+    background: linear-gradient(135deg, #6a11cb, #2575fc); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+/* Styling for the Help Center Icon */
+.shipping-icon .fa-headset {
+    font-size: 50px;
+    /* Energetic Orange/Coral Gradient */
+    background: linear-gradient(135deg, #ff512f, #f09819); 
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+.product-active.owl-carousel .col-lg-12 {
+    padding: 0 10px; /* Provides consistent gutter spacing between cards */
+}
+
+/* Force the Add to Cart button to stay at the very bottom */
+.btn-full-width {
+    margin-top: auto; /* Pushes button to the bottom if content is short */
+    width: 100%;
 }

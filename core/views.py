@@ -115,14 +115,40 @@ def login_view(request):
     return render(request, 'core/login.html', {'form': AuthenticationForm()})
 
 def register_view(request):
-    """Hybrid Register: Creates User + CustomerProfile with AJAX support"""
+    """Hybrid Register: Creates User + CustomerProfile + Initial Address"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
+            # 1. Save the User
             user = form.save()
+            
+            # 2. Get extra fields from POST
+            tax_id = request.POST.get('tax_id', '').strip()
+            billing_addr_text = request.POST.get('billing_address', '').strip()
+            phone = request.POST.get('phone_number', '') # Assuming you have a phone field
+
+            # 3. Update the Profile (In case a signal already created it)
+            profile, created = CustomerProfile.objects.update_or_create(
+                user=user,
+                defaults={
+                    'tax_id': tax_id,
+                    'phone_number': phone,
+                }
+            )
+
+            # 4. Save Billing Address if provided
+            if billing_addr_text:
+                Address.objects.create(
+                    customer=profile,
+                    label="Billing Address",
+                    physical_address=billing_addr_text,
+                    is_primary=True
+                )
+
+            # 5. Log the user in
             login(request, user)
             
             if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -132,9 +158,8 @@ def register_view(request):
                 })
             return redirect('dashboard')
         
-        # If form is invalid and it's an AJAX request
+        # AJAX Validation Errors
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            # .get_json_data() provides a clean dictionary of error messages
             return JsonResponse({
                 "success": False, 
                 "errors": form.errors.get_json_data()

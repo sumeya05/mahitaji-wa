@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
     <link rel="stylesheet" href="{% static 'css/style_custom.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/style_custom_ii.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive_custom.css' %}">
 
     {% block extra_css %}
@@ -43,28 +45,26 @@
 
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
 
-    <header>
+    <header class="main-header">
 
         <div class="header-middle pl-sm-0 pr-sm-0 pl-xs-0 pr-xs-0">
-            <div class="container">
+            <div class="container-fluid">
 
-                <div class="row" style="align-items: center;">
-
-                    <div class="col-lg-3"> 
-                        <!-- Logo Area -->                               
+                <div class="row align-items-center">
+                    <!-- Logo: Left Aligned -->
+                    <div class="col-lg-3 col-md-3">
                         <a href="{% url 'home' %}" title="Home">
-                            <img class="logo-img" src="{% static 'assets/logos/logo.png' %}" alt="Logo">
-                        </a> <!-- End of Logo Area -->                               
+                            <img class="logo-img" src="{% static 'assets/logos/logo_sa.png' %}" alt="Logo"><span style="font-family: 'Times New Roman', Times, serif;">MAHITAJI</span>
+                        </a>
                     </div>
 
-                    <div class="col-lg-9 pl-0 ml-sm-15 ml-xs-15">
-
-                        <!-- Searchbox Area -->
-                        <form action="#" class="hm-searchbox">
+                    <!-- Search: Centered and Wider -->
+                    <div class="col-lg-6 col-md-6">
+                        <form action="#" class="hm-searchbox custom-search-wide">
                             <select class="nice-select select-search-category">
-                                <option value="0">All</option>                         
+                                <option value="0">All</option>                       
                                 <option value="1">Flour</option>                
                                 <option value="2">Cooking Oil</option>                              
                                 <option value="3">Toiletries</option>            
@@ -75,21 +75,13 @@
                                 <option value="8">Soft Drinks</option>
                             </select>
                             <input type="text" placeholder="Enter your search key ...">
-                            <button class="li-btn" type="submit" title="Search"><i class="fa fa-search"></i></button>
-                        </form> <!-- End of Searchbox Area -->                                  
-                        
-                        <div class="header-middle-right">
-                            <ul class="hm-menu" style="display: flex;">
+                            <button class="li-btn" type="submit"><i class="fa fa-search"></i></button>
+                        </form>
+                    </div>
 
-                                <!-- Wishlist Area -->
-                                <li class="hm-wishlist" title="My Account">
-                                    <a href="{% url 'login' %}">
-                                        <span class="cart-item-count wishlist-item-count">2</span>
-                                        <i class="fa fa-user-o"></i>
-                                    </a>
-                                </li> <!-- End of Wishlist Area -->
-
-                                <!-- Mini Cart Area -->
+                    <div class="col-lg-3 col-md-3 text-right">
+                        <div class="header-middle-right" style="justify-content: flex-end;">
+                            <ul class="hm-menu">
                                 <li class="hm-minicart" title="My Shopping Cart">
 
                                     <div class="hm-minicart-trigger">
@@ -130,6 +122,13 @@
 
                                 </li><!-- End of Mini Cart Area -->
 
+                                <!-- My Account Area -->
+                                <li class="hm-wishlist" title="My Account">
+                                    <a href="{% url 'login' %}">
+                                        <i style="color: #ffffff;" class="fa fa-user-o"></i>
+                                    </a>
+                                </li> <!-- End of Wishlist Area -->
+
                             </ul>
 
                         </div>
@@ -152,21 +151,7 @@
                             <nav>
 
                                 <ul class="nav-links-custom">  
-
-                                    <li class="dropdown-holder">
-                                        <a href="{% url 'products' %}"><i class="zmdi zmdi-view-list-alt"></i> All Categories</a>
-                                        <ul class="hb-dropdown">
-                                            <li><a href="{% url 'products' %}?filter=flour">Flour</a></li>
-                                            <li><a href="{% url 'products' %}?filter=cooking-oil">Cooking Oil</a></li>
-                                            <li><a href="{% url 'products' %}?filter=toiletries">Toiletries</a></li>
-                                            <li><a href="{% url 'products' %}?filter=detergents">Detergents</a></li>
-                                            <li><a href="{% url 'products' %}?filter=bar-soaps">Bar Soaps</a></li>
-                                            <li><a href="{% url 'products' %}?filter=cereals">Cereals</a></li>
-                                            <li><a href="{% url 'products' %}?filter=sugar">Sugar</a></li>
-                                            <li><a href="{% url 'products' %}?filter=soft-drinks">Soft Drinks</a></li>
-                                            <li><a href="{% url 'products' %}?filter=baking-additives">Baking Additives</a></li>
-                                        </ul>
-                                    </li>    
+  
 
                                     <li class="dropdown-holder">
                                         <a href="#">Shop</a>
@@ -256,6 +241,8 @@
         </div>
     </section>
 
+    
+
     <footer>  
 
         <div class="footer">
@@ -269,7 +256,8 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="{% static 'assets/logos/1.png' %}" alt="Shipping Icon">
+                                        <!-- Using a truck or box icon instead of the ship for "Delivery" -->
+                                        <i class="fa-solid fa-truck-fast"></i> 
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Free Delivery</h2>
@@ -278,11 +266,15 @@
                                 </div>
                             </div>
                             <!-- Li's Shipping Inner Box Area End Here -->
+
+                            
+
                             <!-- Begin Li's Shipping Inner Box Area -->
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-sm-55 pb-xs-55">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="{% static 'assets/logos/2.png' %}" alt="Shipping Icon">
+                                        <!-- Font Awesome Secure Payment Icon -->
+                                        <i class="fa-solid fa-shield-halved"></i>
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Safe Payment</h2>
@@ -295,11 +287,12 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="{% static 'assets/logos/3.png' %}" alt="Shipping Icon">
+                                        <!-- Font Awesome Confidence/Protection Icon -->
+                                        <i class="fa-solid fa-handshake-angle"></i>
                                     </div>
                                     <div class="shipping-text">
                                         <h2>Shop with Confidence</h2>
-                                        <p>Our Buyer Protection covers your purchasefrom click to delivery.</p>
+                                        <p>Our Buyer Protection covers your purchase from click to delivery.</p>
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +301,8 @@
                             <div class="col-lg-3 col-md-6 col-sm-6 pb-xs-30">
                                 <div class="li-shipping-inner-box">
                                     <div class="shipping-icon">
-                                        <img src="{% static 'assets/logos/4.png' %}" alt="Shipping Icon">
+                                        <!-- Font Awesome 24/7 Support Icon -->
+                                        <i class="fa-solid fa-headset"></i>
                                     </div>
                                     <div class="shipping-text">
                                         <h2>24/7 Help Center</h2>
@@ -320,6 +314,8 @@
                         </div>
                     </div>
                     <!-- Footer Shipping Area End Here -->
+
+                    
                 </div>
             </div>
             <!-- Footer Static Top Area End Here -->

@@ -380,6 +380,51 @@
 </main>
 {% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Force the hover effect for the register-button in the dashboard */
+    .account-details-form .register-button {
+        /* Ensure base state matches your theme */
+        background-color: #1d1d1f; /* Adjust to your specific theme dark/brand color */
+        color: #fff;
+        border: none;
+        padding: 15px 40px;
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .account-details-form .register-button:hover {
+        background-color: #0071e3 !important; /* Apple Blue hover, or your theme color */
+        color: #fff !important;
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+    }
+    
+    /* Ensure it doesn't look weird when clicked */
+    .account-details-form .register-button:active {
+        transform: translateY(0);
+    }
+
+    /* Read-only Input Styling */
+    .auth-input.readonly-input {
+        background-color: #f5f5f7 !important; /* Apple-style light gray */
+        color: #86868b !important;
+        cursor: not-allowed;
+        border-color: #d2d2d7 !important;
+    }
+
+    .auth-input.readonly-input:focus {
+        border-color: #d2d2d7 !important;
+        box-shadow: none !important;
+    }
+</style>
+
+{% endblock %}
+
+
 {% block extra_js %}
 <script>
     // Global Scope for HTML onclick
