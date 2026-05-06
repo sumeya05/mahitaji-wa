@@ -76,8 +76,9 @@ body {
     /* Updated to the Finspree logo font 
     font-family: 'Montserrat', sans-serif; 
 	font-family: 'Times New Roman', Times, serif;
-	font-family: 'Libre Baskerville', serif;*/
-	font-family: 'Playfair Display', serif;
+	font-family: 'Libre Baskerville', serif;
+	font-family: 'Playfair Display', serif;*/
+	font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
     font-size: 14px;
     font-style: normal;
     font-weight: 400; /* Standard weight */
@@ -675,7 +676,7 @@ textarea:focus {
 }
 .slider-active .owl-nav div:hover, 
 .product-active .owl-nav div:hover {
-	color: #7880c3;
+	color: #35a812;
 }
 .slider-active:hover .owl-nav div, .product-active:hover .owl-nav div {
 	opacity: 1;
@@ -1296,7 +1297,7 @@ textarea:focus {
 	box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }
 #scrollUp:hover {
-	background: #7880c3 none repeat scroll 0 0;
+	background: #35a812 none repeat scroll 0 0;
 }
 #scrollUp i {
 	color: #ffffff;
@@ -1541,18 +1542,19 @@ textarea:focus {
 		position: relative;
 }
 .hm-minicart-trigger {
-		border: solid 2px #ffffff;
-		border-radius: 8px;
-		color: #fff;
-		height: 45px;
-		cursor: pointer;
-		display: block;
-		position: relative;
-		padding: 0 15px 0 55px;
+	border-radius: 8px;
+    color: #313761;
+    height: 45px;
+    cursor: pointer;
+    display: block;
+    position: relative;
+    padding: 0 15px 0 55px;
+    border: solid 2px;
 }
 
 .hm-minicart-trigger:hover {
 		background: #313761;
+		color: #ffffff;
 }
 .item-icon::before {
 		content: "\f07a";
@@ -1580,7 +1582,7 @@ textarea:focus {
 .cart-item-count {
 		position: absolute;
 		top: -25px;
-		left: 85px;
+		left: 91px;
 		display: block;
 		overflow: hidden;
 		min-width: 26px;
@@ -2202,6 +2204,7 @@ textarea:focus {
   position: relative;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 300ms ease-in 0s;
+  padding: 10px 32px;
 }
 .single-product-wrap:hover {
   margin: 0 0 -75px;
@@ -2865,6 +2868,17 @@ textarea:focus {
 	text-align: center;
 	z-index: 99;
 }
+
+.li-shipping-inner-box
+ {
+    border: 1px solid var(--mh-border);
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    min-height: 142px;
+    box-shadow: 0 10px 28px rgba(15, 23, 42, .06);
+}
+
 .footer-static-top-3 .li-shipping-inner-box {
 	border-right: 1px solid #e1e1e1;
 	padding: 50px 10px 45px;
@@ -3025,7 +3039,7 @@ textarea:focus {
 .footer-newsletter .form-group .btn {
 	position: absolute;
 	right: 0;
-	background: #7880c3;
+	background: #313761;
 	border: none;
 	color: #ffffff;
 	height: 45px;
@@ -3039,7 +3053,7 @@ textarea:focus {
 	transition: all 0.5s ease-in-out;
 }
 .footer-newsletter .form-group .btn:hover {
-	background: #333333;
+	background: #35a812;
 	color: #ffffff;
 }
 /*Footer Static Bottom*/

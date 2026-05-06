@@ -42,8 +42,9 @@ function arrangeCircle(containerId, radius, drawLines = false) {
         const angle = (i / total) * (2 * Math.PI) - (Math.PI / 2);
         
         // Icon Positioning: Centered by subtracting half of the 56px icon size (28px)
-        const x = centerX + radius * Math.cos(angle) - 28; 
-        const y = centerY + radius * Math.sin(angle) - 28;
+        const y = centerY + radius * Math.sin(angle) - 30; //category
+        const x = centerX + radius * Math.cos(angle) - 25; //supplier
+        
 
         items[i].style.left = `${x}px`;
         items[i].style.top = `${y}px`;
@@ -152,4 +153,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
+
+    
+
 });
+
+
+const body = document.body;
+const hero = document.querySelector('.hero');
+
+// If NOT homepage → always solid dropdown
+if (!hero) {
+    body.classList.add('dropdown-solid');
+} else {
+    // Homepage → switch on scroll
+    function handleDropdown() {
+        const trigger = hero.offsetHeight - 80;
+
+        if (window.scrollY > trigger) {
+            body.classList.add('dropdown-solid');
+        } else {
+            body.classList.remove('dropdown-solid');
+        }
+    }
+
+    handleDropdown();
+    window.addEventListener('scroll', handleDropdown);
+}

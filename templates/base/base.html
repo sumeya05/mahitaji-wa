@@ -46,6 +46,7 @@
 </head>
 
 <body class="{% block body_class %}{% endblock %}">
+    
 
     <header class="main-header">
 
@@ -55,7 +56,7 @@
                 <div class="row align-items-center">
                     <!-- Logo: Left Aligned -->
                     <div class="col-lg-3 col-md-3">
-                        <a href="{% url 'home' %}" title="Home">
+                        <a href="{% url 'home' %}" title="Home" class="logo-area">
                             <img class="logo-img" src="{% static 'assets/logos/logo_sa.png' %}" alt="Logo"><span style="font-family: 'Times New Roman', Times, serif;">MAHITAJI</span>
                         </a>
                     </div>
@@ -125,7 +126,7 @@
                                 <!-- My Account Area -->
                                 <li class="hm-wishlist" title="My Account">
                                     <a href="{% url 'login' %}">
-                                        <i style="color: #ffffff;" class="fa fa-user-o"></i>
+                                        <i class="fa fa-user-o"></i>
                                     </a>
                                 </li> <!-- End of Wishlist Area -->
 
@@ -327,7 +328,7 @@
                             <!-- Begin Footer Logo Area -->
                             <div class="col-lg-4 col-md-6">
                                 <div class="footer-logo">
-                                    <img src="{% static 'assets/logos/logo.png' %}" style="height: 3.5em; width: auto;" alt="Footer Logo">
+                                    <img src="{% static 'assets/logos/logo_sa.png' %}" style="height: 3.5em; width: auto; margin-right: 1em;" alt="Footer Logo"><span style="font-family: 'Times New Roman', Times, serif; font-size: 16px; color: #0056b3;">MAHITAJI ENTERPRISES LTD</span>
                                     <p class="info">
                                         We are the most trusted retail/wholesale supplier of fast moving consumer goods in Kenya. We are committed to providing our customers with the best products and services at competitive prices.
                                     </p>
@@ -356,6 +357,11 @@
                                         <li><a href="#">Prices drop</a></li>
                                         <li><a href="#">New products</a></li>
                                         <li><a href="#">Best sales</a></li>
+                                        <li>
+                                            <a href="{% static 'data/products.csv' %}" download="product_catalog.csv">
+                                                Download Catalog
+                                            </a>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>

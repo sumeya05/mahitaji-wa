@@ -151,11 +151,11 @@
 
 .bookmark-text {
     color: #ffffff;
-    font-weight: 800;
-    font-size: 9px;
+    font-weight: 600;
+    font-size: 8px;
     position: absolute;
     top: 12px;
-    left: 7px;
+    left: 5px;
 }
 
 .bookmark-notch {
@@ -431,9 +431,9 @@
 /* User Icon & Cart Button */
 .is-landing-page .user-link, 
 .is-landing-page .cart-btn {
-    background-color: transparent !important;
+    background-color: transparent;
     border: 1px solid #ffffff !important;
-    color: #ffffff !important;
+    color: #ffffff;
 }
 
 
@@ -442,8 +442,12 @@
 /* 1. Remove the dark strip background on the navbar */
 .is-landing-page .header-bottom, 
 .is-landing-page .main-nav-container {
-    background: transparent !important;
+    background: transparent;
     border: none !important;
+}
+
+.is-landing-page .header-sticky.sticky {
+    background: #545891cc;
 }
 
 /* 2. Remove white bg from search typing area & category select */
@@ -700,11 +704,10 @@
     align-items: center;
     justify-content: center;
     width: 45px;
-    border: 2px solid #ffffff;
-    border-radius: 8px; /* Matching the Apple-style rounding */
+    border: 2px solid #313761;
+    border-radius: 8px;
     transition: all 0.3s ease;
-    color: #444; /* Standard icon color */
-    background: transparent;
+    color: #313761;
 }
 
 /* Unified Hover State: User Icon & Minicart */
@@ -738,16 +741,33 @@
     display: block;
 }
 
-/* The MAHITAJI Brand Text */
+/* The MAHITAJI Brand Text 
 .col-lg-3 a[title="Home"] span {
-    color: #ffffff;
-    /* 80% of 60px is 48px. Adjust this value if you change the logo height above */
+    color: #313761;
+     80% of 60px is 48px. Adjust this value if you change the logo height above 
     font-size: 33px;     
-    font-weight: 600;    /* Extra bold to match the strength of the logo */
-    line-height: 1;      /* Ensures the bounding box doesn't add extra height */
+    font-weight: 600;     Extra bold to match the strength of the logo 
+    line-height: 1;      /* Ensures the bounding box doesn't add extra height 
     letter-spacing: 1px;
     text-transform: uppercase;
-    font-family: 'Inter', sans-serif; /* Using a clean, Apple-style font if available */
+    font-family: 'Inter', sans-serif; /* Using a clean, Apple-style font if available 
+}
+*/
+
+/* override ONLY background-related stuff */
+.dropdown-solid .hb-menu nav > ul > li > ul.hb-dropdown {
+    background: #ffffff;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border: 1px solid #e6eaf0;
+}
+
+.dropdown-solid .hb-menu nav > ul > li > ul.hb-dropdown li a {
+    color: #333 !important;
+}
+
+.dropdown-solid .hb-menu nav > ul > li > ul.hb-dropdown li a:hover {
+    color: #0056b3 !important;
 }
 
 /* Target the main navigation links (SHOP, PRODUCTS CATALOG, etc.) */
@@ -767,6 +787,256 @@
     /*opacity: 0.7;                Gently dims the text on hover */
 }
 
-section {
-    margin: 0px 0px;
+.landing-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
+
+.landing-banner > img {
+    object-fit: contain;
+    width: 100%;
+}
+
+.is-landing-page .logo-area {
+    color: white;
+    /* 80% of 60px is 48px. Adjust this value if you change the logo height above */
+    font-size: 33px;     
+    font-weight: 600;    /* Extra bold to match the strength of the logo */
+    line-height: 1;      /* Ensures the bounding box doesn't add extra height */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif; /* Using a clean, Apple-style font if available */
+}
+
+.logo-area {
+    color: #313761;
+    /* 80% of 60px is 48px. Adjust this value if you change the logo height above */
+    font-size: 33px;     
+    font-weight: 600;    /* Extra bold to match the strength of the logo */
+    line-height: 1;      /* Ensures the bounding box doesn't add extra height */
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-family: 'Inter', sans-serif; /* Using a clean, Apple-style font if available */
+}
+
+.is-landing-page .hm-minicart-trigger {
+    border-radius: 8px;
+    color: #ffffff;
+    height: 45px;
+    cursor: pointer;
+    display: block;
+    position: relative;
+    padding: 0 15px 0 55px;
+    border: solid 2px;
+}
+
+.is-landing-page .header-middle-right .hm-menu > li > a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    border: 2px solid #ffffff;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    color: #ffffff;
+}
+.is-landing-page .hm-wishlist {
+    float: left;
+    margin-right: 25px;
+    position: relative;
+}
+
+.hm-wishlist {
+    float: right;
+    margin-left: 25px;
+    position: relative;
+}
+
+
+
+
+.is-landing-page .header-sticky.sticky {
+    background: #545891cc;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    -webkit-transition: all 300ms ease-in 0s;
+    transition: all 300ms ease-in 0s;
+    z-index: 1049;
+}
+
+
+
+/* when past hero */
+.header-bottom.scrolled .hb-menu nav > ul > li > ul.hb-dropdown {
+    background: #ffffff;
+    backdrop-filter: none;
+    border: 1px solid #e6eaf0;
+}
+
+.header-bottom {
+    transition: all 0.3s ease;
+}
+
+/* solid navbar after scroll */
+.header-bottom.scrolled {
+    color: #313761;
+    background: #ffffff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* hero (transparent) */
+.header-bottom a {
+    color: #fff;
+}
+
+/* after scroll */
+.header-bottom.scrolled a {
+    color: #333;
+}
+
+.header-bottom.scrolled .hb-menu nav > ul > li > ul.hb-dropdown li a {
+    color: #333;
+}
+
+.header-bottom.scrolled .hb-menu nav > ul > li > ul.hb-dropdown li a:hover {
+    color: #313761 !important; /* or #333 if you want subtle */
+}
+
+
+
+.section-wrapper {
+    background: #f5f7fa;
+}
+
+.section-heading.container {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    margin-top: 40px;
+    gap: 4px;
+}
+
+.section-heading span {
+    color: #0f766e;
+    font-weight: 950;
+    text-transform: uppercase;
+    letter-spacing: .1em;
+    font-size: 13px;
+}
+
+.section-heading h2 {
+    font-size: clamp(30px, 3vw, 46px);
+    line-height: 1.12;
+    margin: 8px 0 10px;
+    font-weight: 950;
+    color: #0f172a;
+}
+
+.section-heading p {
+    margin: 0;
+    color: #64748b;
+    font-size: 17px;
+}
+
+
+.hero-badge
+ {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 18px;
+    border: 1px solid rgba(255, 255, 255, .3);
+    border-radius: 999px;
+    background: rgb(0 255 139 / 21%);
+}
+
+#heading-ii {
+    margin-top: 16px;
+    margin-bottom: 48px;
+    gap: 24px !important;
+}
+#heading-ii p {
+    max-width: 760px;
+    margin: 0 auto;
+    color: #64748b;
+    font-size: clamp(17px, 2vw, 22px);
+    line-height: 1.65;
+}
+
+.hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0 26px;
+    border-radius: 999px;
+    font-weight: 900;
+    letter-spacing: .01em;
+}
+
+.hero-btn-primary
+ {
+    color: #0f172a;
+    background: linear-gradient(135deg, #8c8afd, #0b73f5);
+    box-shadow: 0 18px 40px rgba(245, 158, 11, .35);
+}
+
+.hero-btn-outline {
+    color: #000;
+    border: 2px solid #313761;
+}
+
+
+
+
+
+
+
+
+
+
+.price-box {
+    display: flex;
+    align-items: center;
+    gap: 4px; /* spacing between items */
+    flex-wrap: nowrap; /* prevent wrapping */
+    align-items: center;
+    justify-content: center;
+}
+
+.price-box span {
+    white-space: nowrap; /* prevents individual text breaking */
+}
+
+
+/* home background - with image
+.section-holder {
+    position: relative;
+    background-image: url("/static/assets/logos/logo_sa.png");
+    /*background-size: cover;
+    background-position: center;
+    background-repeat: repeat;
+}
+
+/* dark overlay 
+.section-holder::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5); /* adjust darkness here 
+    background: rgba(0, 86, 179, 0.4);
+    z-index: 1;
+}
+
+/* ensure content stays above overlay 
+.section-holder > * {
+    position: relative;
+    z-index: 2;
+}
+
+*/
