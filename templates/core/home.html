@@ -98,12 +98,52 @@
     </section>
 
     <div class="section-wrapper">
+                           
+        <section class="category-promo-wrapper container mt-40">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="main-promo-slider">
+                        <div class="promo-item active" style="background-image: linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('{% static 'assets/slides/mahitaji.gif' %}');">
+                            <div class="promo-content">
+                                <span class="badge">Exclusive Offer</span>
+                                <h2>Stock Up & Save</h2>
+                                <p>Special wholesale prices on all Amaize products this week.</p>
+                                <a href="{% url 'products' %}" class="shop-btn">View Deals</a>
+                            </div>
+                        </div>
+                        </div>
+                </div>
 
-        <div id="heading-i" class="section-heading container">
+                <div class="col-lg-4">
+                    <div class="category-sidebar-grid">
+                        <div class="cat-card">
+                            <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Soaps">
+                            <div class="cat-overlay">
+                                <span>Soaps</span>
+                            </div>
+                        </div>
+                        <div class="cat-card">
+                            <img src="{% static 'assets/categories/oils.png' %}" alt="Oils">
+                            <div class="cat-overlay">
+                                <span>Oils</span>
+                            </div>
+                        </div>
+                        <div class="cat-card">
+                            <img src="{% static 'assets/categories/flour.jpg' %}" alt="Flour">
+                            <div class="cat-overlay">
+                                <span>Flour</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>  
+
+        <section id="heading-i" class="section-heading container">
             <span>Featured Catalogue</span>
             <h2>Popular products ready for order</h2>
             <p>Browse fast-moving essentials selected for retailers, households and organizations.</p>         
-        </div>
+        </section>
 
         <section class="product-area pt-60 pb-50">
 
@@ -724,13 +764,7 @@
 
             </div>
 
-        </section>    
- 
-        <div id="heading-ii" class="section-heading container">                       
-            <div class="landing-banner">
-                <img src="{% static 'assets/banners/landing-banner.gif' %}" alt="Mahitaji Offers">
-            </div>       
-        </div>  
+        </section>           
 
         <section class="product-area pt-60 pb-45 li-trending-product">
 
@@ -764,50 +798,9 @@
                                         <div class="col-lg-12">
                                             <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/atilla_tc_green_12x1ltr.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Atilla</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Atilla Toilet Cleaner Apple Green 12x1ltr</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 2635.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
+                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/cil_brown_rice_24x1kg.png');">
                                                     <a href="">
-                                                        <img src="media/cil_brown_rice_24x1kg.webp" alt="Li's Product Image">
+                                                        <img src="media/cil_brown_rice_24x1kg.png" alt="Li's Product Image">
                                                     </a>
                                                 </div>
                                                 <div class="product_desc">
@@ -848,9 +841,9 @@
                                         <div class="col-lg-12">
                                             <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
-                                                <div class="product-image">
+                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/balu_tp_white_4x10s.png');">
                                                     <a href="#">
-                                                        <img src="media/balu_tp_white_4x10s.webp" alt="Li's Product Image">
+                                                        <img src="media/balu_tp_white_4x10s.png" alt="Li's Product Image">
                                                     </a>
                                                 </div>
                                                 <div class="product_desc">
@@ -889,9 +882,9 @@
                                         <div class="col-lg-12">
                                             <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
-                                                <div class="product-image">
+                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/captain_cook_corn_oil_4x5ltr.png');">
                                                     <a href="#">
-                                                        <img src="media/captain_cook_corn_oil_4x5ltr.webp" alt="Li's Product Image">
+                                                        <img src="media/captain_cook_corn_oil_4x5ltr.png" alt="Li's Product Image">
                                                     </a>
                                                 </div>
                                                 <div class="product_desc">
@@ -932,9 +925,9 @@
                                         <div class="col-lg-12">
                                             <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
-                                                <div class="product-image">
+                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/chapa_mandashi_6x4kg.png');">
                                                     <a href="#">
-                                                        <img src="media/chapa_mandashi_6x4kg.webp" alt="Li's Product Image">
+                                                        <img src="media/chapa_mandashi_6x4kg.png" alt="Li's Product Image">
                                                     </a>
                                                 </div>
                                                 <div class="product_desc">
@@ -973,9 +966,9 @@
                                         <div class="col-lg-12">
                                             <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
-                                                <div class="product-image">
+                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/choco_primo_144x10g.png');">
                                                     <a href="#">
-                                                        <img src="media/choco_primo_144x10g.webp" alt="Li's Product Image">
+                                                        <img src="media/choco_primo_144x10g.png" alt="Li's Product Image">
                                                     </a>
                                                 </div>
                                                 <div class="product_desc">
@@ -1632,6 +1625,110 @@
 
 {% endblock %}
 
+{% block extra_css %}
+    
+<style>
+
+    .badge {
+        color: #ffffff;
+    }
+    .category-promo-wrapper {
+        margin-bottom: 60px;
+    }
+
+    /* Main Slider Area */
+    .main-promo-slider {
+        height: 450px;
+        border-radius: 15px;
+        overflow: hidden;
+        position: relative;
+        box-shadow: 0 10px 30px rgba(49, 55, 97, 0.15);
+    }
+
+    .promo-item {
+        height: 100%;
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        padding: 60px;
+    }
+
+    .promo-content h2 {
+        color: #fff;
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 15px;
+    }
+
+    .promo-content p {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.2rem;
+        margin-bottom: 25px;
+        max-width: 400px;
+    }
+
+    .shop-btn {
+        background: #35a812; /* Golden accent */
+        color: #ffffff;
+        padding: 12px 30px;
+        border-radius: 5px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .shop-btn:hover {
+        background: #fff;
+        color: #313761;
+    }
+
+    /* Category Grid Styling */
+    .category-sidebar-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        height: 450px;
+    }
+
+    .cat-card {
+        flex: 1;
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        cursor: pointer;
+    }
+
+    .cat-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    .cat-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 20px;
+        background: linear-gradient(transparent, rgba(49, 55, 97, 0.8));
+        color: #fff;
+        font-weight: 700;
+        font-size: 1.1rem;
+    }
+
+    .cat-card:hover img {
+        transform: scale(1.1);
+    }
+
+    /* Mobile handling */
+    @media (max-width: 991px) {
+        .main-promo-slider, .category-sidebar-grid { height: auto; }
+        .main-promo-slider { height: 350px; margin-bottom: 20px; }
+        .category-sidebar-grid { height: 300px; flex-direction: row; }
+    }
+</style>
+
+{% endblock %}
 
 
 {% block extra_js %}
@@ -1649,6 +1746,21 @@ window.addEventListener('scroll', () => {
         header.classList.remove('scrolled');
     }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const slides = [
+        "{% static 'assets/banners/slide1.jpg' %}",
+        "{% static 'assets/banners/slide2.jpg' %}"
+    ];
+    let current = 0;
+    const slider = document.querySelector('.promo-item');
+
+    setInterval(() => {
+        current = (current + 1) % slides.length;
+        slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
+    }, 5000);
+});
+
 </script>
 
     

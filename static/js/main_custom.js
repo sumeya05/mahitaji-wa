@@ -42,8 +42,8 @@ function arrangeCircle(containerId, radius, drawLines = false) {
         const angle = (i / total) * (2 * Math.PI) - (Math.PI / 2);
         
         // Icon Positioning: Centered by subtracting half of the 56px icon size (28px)
-        const y = centerY + radius * Math.sin(angle) - 30; //category
-        const x = centerX + radius * Math.cos(angle) - 25; //supplier
+        const y = centerY + radius * Math.sin(angle) - 45; //category
+        const x = centerX + radius * Math.cos(angle) - 45; //supplier
         
 
         items[i].style.left = `${x}px`;
@@ -180,3 +180,4 @@ if (!hero) {
     handleDropdown();
     window.addEventListener('scroll', handleDropdown);
 }
+

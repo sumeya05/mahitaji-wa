@@ -145,7 +145,7 @@
     right: 20px;
     width: 35px;
     height: 50px;
-    background: var(--brand-blue); /* AP 1 Primary Blue */
+    background: #2ecc71; /* AP 1 Primary Blue */
     z-index: 5;
 }
 
@@ -166,7 +166,7 @@
     height: 0;
     border-style: solid;
     border-width: 12px 17.5px 0 17.5px;
-    border-color: var(--brand-blue) transparent transparent transparent;
+    border-color: #2ecc71 transparent transparent transparent;
 }
 
 /* Force stars to stay in one line and prevent wrapping */
@@ -366,6 +366,11 @@
 
 
 
+
+
+header.main-header {
+    background: linear-gradient(to bottom, #7292B5, #B9D1EA) !important;
+}
 
 
 /* Only triggers on the home page */
@@ -617,6 +622,13 @@
     display: flex;
 }
 
+span.current {
+    color: #1b4477;
+}
+
+.is-landing-page span.current {
+    color: #000;
+}
 /* 2. Remove Nav Dropdown Icons (Carats/Arrows) */
 /* This targets typical Font-Awesome or theme-specific icons inside the nav links */
 .nav-links-custom .dropdown-holder > a::after, 
@@ -704,18 +716,24 @@
     align-items: center;
     justify-content: center;
     width: 45px;
-    border: 2px solid #313761;
+    border: 2px solid #0b73f5;
     border-radius: 8px;
     transition: all 0.3s ease;
-    color: #313761;
+    color: #0b73f5;
 }
 
 /* Unified Hover State: User Icon & Minicart */
 .header-middle-right .hm-menu > li > a:hover,
 .header-middle-right .hm-minicart:hover > a {
-    background: #313761 !important; /* The blue from image_57f0a5.png */
+    background: #0b73f5 !important; /* The blue from image_57f0a5.png */
     color: #ffffff !important;      /* White icon on hover */
+    border: solid 2px #ffffff;
 }
+
+.is-landing-page .header-middle-right .hm-menu > li > a:hover, .is-landing-page .header-middle-right .hm-minicart:hover > a
+ {
+    background: #313761 !important;
+ }
 
 /* If your user icon is an <i> tag inside the <a> */
 .header-middle-right .hm-menu > li > a:hover i {
@@ -723,6 +741,18 @@
 }
 
 
+.is-landing-page .hm-minicart-trigger:hover {
+    background: #313761;
+}
+
+.is-landing-page .logo-area .logo-name {
+    color: #ffffff;
+}
+
+/* target the span specifically when the parent anchor is hovered */
+.is-landing-page a.logo-area:hover .logo-name {
+    color: #ffffff; 
+}
 
 
 
@@ -770,9 +800,10 @@
     color: #0056b3 !important;
 }
 
+
 /* Target the main navigation links (SHOP, PRODUCTS CATALOG, etc.) */
 .nav-links-custom > li > a {
-    color: #ffffff !important;   
+    color: #1b4477 !important;   
     font-size: 14px;            /* Keep the size balanced */
     font-weight: 600;           /* Thicker text (Semi-bold) so it doesn't look frail */
     letter-spacing: 1.5px;      /* Adds horizontal breathing room between letters */
@@ -781,8 +812,17 @@
     transition: all 0.3s ease;
 }
 
+.is-landing-page .nav-links-custom > li > a
+ {
+    color: #ffffff !important;
+}
+
+.header-sticky.sticky .nav-links-custom > li > a {
+    color: #ffffff !important;
+}
+
 /* Optional: Slight opacity fade on hover for a subtle interaction */
-.nav-links-custom > li > a:hover {
+.nav-links-custom > li > a:focus, .nav-links-custom > li > a:hover {
     color: #ffffff !important;
     /*opacity: 0.7;                Gently dims the text on hover */
 }
@@ -810,7 +850,7 @@
 }
 
 .logo-area {
-    color: #313761;
+    color: #1b4477;
     /* 80% of 60px is 48px. Adjust this value if you change the logo height above */
     font-size: 33px;     
     font-weight: 600;    /* Extra bold to match the strength of the logo */
@@ -818,6 +858,10 @@
     letter-spacing: 1px;
     text-transform: uppercase;
     font-family: 'Inter', sans-serif; /* Using a clean, Apple-style font if available */
+}
+
+.is-landing-page .header-middle {
+    background: transparent !important;
 }
 
 .is-landing-page .hm-minicart-trigger {
@@ -853,11 +897,18 @@
     position: relative;
 }
 
+.is-landing-page .fa-search {
+    color: #313761;
+}
+
+.is-landing-page .cart-item-count {
+    background: #313761 !important;
+}
 
 
 
 .is-landing-page .header-sticky.sticky {
-    background: #545891cc;
+    background: #1a452cdb;
     left: 0;
     position: fixed;
     right: 0;
@@ -908,7 +959,7 @@
 
 
 .section-wrapper {
-    background: #f5f7fa;
+    background: #f7f7f7;
 }
 
 .section-heading.container {
@@ -991,12 +1042,10 @@
     border: 2px solid #313761;
 }
 
-
-
-
-
-
-
+.is-landing-page .footer-bottom
+ {
+    background-color: #084f25f5; 
+}
 
 
 
@@ -1005,14 +1054,28 @@
     align-items: center;
     gap: 4px; /* spacing between items */
     flex-wrap: nowrap; /* prevent wrapping */
-    align-items: center;
-    justify-content: center;
+    /*align-items: center;
+    justify-content: center;*/
 }
 
 .price-box span {
     white-space: nowrap; /* prevents individual text breaking */
 }
 
+
+.pt-60
+ {
+    padding-top: 20px !important; 
+}
+
+h3.counter
+ {
+    color: #26834dc4;
+}
+
+.counter-text span {
+    color: #29571bbd;
+}
 
 /* home background - with image
 .section-holder {

@@ -1,7 +1,7 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %} Mahitaji | Product One {% endblock %}
+{% block title %} Mahitaji | Our Statement {% endblock %}
 
 {% block content %}
 
@@ -11,67 +11,173 @@
         <div class="container">
             <div class="breadcrumb-content">
                 <ul>
-                    <li><a href="index.html">Home</a></li>
+                    <li><a href="{% url 'home' %}">Home</a></li>
                     <li class="active">Our Statement</li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <section class="about-us-wrapper pt-60 pb-40">
+    <section class="philosophy-hero">
     <div class="container">
-        <div class="row pb-60">
-            <div class="col-lg-12">
-                <div class="about-text-wrap text-center">
-                    <h2>Our Vision</h2>
-                    <p class="lead">To redefine the standards of quality and service in the FMCG distribution sector across East Africa.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="row pb-60">
-            <div class="col-lg-12">
-                <div class="about-text-wrap text-center">
-                    <h2>Our Mission</h2>
-                    <p class="lead">To deliver exceptional products that enhance lives and build strong, lasting relationships with our partners and manufacturers.</p>
-                </div>
-            </div>
-        </div>
-
         <div class="row">
-            <div class="col-lg-12">
-                <div class="about-text-wrap text-center">
-                    <h2>Core Values</h2>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="value-item text-center">
-                    <h4>Integrity</h4>
-                    <p>Being honest and having strong moral principles in all our business dealings.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="value-item text-center">
-                    <h4>Customer Focus</h4>
-                    <p>Ensuring timely delivery and competitive pricing for all our 3,000+ clients.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="value-item text-center">
-                    <h4>Innovation</h4>
-                    <p>Utilizing GPS-enabled fleets and advanced ERP systems for efficient logistics.</p>
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-6">
-                <div class="value-item text-center">
-                    <h4>Sustainability</h4>
-                    <p>Actively engaging in community and environmental responsibility programs.</p>
+            <div class="col-lg-12 text-center">
+                <div class="philosophy-content">
+                    <h2>Our Corporate Philosophy</h2>
+                    <div class="divider"></div>
+                    <p>
+                        Established in 1997, Mahitaji Enterprises Limited serves as the essential bridge 
+                        connecting world-class manufacturers with over 3,000 active retail clients. 
+                        Operating from our hub in Baba Dogo Industrial Park, we ensure the 
+                        **seamless movement** of quality FMCG goods to every Kenyan household.
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-    </section>          
+</section>
+
+    <section class="about-us-wrapper pb-40" style="margin-top: 40px;">
+        <div class="container">
+            <div class="row pb-60">
+                <div class="col-lg-6">
+                    <div class="about-text-wrap" style="background: #f9f9f9; padding: 40px; border-radius: 15px; border-top: 5px solid #313171; height: 100%;">
+                        <h2 style="color: #313171;"><i class="fa fa-eye"></i> Our Vision</h2>
+                        <p class="lead" style="font-size: 1.15rem; line-height: 1.6;">To be the most preferred and reliable FMCG distribution partner in East Africa, recognized for our efficiency, integrity, and unwavering contribution to household well-being.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-text-wrap" style="background: #f9f9f9; padding: 40px; border-radius: 15px; border-top: 5px solid #26834dc4; height: 100%;">
+                        <h2 style="color: #26834dc4;"><i class="fa fa-bullseye"></i> Our Mission</h2>
+                        <p class="lead" style="font-size: 1.15rem; line-height: 1.6;">To bridge the gap between manufacturers and consumers by providing seamless logistics, rigorous quality assurance, and competitive pricing through our extensive and growing retail network.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row pb-60">
+                <div class="col-lg-12">
+                    <div class="about-text-wrap text-center" style="padding: 40px; border: 1px solid #eee; border-radius: 15px; background: #fff;">
+                        <h3 style="color: #313171; margin-bottom: 20px;">The Mahitaji Commitment</h3>
+                        <p style="max-width: 850px; margin: 0 auto; color: #666;">
+                            Operating from our strategic hub in <b>Baba Dogo Industrial Park</b>, we manage a dedicated fleet of 10+ specialized delivery vehicles and a 100,000 sq. ft. warehouse facility. Our commitment is to ensure that essential products—from staple foods and beverages to personal care items—reach our 3,000+ active clients efficiently and on time.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="li-section-title text-center mb-45">
+                        <h2><span>Core Values</span></h2>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="value-item text-center mb-30">
+                        <div style="font-size: 40px; color: #313171; margin-bottom: 15px;"><i class="fa fa-handshake-o"></i></div>
+                        <h4 style="color: #313171;">Integrity</h4>
+                        <p>We believe in transparent business dealings and maintaining strong moral principles with all manufacturers and retail partners.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="value-item text-center mb-30">
+                        <div style="font-size: 40px; color: #26834dc4; margin-bottom: 15px;"><i class="fa fa-line-chart"></i></div>
+                        <h4 style="color: #26834dc4;">Customer Focus</h4>
+                        <p>Our success is tied to the growth of our clients. We ensure timely delivery and competitive pricing to help their businesses thrive.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="value-item text-center mb-30">
+                        <div style="font-size: 40px; color: #313171; margin-bottom: 15px;"><i class="fa fa-check-circle-o"></i></div>
+                        <h4 style="color: #313171;">Quality Assurance</h4>
+                        <p>We take pride in distributing only KEBS-certified products, ensuring safety and quality for every household we serve.</p>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="value-item text-center mb-30">
+                        <div style="font-size: 40px; color: #26834dc4; margin-bottom: 15px;"><i class="fa fa-truck"></i></div>
+                        <h4 style="color: #26834dc4;">Reliability</h4>
+                        <p>With our robust logistics setup, we are the bridge that provides consistent supply and professional service year-round.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="responsibility-area pt-60 pb-60" style="background: #f4f7f6;">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h2 style="color: #313171;">Community & Growth</h2>
+                    <p>At Mahitaji Enterprises Limited, we recognize that our role extends beyond distribution. We are committed to the economic growth of Kenya by:</p>
+                    <ul style="padding-left: 20px; color: #555; list-style-type: none;">
+                        <li style="margin-bottom: 12px;"><i class="fa fa-caret-right" style="color: #26834dc4; margin-right: 10px;"></i> <b>Supporting Local Retail:</b> Empowering small and medium-sized shops with reliable inventory.</li>
+                        <li style="margin-bottom: 12px;"><i class="fa fa-caret-right" style="color: #26834dc4; margin-right: 10px;"></i> <b>Ensuring Food Security:</b> Maintaining a steady supply of staple goods across the region.</li>
+                        <li style="margin-bottom: 12px;"><i class="fa fa-caret-right" style="color: #26834dc4; margin-right: 10px;"></i> <b>Professional Standards:</b> Leading the industry with professional-grade logistics and ethical operations.</li>
+                    </ul>
+                </div>
+                <div class="col-lg-6">
+                    <div class="about-image-wrap">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" alt="FMCG Supply Chain" style="border-radius: 15px; width: 100%; box-shadow: 0 10px 20px rgba(0,0,0,0.05);">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
 </main>
+
+{% endblock %}
+
+{% block extra_css %}
+
+<style>
+    /* 1. Fix Spacing: Remove top margin to sit flush with breadcrumbs */
+    .philosophy-hero {
+        background: #84a8d5b5; /* Exact match to your brand green */
+        padding: 60px 0;    /* Reduced padding for better vertical rhythm */
+        position: relative;
+        color: #ffffff;
+    }
+
+    /* 2. Color Matching: Ensure the overlay doesn't muddy the brand green */
+    .philosophy-hero::before {
+        content: "";
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: linear-gradient(rgba(8, 79, 37, 0.9), rgba(8, 79, 37, 0.9)), 
+                    url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
+        opacity: 0.1;
+    }
+
+    .philosophy-content h2 {
+        color: #ffffff !important;
+        font-size: 2.5rem; /* Slightly smaller to feel less "heavy" */
+        font-weight: 800;
+        margin-bottom: 15px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+    }
+
+    .philosophy-content .divider {
+        width: 60px;
+        height: 3px;
+        background: #22ec71; 
+        margin: 0 auto 25px;
+    }
+
+    .philosophy-content p {
+        font-size: 1.15rem;
+        line-height: 1.7;
+        max-width: 850px;
+        margin: 0 auto;
+        color: rgba(255, 255, 255, 0.95); /* Brighter text for better contrast */
+    }
+
+    /* 3. Global Spacing Fix: Ensure the breadcrumb doesn't push too far down */
+    .breadcrumb-area {
+        padding: 20px 0; /* Tighten up the breadcrumb spacing */
+        background: #f4f7f6;
+    }
+</style>
 
 {% endblock %}

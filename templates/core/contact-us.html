@@ -4,77 +4,135 @@
 {% block title %} Contact Us | Mahitaji{% endblock %}
 
 {% block content %}
-<main class="body-wrapper">
 
-            <!-- Begin Li's Breadcrumb Area -->
-            <div class="breadcrumb-area">
-                <div class="container">
-                    <div class="breadcrumb-content">
-                        <ul>
-                            <li><a href="{% url 'home' %}">Home</a></li>
-                            <li class="active">Contact Us</li>
-                        </ul>
+<main class="body-wrapper">
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="active">Contact Us</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-header pt-60 pb-30 text-center">
+        <div class="container">
+            <h2 style="color: #313761; font-weight: 800;">Get In Touch</h2>
+            <p style="max-width: 600px; margin: 0 auto; color: #666;">Whether you are a manufacturer looking for distribution or a retailer wanting to restock, our team at Baba Dogo is ready to assist.</p>
+        </div>
+    </div>
+
+    <div class="contact-main-page mb-60">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-7">
+                    <div class="contact-form-content pt-sm-55 pt-xs-55">
+                        <h3 class="contact-page-title" style="color: #313761;">Send Us a Message</h3>
+                        <div class="contact-form">
+                            <form action="#" method="post">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Full Name <span class="required">*</span></label>
+                                            <input type="text" name="customerName" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Business Name</label>
+                                            <input type="text" name="businessName">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address <span class="required">*</span></label>
+                                    <input type="email" name="customerEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Inquiry Type</label>
+                                    <select class="form-control" style="height: 45px; border-radius: 0; border: 1px solid #ccc;">                                        
+                                        <option>Order Status / Delivery</option>
+                                        <option>Manufacturer Partnership</option>
+                                        <option>General Feedback</option>
+                                        <option>Registration</option>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-30">
+                                    <label>Your Message</label>
+                                    <textarea name="contactMessage" style="height: 150px;"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <button type="submit" class="li-btn-3" style="background: #313761;">Submit Inquiry</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5">
+                    <div class="contact-page-side-content">
+                        <div class="single-contact-block">
+                            <h4><i class="fa fa-map-marker"></i> Our Location</h4>
+                            <p>Prabhaki Industrial Park, Baba Dogo Road,<br>P.O. Box 48312 - 00100, Nairobi, Kenya.</p>
+                        </div>
+                        <div class="single-contact-block">
+                            <h4><i class="fa fa-phone"></i> Call Us Today</h4>
+                            <p>+254 750 530 130</p>
+                        </div>
+                        <div class="single-contact-block">
+                            <h4><i class="fa fa-envelope-o"></i> Email</h4>
+                            <p>info@mahitaji.co.ke</p>
+                        </div>
+                        <div class="single-contact-block">
+                            <h4><i class="fa fa-clock-o"></i> Working Hours</h4>
+                            <p>Mon – Fri: 08:00 AM - 05:00 PM</p>
+                            <p>Sat: 08:00 AM - 01:00 PM</p>
+                        </div>
                     </div>
                 </div>
             </div>
-            <!-- Li's Breadcrumb Area End Here -->     
-            <!-- Begin Contact Main Page Area -->
-            <div class="contact-main-page mt-60 mb-40 mb-md-40 mb-sm-40 mb-xs-40">
-                
-                <div class="container">
-                    <div class="row">
-                        <div class="col-lg-5 offset-lg-1 col-md-12 order-1 order-lg-2">
-                            <div class="contact-page-side-content">
-                                <h3 class="contact-page-title">Contact Us</h3>
-                                <p class="contact-page-message mb-25">Reach out to our help desk for assistance. We are available 24/7 to assist you.</p>
-                                <div class="single-contact-block">
-                                    <h4><i class="fa fa-fax"></i> Address</h4>
-                                    <p>Prabhaki Industrial Park, Baba Dogo Road, QV3F+XJ Nairobi - Kenya</p>
-                                </div>
-                                <div class="single-contact-block">
-                                    <h4><i class="fa fa-phone"></i> Phone</h4>
-                                    <p>Mobile: +254 750 530 130</p>
-                                </div>
-                                <div class="single-contact-block last-child">
-                                    <h4><i class="fa fa-envelope-o"></i> Email</h4>
-                                    <p>info@mahitaji.co.ke</p>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6 col-md-12 order-2 order-lg-1">
-                            <div class="contact-form-content pt-sm-55 pt-xs-55">
-                                <h3 class="contact-page-title">Tell Us Your Message</h3>
-                                <div class="contact-form">
-                                    <form  id="contact-form" action="http://demo.hasthemes.com/limupa-v3/limupa/mail.php" method="post">
-                                        <div class="form-group">
-                                            <label>Your Name <span class="required">*</span></label>
-                                            <input type="text" name="customerName" id="customername" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Your Email <span class="required">*</span></label>
-                                            <input type="email" name="customerEmail" id="customerEmail" required>
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Subject</label>
-                                            <input type="text" name="contactSubject" id="contactSubject">
-                                        </div>
-                                        <div class="form-group mb-30">
-                                            <label>Your Message</label>
-                                            <textarea name="contactMessage" id="contactMessage" ></textarea>
-                                        </div>
-                                        <div class="form-group">
-                                            <button type="submit" value="submit" id="submit" class="li-btn-3" name="submit">send</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <p class="form-messege"></p>
-                            </div>
-                        </div>
+        </div>
+    </div>
+
+    <section class="contact-faq-area pt-60 pb-60" style="background: #f8f9fa;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="li-section-title text-center mb-45">
+                        <h2 style="color: #084f25;">Retailer Quick Help</h2>
                     </div>
                 </div>
             </div>
-            <!-- Contact Main Page Area End Here -->
-            <!-- Begin Footer Area -->
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="faq-item mb-30">
+                        <h5 style="color: #084f25;"><i class="fa fa-question-circle"></i> How do I become a registered retailer?</h5>
+                        <p>Fill out the form above with your Business Name, or visit our Baba Dogo hub with your business permit and KRA PIN for immediate registration.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="faq-item mb-30">
+                        <h5 style="color: #084f25;"><i class="fa fa-question-circle"></i> What is your typical delivery lead time?</h5>
+                        <p>For orders placed before 10:00 AM, we strive for same-day or next-day delivery within Nairobi and its surroundings.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="faq-item mb-30">
+                        <h5 style="color: #084f25;"><i class="fa fa-question-circle"></i> Do you offer credit terms?</h5>
+                        <p>Credit terms are available for established partners following a credit risk assessment by our finance department.</p>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="faq-item mb-30">
+                        <h5 style="color: #084f25;"><i class="fa fa-question-circle"></i> Are all your products KEBS certified?</h5>
+                        <p>Yes. As a premier distributor, we exclusively stock products that meet all Kenya Bureau of Standards (KEBS) requirements.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </main>
 
 {% endblock %}

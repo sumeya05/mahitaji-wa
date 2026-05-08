@@ -183,13 +183,13 @@ body {
 /* Rotating Carousel Items */
 .supplier-item {
     position: absolute;
-    width: 50px;
-    height: 50px;
+    width: 90px;
+    height: 90px;
 }
 .category-item {
     position: absolute;
-    width: 60px;
-    height: 60px;
+    width: 90px;
+    height: 90px;
 }
 
 
@@ -705,4 +705,60 @@ body {
 .btn-full-width {
     margin-top: auto; /* Pushes button to the bottom if content is short */
     width: 100%;
+}
+
+
+
+
+
+
+
+
+
+/* Container adjustments */
+.product-image.blurred-bg {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 250px; /* Fixed height for a uniform grid */
+    background: #fcfcfc;
+    z-index: 1;
+}
+
+/* The Blurred Background Layer */
+.product-image.blurred-bg::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: var(--bg-image);
+    background-size: cover;
+    background-position: center;
+    /* Blur settings */
+    filter: blur(15px) brightness(0.95);
+    transform: scale(1.15); /* Eliminates white edges from blur */
+    z-index: -1;
+    opacity: 0.6; /* Softens the effect so it doesn't distract */
+}
+
+/* Product Image Floating Effect */
+.product-image.blurred-bg img {
+    max-height: 190px;
+    width: auto;
+    max-width: 85%;
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
+    /* Clean shadow to separate product from blur */
+    filter: drop-shadow(0 12px 20px rgba(0,0,0,0.15));
+    transition: transform 0.3s ease;
+}
+
+/* Hover effect for the image */
+.single-product-wrap:hover .product-image.blurred-bg img {
+    transform: scale(1.05) translateY(-5px);
 }

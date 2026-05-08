@@ -101,11 +101,29 @@ a:hover {
 		overflow: hidden;
 		display: block;
 }
-a:focus,
-a:hover {
-	color: #7880c3;
+
+
+
+a:focus, a:hover {
+	color: #0b73f5;
+	transition: all ease-in-out 0.3s;
 	text-decoration: none;
 }
+
+
+/* target the span specifically when the parent anchor is hovered */
+a.logo-area:hover .logo-name {
+    color: #313761; /* Forces it to stay your brand blue */
+    text-decoration: none !important; /* Prevents underlines */
+	font-size: 38px;
+}
+
+/* ensure the base state is also locked in */
+.logo-name {
+    color: #313761;
+    transition: none !important; /* Stops the "flash" by removing the transition */
+}
+
 a,
 button,
 input {
@@ -246,12 +264,13 @@ span.tooltip-content {
 	max-width: 100%;
 }
 .nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus {
-	color: #ffffff;
-	background-color: #313761;
+	color: #0b73f5;
+	background-color: #b4bae380;
 }
+/* 
 .nice-select .option:hover {
 	color: #ffffff;
-}
+} */
 iframe {
 	width: 100%;
 	height: 300px;
@@ -357,14 +376,14 @@ a.links-2:hover {
 	color: #fff;
 }
 a.review-links {
-	background: #242424;
+	background: #313761;
 	color: #ffffff;
 	width: 205px;
 	height: 40px;
 	line-height: 40px;
 }
 a.review-links:hover {
-	background: #7880c3;
+	background: #2ecc71;
 }
 /*----------------------------------------*/
 /*  1.5 Text Color
@@ -1441,6 +1460,7 @@ textarea:focus {
 /*Header Middle*/
 .header-middle {
 	padding: 30px;
+	background: linear-gradient(to bottom, #7292B5, #B9D1EA);;
 }
 
 .logo-img {
@@ -1543,7 +1563,7 @@ textarea:focus {
 }
 .hm-minicart-trigger {
 	border-radius: 8px;
-    color: #313761;
+    color: #0b73f5;
     height: 45px;
     cursor: pointer;
     display: block;
@@ -1553,7 +1573,7 @@ textarea:focus {
 }
 
 .hm-minicart-trigger:hover {
-		background: #313761;
+		background: #0b73f5;
 		color: #ffffff;
 }
 .item-icon::before {
@@ -1590,7 +1610,7 @@ textarea:focus {
 		font-size: 12px;
 		font-weight: 400;
 		color: #ffffff;
-		background: #313761;
+		background: #0b73f5;
 		text-align: center;
 		border-radius: 100%;
 		border: solid 1px white;
@@ -1758,7 +1778,7 @@ textarea:focus {
 }
 /*Header Bottom Menu*/
 .header-bottom {
-		background: #313761;
+		/*background: #2ecc71;*/
 		margin-bottom: 20px;
 }
 .hb-menu > nav > ul {
@@ -1959,7 +1979,7 @@ textarea:focus {
 }
 /*Sticky*/
 .header-sticky.sticky {
-	background: #545891cc;
+	background: #254369e0;
 	left: 0;
 	position: fixed;
 	right: 0;
@@ -2191,11 +2211,11 @@ textarea:focus {
 }
 .li-product-menu > li a.active {
 		color: #ffffff;
-		background-color: #313761;
+		background-color: #2ecc71;
 		padding: 12px;
 }
 .li-product-menu li a:hover {
-		background-color: #313761;
+		background-color: #2ecc71;
 		padding: 12px;
 		color: #ffffff;
 }
@@ -2204,7 +2224,8 @@ textarea:focus {
   position: relative;
   -webkit-transition: all 0.3s ease-in-out;
   transition: all 300ms ease-in 0s;
-  padding: 10px 32px;
+  padding: 0px 14px 48px 14px;
+
 }
 .single-product-wrap:hover {
   margin: 0 0 -75px;
@@ -2347,19 +2368,19 @@ textarea:focus {
 .product_desc .product_desc_info .new-price ,
 .featured-price-box .new-price,
 .featured-price-box .new-price-2{
-  color: #FFA500;
+  color: #FF80AB;
   font-size: 14px;
   font-weight: 500;
   padding-right: 10px;
 }
 .product_desc .product_desc_info .price-box .new-price-2,
 .featured-price-box .new-price-2 {
-	color: #FFA500 !important;
+	color: #FF80AB !important;
 }
 .product_desc .product_desc_info .price-box .discount-percentage,
 .featured-price-box .discount-percentage {
 	float: right;
-	color: #e80f0f;
+	color: #FF80AB;
 }
  .product_desc .product_desc_info .old-price {
   color: #666;
@@ -2888,7 +2909,7 @@ textarea:focus {
 }
 .footer-bottom {
 	height: 20vh;
-	background-color: #313761;	
+	background-color: #0f2649db;	
 }
 .shipping-icon {
 	display: inline-block;
@@ -3458,7 +3479,6 @@ li.right-menu .cat-mega-menu-2 > li {
 /*Li's Breadcrumb*/
 .breadcrumb-area {
 	padding: 21px 0 22px;
-	background: #b4b7cd;
 }
 .breadcrumb-content li {
 	color: #0363cd;
@@ -3468,12 +3488,11 @@ li.right-menu .cat-mega-menu-2 > li {
 	margin-right: 28px;
 	position: relative;
 }
-.breadcrumb-content li a {
-	color: #ffffff;
+
+breadcrumb-content li a {
+	color: #aaa;
 }
-.breadcrumb-content li a:hover {
-	color: #ffffff;
-}
+
 .breadcrumb-content li::before {
 	background-color: #aaaaaa;
 	content: "";
@@ -4678,8 +4697,8 @@ h5.compare-product-name a:hover {
   height: 400px; 
 }
 h3.contact-page-title {
-  font-size: 32px;
-  line-height: 32px;
+  font-size: 18px;
+  line-height: 4px;
   color: #363f4d;
   font-weight: 500;
   margin-bottom: 20px;
@@ -4690,7 +4709,8 @@ h3.contact-page-title {
   border-bottom: 1px solid #e1e1e1;
 }
 .single-contact-block > h4 {
-  margin-bottom: 23px;
+  font-size: 18px;
+  line-height: 4px;
 }
 .single-contact-block.last-child {
 	border-bottom: none;
@@ -4700,7 +4720,7 @@ span.required {
 }
 /*----------  contact form  ----------*/
 .contact-form .form-group {
-  margin-bottom: 20px; 
+  margin-bottom: 2px; 
 }
 .contact-form label {
   display: block;
@@ -4737,17 +4757,16 @@ span.required {
   color: #363f4d;
   font-weight: 500;
   font-size: 12px;
-  background-color: #242424;
-  border: 1px solid #242424;
+  background-color: #313761;
+  border: 1px solid #313761;
   color: #ffffff;
   text-transform: uppercase;
   transition: all 0.3s ease-in-out;
 }
  .contact-form .li-btn-3:hover {
-  background-color: #fed700;
   color: #ffffff;
-  background-color: #fed700;
-  border-color: #fed700; 
+  background-color: #0b73f5;
+  cursor: pointer;
 }
 .contact-page-side-content {
   background-color: #F2F2F2;
@@ -4866,6 +4885,7 @@ span.required {
 /*----------------------------------------*/
 /* 6.11 Li's Shop Page
 /*----------------------------------------*/
+/* 
 .sidebar-categores-box {
 	background: #f4f4f4;
 	border: 1px solid #e1e1e1;
@@ -4874,6 +4894,8 @@ span.required {
 	margin-bottom: 30px;
 	padding: 22.1px 15px 28px;
 }
+
+*/
 .sidebar-title {
 	border-bottom: 1px solid #e1e1e1;
 }
@@ -5552,7 +5574,7 @@ span.required {
 /*------------------------------------------> Custom <-----------------------------------------------*/
 
 .fa-search {
-	color: #3644bb;
+	color: #1b4477;;
 }
 
 .fa-search:hover {
