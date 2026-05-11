@@ -76,36 +76,43 @@
                                 <div class="product-area shop-product-area">
 
                                     <div class="row">
-
+                                        {% for product in products %}
                                         <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
                                             <div class="single-product-wrap">
                                                 <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
+                                                    <a href="{% url 'product_detail' product.id %}">
+                                                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
                                                     </a>
+                                                    {% if product.discount_percentage %}
+                                                        <span class="sticker">{{ product.discount_percentage }}</span>
+                                                    {% endif %}
                                                 </div>
                                                 <div class="product_desc">
                                                     <div class="product_desc_info">
                                                         <div class="product-review">
                                                             <h5 class="manufacturer">
-                                                                <a href="#">Amaize</a>
+                                                                <a href="#">{{ product.brand.name }}</a>
                                                             </h5>
                                                             <div class="rating-box">
                                                                 <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
+                                                                    {% for i in "12345" %}
+                                                                        <li>
+                                                                            {% if product.average_rating >= forloop.counter %}
+                                                                                <i class="fa fa-star"></i>
+                                                                            {% else %}
+                                                                                <i class="fa fa-star-o"></i>
+                                                                            {% endif %}
+                                                                        </li>
+                                                                    {% endfor %}
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amaize Maize Meal 24X1kg</a></h4>
+                                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
                                                         <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 1960.00</span>
-                                                            <span class="old-price">ksh 2450.00</span>
-                                                            <span class="discount-percentage">-7%</span>
+                                                            <span class="new-price">ksh {{ product.retail_price }}</span>
+                                                            {% if product.old_price %}
+                                                                <span class="old-price">ksh {{ product.old_price }}</span>
+                                                            {% endif %}
                                                         </div>
                                                     </div>
                                                     <div class="add-actions">
@@ -117,368 +124,28 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <!-- single-product-wrap end -->
                                         </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="/media/alpa_fat_100x50g.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Alpa Fat</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Alpa Fat 100x50g</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price">ksh 1030.00</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="/media/Alpa_fat_17kg.webp" alt="Li's Product Image">
-                                            </a>
-                                            
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Alpa Fat</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Alpa Fat 17kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price">ksh 3460.00</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="/media/captain_cook_corn_oil_4x5ltr.webp" alt="Li's Product Image">
-                                            </a>
-                                            
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Captain Cook</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Captain Cook Corn Oil 4x5ltr</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 7470.00</span>
-                                                    <span class="old-price">ksh 7600.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="{% url 'product_detail' 1 %}">
-                                                <img src="/media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                            </a>
-                                            
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Alpa Fat</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 1790.00</span>
-                                                    <span class="old-price">ksh 1990.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="#"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        
+                                        {% endfor %}
                                     </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amaize</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amaize Maize Meal 24X1kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price new-price-2">ksh 1960.00</span>
-                                                <span class="old-price">ksh 2450.00</span>
-                                                <span class="discount-percentage">-7%</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
 
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amana</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amana Long Grain Rice 24x1kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh 4680.00</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amaize</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amaize Maize Meal 24X1kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price new-price-2">ksh 1960.00</span>
-                                                <span class="old-price">ksh 2450.00</span>
-                                                <span class="discount-percentage">-7%</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amana</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amana Long Grain Rice 24x1kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh 4680.00</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>                                              
-
-                                    </div>
                                 </div>
                             </div>
 
-                            <div id="list-view" class="tab-pane fade product-list-view" role="tabpanel">
+
+                            <div id="list-view" class="tab-pane fade" role="tabpanel">
+
                                 <div class="row">
-
                                     <div class="col">
-
+                                        {% for product in products %}
                                         <div class="row product-layout-list">
-                                            <div class="col-lg-3 col-md-5 ">
+                                            <div class="col-lg-3 col-md-5">
                                                 <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
+                                                    <a href="{% url 'product_detail' product.id %}">
+                                                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
                                                     </a>
-                                                    
+                                                    {% if product.discount_percentage %}
+                                                        <span class="sticker">{{ product.discount_percentage }}</span>
+                                                    {% endif %}
                                                 </div>
                                             </div>
                                             <div class="col-lg-5 col-md-7">
@@ -486,134 +153,47 @@
                                                     <div class="product_desc_info">
                                                         <div class="product-review">
                                                             <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">Amaize</a>
+                                                                <a href="#">{{ product.brand.name }}</a>
                                                             </h5>
                                                             <div class="rating-box">
                                                                 <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
+                                                                    {% for i in "12345" %}
+                                                                        <li>
+                                                                            {% if product.average_rating >= forloop.counter %}
+                                                                                <i class="fa fa-star"></i>
+                                                                            {% else %}
+                                                                                <i class="fa fa-star-o"></i>
+                                                                            {% endif %}
+                                                                        </li>
+                                                                    {% endfor %}
                                                                 </ul>
                                                             </div>
                                                         </div>
-                                                        <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amaize Maize Meal 24X1kg</a></h4>
+                                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
                                                         <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 1960.00</span>
-                                                            <span class="old-price">ksh 2450.00</span>
-                                                            <span class="discount-percentage">-7%</span>
+                                                            <span class="new-price">ksh {{ product.retail_price }}</span>
+                                                            {% if product.old_price %}
+                                                                <span class="old-price">ksh {{ product.old_price }}</span>
+                                                            {% endif %}
                                                         </div>
-                                                        <p>Product Description.</p>
+                                                        <p>{{ product.description }}</p>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="col-lg-4">
-                                                <div class="shop-add-action mb-xs-30">
+                                            <div class="col-lg-4 col-md-12">
+                                                <div class="add-actions">
                                                     <ul class="add-actions-link">
-                                                        <li class="add-cart"><a href="shopping-cart.html">Add to cart</a></li>
-                                                        <li class="wishlist"><a href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i>Add to wishlist</a></li>
-                                                        <li><a class="quick-view" data-toggle="modal" data-target="#exampleModalCenter" href="#"><i class="fa fa-eye"></i>Quick view</a></li>
+                                                        <li class="add-cart active"><a href="#">Add to cart</a></li>
+                                                        <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
+                                                        <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="row product-layout-list">
-                                            <div class="col-lg-3 col-md-5 ">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="/media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                    
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-5 col-md-7">
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">Amana</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="{% url 'product_detail' 1 %}">Amana Long Grain Rice 24x1kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 4680.00</span>
-                                                        </div>
-                                                        <p>Product Description.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="shop-add-action mb-xs-30">
-                                                    <ul class="add-actions-link">
-                                                        <li class="add-cart"><a href="shopping-cart.html">Add to cart</a></li>
-                                                        <li class="wishlist"><a href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i>Add to wishlist</a></li>
-                                                        <li><a class="quick-view" data-toggle="modal" data-target="#exampleModalCenter" href="#"><i class="fa fa-eye"></i>Quick view</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="row product-layout-list">
-                                            <div class="col-lg-3 col-md-5 ">
-                                                <div class="product-image">
-                                                    <a href="{% url 'product_detail' 1 %}">
-                                                        <img src="/media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                    
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-5 col-md-7">
-                                                <div class="product_desc">
-                                                <div class="product_desc_info">
-                                                    <div class="product-review">
-                                                        <h5 class="manufacturer">
-                                                            <a href="#">Alpa Fat</a>
-                                                        </h5>
-                                                        <div class="rating-box">
-                                                            <ul class="rating">
-                                                                <li><i class="fa fa-star-o"></i></li>
-                                                                <li><i class="fa fa-star-o"></i></li>
-                                                                <li><i class="fa fa-star-o"></i></li>
-                                                                <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
-                                                    <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                                    <div class="price-box">
-                                                        <span class="new-price new-price-2">ksh 1790.00</span>
-                                                        <span class="old-price">ksh 1990.00</span>
-                                                        <span class="discount-percentage">-7%</span>
-                                                    </div>
-                                                    <p>Product Description.</p>
-                                                </div>
-
-                                                </div>
-                                            </div>
-                                            <div class="col-lg-4">
-                                                <div class="shop-add-action mb-xs-30">
-                                                    <ul class="add-actions-link">
-                                                        <li class="add-cart"><a href="shopping-cart.html">Add to cart</a></li>
-                                                        <li class="wishlist"><a href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i>Add to wishlist</a></li>
-                                                        <li><a class="quick-view" data-toggle="modal" data-target="#exampleModalCenter" href="#"><i class="fa fa-eye"></i>Quick view</a></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>                                                                                                                                               
-
+                                        {% endfor %}
                                     </div>
                                 </div>
+
                             </div>
 
                             <div class="paginatoin-area">
@@ -642,7 +222,6 @@
                 </div>
 
                 <div class="col-lg-3 order-2 order-lg-1">
-
                     <div class="sidebar-categores-box">
 
                         <div class="sidebar-title">
@@ -702,8 +281,7 @@
                             </div>
                         </div>
                         
-                    </div>                          
-
+                    </div>                   
                 </div>
 
             </div>

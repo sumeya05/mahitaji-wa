@@ -10,6 +10,7 @@ from django_daraja.mpesa.core import MpesaClient
 import json
 from datetime import datetime
 from django.urls import reverse
+from django.db.models import F, Count
 
 
 from django.contrib.auth.models import User
@@ -40,28 +41,82 @@ from .forms import RegisterForm  # Make sure to create this in core/forms.py
 
 # 1. Template & Auth Views
 
-# 1. Template Views
 def home(request):
-    return render(request, 'core/home.html')
+    # 1. New Products: Ordered by newest first
+    new_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
+    
+    # 2. Top Offers: Products where old_price is greater than retail_price
+    top_offers = Product.objects.filter(
+        is_active=True, 
+        old_price__gt=F('retail_price')
+    ).order_by('-id')[:8]
+    
+    # 3. Trending Section (Dynamic Categories)
+    # We find the top 2 categories that have the most active products
+    top_categories = Category.objects.annotate(
+        product_count=Count('products')
+    ).filter(product_count__gt=0).order_by('-product_count')[:2]
+
+    # We build a list containing the category and its products for the tabs
+    trending_data = []
+    for cat in top_categories:
+        trending_data.append({
+            'category': cat,
+            'products': Product.objects.filter(category=cat, is_active=True)[:8]
+        })
+    
+    # 4. Bestsellers: Products specifically marked as best sellers
+    # (Ensure you have 'is_best_seller' field in your Product model)
+    bestsellers = Product.objects.filter(is_active=True, is_best_seller=True)[:8]
+
+    context = {
+        'new_products': new_products,
+        'top_offers': top_offers,
+        'trending_data': trending_data, # Use this for your dynamic tabs
+        'bestsellers': bestsellers,
+    }
+    
+    return render(request, 'core/home.html', context)
+
+
 
 def retailers(request):
-    return render(request, 'core/retailers.html')
-
-def wholesalers(request):
-    return render(request, 'core/wholesalers.html') 
-
-def products(request):
-    # Fetch all active products from the database
-    # select_related('brand') optimizes the query for the "Manufacturer" field
-    all_products = Product.objects.filter(is_active=True).select_related('brand')
-    
+    # Fetch active products and optimize for brand and UOM lookup
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
     context = {
         'products': all_products
     }
-    return render(request, 'core/products.html', context)
+    return render(request, 'core/retailers.html', context)
+
+
+def wholesalers(request):
+    # Fetch active products for wholesalers
+    products = Product.objects.filter(is_active=True).select_related('brand')
+    return render(request, 'core/wholesalers.html', {'products': products})
+
+def products(request):
+    # Fetch all active products for the general catalog
+    products = Product.objects.filter(is_active=True).select_related('brand')
+    return render(request, 'core/products.html', {'products': products})
 
 def product_detail(request, pk):
-    return render(request, 'core/product-detail.html')
+    product = get_object_or_404(Product, pk=pk)
+    # Fetch related products from the same category, excluding the current one
+    related_products = Product.objects.filter(
+        category=product.category, 
+        is_active=True
+    ).exclude(pk=pk)[:10]
+    
+    return render(request, 'core/product-detail.html', {
+        'product': product,
+        'related_products': related_products
+    })
+
+
+
+
+
+
 
 def search(request):
     return render(request, 'core/search.html')

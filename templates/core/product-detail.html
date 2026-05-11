@@ -22,63 +22,49 @@
     
     <section class="content-wraper">
         <div class="container">
-            <div class="row single-product-area">
 
+            <div class="row single-product-area">
                 <div class="col-lg-5 col-md-6">
-                    <!-- Product Details Left -->
                     <div class="product-details-left">
                         <div class="product-details-images slider-navigation-1">
                             <div class="lg-image">
-                                <img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image">
+                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
                             </div>
-                            <div class="lg-image">
-                                <img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image">
-                            </div>
-                            <div class="lg-image">
-                                <img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image">
-                            </div>
-                            <div class="lg-image">
-                                <img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image">
-                            </div>
-                        </div>
-                        <div class="product-details-thumbs slider-thumbs-1">
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
-                            <div class="sm-image"><img src="/media/amaiza_mmeal_24x1kg.webp" alt="product image thumb"></div>
                         </div>
                     </div>
-                    <!--// Product Details Left -->
                 </div>
 
                 <div class="col-lg-7 col-md-6">
-                    <div class="product-details-view-content sp-normal-content pt-60">
+                    <div class="product-details-view-content pt-60">
                         <div class="product-info">
-                            <h2>Amaize Maize Meal 24X1kg</h2>
-                            <span class="product-details-ref">Reference: Amaize</span>
+                            <h2>{{ product.name }}</h2>
+                            <span class="product-details-ref">Brand: {{ product.brand.name }}</span>
                             <div class="rating-box pt-20">
-                                <ul class="rating rating-with-review-item">
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                    <li class="review-item"><a href="#">Read Review</a></li>
-                                    <li class="review-item"><a href="#">Write Review</a></li>
+                                <ul class="rating">
+                                    {% for i in "12345" %}
+                                        <li>
+                                            {% if product.average_rating >= forloop.counter %}
+                                                <i class="fa fa-star"></i>
+                                            {% else %}
+                                                <i class="fa fa-star-o"></i>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
                             <div class="price-box pt-20">
-                                <span class="new-price new-price-2">ksh 1960.00</span>
-                                <span class="old-price"><i><br>from ksh 2450.00</i></span>
-                                <span class="discount-percentage" style="color: red;"> (-7%)</span>
+                                <span class="new-price new-price-2">ksh {{ product.retail_price }}</span>
+                                {% if product.old_price %}
+                                    <span class="old-price">ksh {{ product.old_price }}</span>
+                                    {% if product.discount_percentage %}
+                                        <span class="discount-percentage">{{ product.discount_percentage }} OFF</span>
+                                    {% endif %}
+                                {% endif %}
                             </div>
                             <div class="product-desc">
-                                <p>
-                                    <span>Product description goes here.</span>
-                                </p>
+                                <p><span>{{ product.description }}</span></p>
                             </div>
+                            
                             <div class="single-add-to-cart">
                                 <form action="#" class="cart-quantity">
                                     <div class="quantity">
@@ -92,24 +78,15 @@
                                     <button class="add-to-cart" type="submit">Add to cart</button>
                                 </form>
                             </div>
-                            <div class="product-additional-info">
-                                <div class="product-social-sharing">
-                                    <ul> 
-                                        <li class="whatsapp"><a href="#"><i class="fa fa-whatsapp"></i>Whatsapp</a></li>                                       
-                                        <li class="facebook"><a href="#"><i class="fa fa-facebook"></i>Facebook</a></li>                                        
-                                        <li class="google-plus"><a href="#"><i class="fa fa-google-plus"></i>Google +</a></li>
-                                        <li class="instagram"><a href="#"><i class="fa fa-instagram"></i>Instagram</a></li>
-                                    </ul>
-                                </div>
                             </div>
-                        </div>
                     </div>
-                </div> 
+                </div>
             </div>
+
         </div>
     </section>
     
-    <section class="product-area pt-40">
+    <section class="product-area pt-35">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12">
@@ -120,118 +97,91 @@
                             <li><a data-toggle="tab" href="#reviews"><span>Reviews</span></a></li>
                         </ul>               
                     </div>
-                    <!-- Begin Li's Tab Menu Content Area -->
-                </div>
+                    </div>
             </div>
             <div class="tab-content">
                 <div id="description" class="tab-pane active show" role="tabpanel">
                     <div class="product-description">
-                        <span>Product description goes here.</span>
+                        <span>{{ product.description|linebreaks }}</span>
                     </div>
                 </div>
                 <div id="product-details" class="tab-pane" role="tabpanel">
                     <div class="product-details-manufacturer">
                         <a href="#">
-                            <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Product Manufacturer Image">
+                            <img src="{{ product.brand.image_url }}" alt="{{ product.brand.name }} logo" style="max-width: 150px;">
                         </a>
-                        <p>Amaize Maize Meal 24X1kg</p>
-                    </div>
+                        <p><span>Brand:</span> {{ product.brand.name }}</p>
+                        <p><span>Category:</span> {{ product.category.name }}</p>
+                        </div>
                 </div>
                 <div id="reviews" class="tab-pane" role="tabpanel">
                     <div class="product-reviews">
                         <div class="product-details-comment-block">
                             <div class="comment-review">
-                                <span>Stars</span>
+                                <span>Average Rating:</span>
                                 <ul class="rating">
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li><i class="fa fa-star-o"></i></li>
-                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
+                                    {% for i in "12345" %}
+                                        <li>
+                                            {% if product.average_rating >= forloop.counter %}
+                                                <i class="fa fa-star"></i>
+                                            {% else %}
+                                                <i class="fa fa-star-o"></i>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
                                 </ul>
                             </div>
+                            
                             <div class="comment-author-infos pt-25">
-                                <span>John Doe</span>
-                                <em>22-04-26</em>
+                                <p>No reviews yet. Be the first to review <strong>{{ product.name }}</strong>!</p>
                             </div>
-                            <div class="comment-details">
-                                <h4 class="title-block">Great Product!</h4>
-                                <p>The product is great!</p>
+
+                            <div class="review-btn mt-30">
+                                <a class="review-links" href="#" data-toggle="modal" data-target="#mymodal">Write Your Review!</a>
                             </div>
-                            <div class="review-btn">
-                                <a class="review-links" href="#" data-toggle="modal" data-target="#mymodal">Write Your Review</a>
-                            </div>
-                            <!-- Begin Quick View | Modal Area -->
-                            <div class="modal fade modal-wrapper" id="mymodal" >
+
+                            <div class="modal fade modal-wrapper" id="mymodal">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
                                     <div class="modal-content">
                                         <div class="modal-body">
                                             <h3 class="review-page-title">Write Your Review</h3>
                                             <div class="modal-inner-area row">
-                                                <div class="col-lg-6">
-                                                    <div class="li-review-product">
-                                                        <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product">
-                                                        <div class="li-review-product-desc">
-                                                            <p class="li-product-name">Amaize Maize Meal 24X1kg</p>
-                                                            <p>
-                                                                <span>Amaize Maize Meal 24X1kg Bale </span>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6">
+                                                <div class="col-lg-12">
                                                     <div class="li-review-content">
-                                                        <!-- Begin Feedback Area -->
-                                                        <div class="feedback-area">
-                                                            <div class="feedback">
-                                                                <h3 class="feedback-title">Customer's Feedback</h3>
-                                                                <form action="#">
-                                                                    <p class="your-opinion">
-                                                                        <label>Your Rating</label>
-                                                                        <span>
-                                                                            <select class="star-rating">
-                                                                                <option value="1">1</option>
-                                                                                <option value="2">2</option>
-                                                                                <option value="3">3</option>
-                                                                                <option value="4">4</option>
-                                                                                <option value="5">5</option>
-                                                                            </select>
-                                                                        </span>
-                                                                    </p>
-                                                                    <p class="feedback-form">
-                                                                        <label for="feedback">Your Review</label>
-                                                                        <textarea id="feedback" name="comment" cols="45" rows="8" aria-required="true"></textarea>
-                                                                    </p>
+                                                        <form action="#">
+                                                            <div class="feedback-area">
+                                                                <div class="feedback">
+                                                                    <label>Your Rating</label>
+                                                                    <div class="rating-box">
+                                                                        <ul class="rating">
+                                                                            <li><i class="fa fa-star-o"></i></li>
+                                                                            <li><i class="fa fa-star-o"></i></li>
+                                                                            <li><i class="fa fa-star-o"></i></li>
+                                                                            <li><i class="fa fa-star-o"></i></li>
+                                                                            <li><i class="fa fa-star-o"></i></li>
+                                                                        </ul>
+                                                                    </div>
                                                                     <div class="feedback-input">
-                                                                        <p class="feedback-form-author">
-                                                                            <label for="author">Name<span class="required">*</span>
-                                                                            </label>
-                                                                            <input id="author" name="author" value="" size="30" aria-required="true" type="text">
-                                                                        </p>
-                                                                        <p class="feedback-form-author feedback-form-email">
-                                                                            <label for="email">Email<span class="required">*</span>
-                                                                            </label>
-                                                                            <input id="email" name="email" value="" size="30" aria-required="true" type="text">
-                                                                            <span class="required"><sub>*</sub> Required fields</span>
+                                                                        <p>
+                                                                            <label for="feedback">Your Review</label>
+                                                                            <textarea id="feedback" name="comment" cols="45" rows="8" required></textarea>
                                                                         </p>
                                                                         <div class="feedback-btn pb-15">
                                                                             <a href="#" class="close" data-dismiss="modal" aria-label="Close">Close</a>
-                                                                            <a href="#">Submit</a>
+                                                                            <button type="submit" class="btn-primary" style="padding: 10px 20px; border: none; background: #fed700; color: #242424; font-weight: 600; cursor: pointer;">Submit</button>
                                                                         </div>
                                                                     </div>
-                                                                </form>
+                                                                </div>
                                                             </div>
+                                                        </form>
                                                         </div>
-                                                        <!-- Feedback Area End Here -->
-                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>   
-                            <!-- Quick View | Modal Area End Here -->
-                        </div>
+                            </div>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -255,267 +205,25 @@
                     <div class="row">
 
                         <div class="product-active owl-carousel">
-
+                            {% for related in related_products %}
                             <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
                                 <div class="single-product-wrap">
                                     <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
+                                        <a href="{% url 'product_detail' related.id %}">
+                                            <img src="{{ related.image_url }}" alt="{{ related.name }}">
                                         </a>
-                                        <span class="sticker">New</span>
                                     </div>
                                     <div class="product_desc">
                                         <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amaize</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="product-detail.html">Amaize Maize Meal 24X1kg</a></h4>
+                                            <h4><a class="product_name" href="{% url 'product_detail' related.id %}">{{ related.name }}</a></h4>
                                             <div class="price-box">
-                                                <span class="new-price new-price-2">ksh 1960.00</span>
-                                                <span class="old-price">ksh 2450.00</span>
-                                                <span class="discount-percentage">-7%</span>
+                                                <span class="new-price">ksh {{ related.retail_price }}</span>
                                             </div>
                                         </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
                                         </div>
-                                    </div>
                                 </div>
-                                <!-- single-product-wrap end -->
                             </div>
-
-                            <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        <span class="sticker">New</span>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="shop-left-sidebar.html">Amana</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="product-detail.html">Amana Long Grain Rice 24x1kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh 4680.00</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- single-product-wrap end -->
-                            </div>
-
-                            <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="product-detail.html">
-                                            <img src="/media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        <span class="sticker">New</span>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="#">Alpa Fat</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price new-price-2">ksh 1790.00</span>
-                                                <span class="old-price">ksh 1990.00</span>
-                                                <span class="discount-percentage">-7%</span>
-                                            </div>
-                                        </div>
-
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="#"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-
-                                    </div>
-                                </div>
-                                <!-- single-product-wrap end -->
-                            </div>
-
-                            <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/ama_sugar_10x2kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        <span class="sticker">New</span>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="#">Amana</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="#">Amana Sugar 10x2kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price new-price-2">ksh 4000.00</span>
-                                                <span class="old-price">ksh 4380.00</span>
-                                                <span class="discount-percentage">-7%</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- single-product-wrap end -->
-                            </div>
-
-                            <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/alpa_fat_100x50g.webp" alt="Li's Product Image">
-                                        </a>
-                                        <span class="sticker">New</span>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="#">Alpa Fat</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="#">Alpa Fat 100x50g</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh 1030.00</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- single-product-wrap end -->
-                            </div>                       
-
-                            <div class="col-lg-12">
-                                <!-- single-product-wrap start -->
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="#">
-                                            <img src="/media/Alpa_fat_17kg.webp" alt="Li's Product Image">
-                                        </a>
-                                        <span class="sticker">New</span>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <div class="product-review">
-                                                <h5 class="manufacturer">
-                                                    <a href="#">Alpa Fat</a>
-                                                </h5>
-                                                <div class="rating-box">
-                                                    <ul class="rating">
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                            <h4><a class="product_name" href="product-detail.html">Alpa Fat 17kg</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh 3460.00</span>
-                                            </div>
-                                        </div>
-                                        <div class="add-actions">
-                                            <ul class="add-actions-link">
-                                                <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- single-product-wrap end -->
-                            </div>
-
+                            {% endfor %}
                         </div>
 
                     </div>

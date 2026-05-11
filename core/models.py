@@ -3,150 +3,11 @@ from django.contrib.auth.models import User # type: ignore
 from django.utils.text import slugify # type: ignore
 from django.db.models import Sum # type: ignore
 
-# --- 1. PRODUCT & INVENTORY MODELS ---
 
-class Category(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
-    image = models.ImageField(upload_to='categories/', null=True, blank=True)
 
-    class Meta:
-        verbose_name_plural = "Categories"
 
-    def save(self, *args, **kwargs):
-        if not self.slug: self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.name
-
-class Brand(models.Model):
-    name = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
-    logo = models.ImageField(upload_to='brands/', null=True, blank=True)
-    description = models.TextField(blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.slug: self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return self.name
-
-class UnitOfMeasure(models.Model):
-    name = models.CharField(max_length=50, unique=True) # e.g., "Bale", "Piece"
-    short_name = models.CharField(max_length=10, unique=True) # e.g., "bl", "pc"
-    
-    is_base_unit = models.BooleanField(default=False, help_text="Is this the smallest unit (e.g., Piece)?")
-    base_unit = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='conversions')
-    conversion_factor = models.DecimalField(max_digits=10, decimal_places=2, default=1.0, help_text="How many base units are in this unit? (e.g., 1 Bale = 12 Pieces)")
-
-    class Meta:
-        verbose_name = "Unit of Measure"
-        verbose_name_plural = "Units of Measure"
-
-    def __str__(self):
-        return self.short_name
-
-class Product(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
-    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
-    unit_of_measure = models.ForeignKey(UnitOfMeasure, on_delete=models.SET_NULL, null=True, related_name='products')
-    
-    name = models.CharField(max_length=255)
-    slug = models.SlugField(unique=True, blank=True)
-    sku = models.CharField(max_length=50, unique=True) # Focus ERP item code
-    description = models.TextField()
-    
-    retail_price = models.DecimalField(max_digits=12, decimal_places=2)
-    wholesale_price = models.DecimalField(max_digits=12, decimal_places=2)
-    min_wholesale_qty = models.PositiveIntegerField(default=10)
-    
-    image = models.ImageField(upload_to='products/')
-    is_active = models.BooleanField(default=True)
-    
-    focus_item_id = models.CharField(max_length=100, null=True, blank=True)
-    last_sync_time = models.DateTimeField(auto_now=True)
-
-    # NEW: To support the "Old Price" in the template
-    discount_price = models.DecimalField(
-        max_digits=12, 
-        decimal_places=2, 
-        null=True, 
-        blank=True, 
-        help_text="The original price before sale (Market Price)"
-    )
-
-    # NEW: Ratings (If you aren't using a separate Review model yet)
-    # Alternatively, keep it hardcoded if you aren't ready for a review system
-    average_rating = models.PositiveIntegerField(default=0) 
-
-    @property
-    def current_stock(self):
-        """Calculates current stock level in base units from ledger."""
-        total = self.stock_ledger.aggregate(total=Sum('quantity'))['total']
-        return total or 0
-
-    def save(self, *args, **kwargs):
-        if not self.slug: self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        return f"{self.sku} - {self.name}"   
-       
-
-    # --- Properties to match your template logic ---
-
-    @property
-    def discount_percentage(self):
-        """Calculates the -7% shown in your template"""
-        if self.discount_price and self.retail_price < self.discount_price:
-            discount = ((self.discount_price - self.retail_price) / self.discount_price) * 100
-            return f"-{int(discount)}%"
-        return None
-
-    @property
-    def has_discount(self):
-        return self.discount_price is not None and self.discount_price > self.retail_price
-
-class StockLedger(models.Model):
-    TRANSACTION_TYPES = [
-        ('PURCHASE', 'Stock In (Purchase)'),
-        ('SALE', 'Stock Out (Sale)'),
-        ('ADJUSTMENT', 'Manual Adjustment'),
-        ('RETURN', 'Customer Return'),
-    ]
-
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_ledger')
-    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
-    
-    # Transaction Details
-    transaction_uom = models.ForeignKey(UnitOfMeasure, on_delete=models.PROTECT)
-    input_quantity = models.DecimalField(max_digits=12, decimal_places=2)
-    
-    # Auto-calculated actual quantity in Base Units
-    quantity = models.DecimalField(max_digits=12, decimal_places=2, editable=False)
-    
-    reference_number = models.CharField(max_length=100, blank=True) 
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    def save(self, *args, **kwargs):
-        # Convert input to base units: (Quantity * Factor)
-        factor = self.transaction_uom.conversion_factor or 1
-        calculated_qty = self.input_quantity * factor
-        
-        # Sales and manual down-adjustments are recorded as negatives
-        if self.transaction_type in ['SALE', 'ADJUSTMENT_OUT']:
-            self.quantity = -abs(calculated_qty)
-        else:
-            self.quantity = abs(calculated_qty)
-            
-        super().save(*args, **kwargs)
-
-    class Meta:
-        verbose_name_plural = "Stock Ledger"
-
-# --- 2. USER & CUSTOMER MODELS ---
+# --- A. USER & CUSTOMER MODELS ---
 class CustomerProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customerprofile')
     # Fields added to support business registration requirements
@@ -177,9 +38,199 @@ class Address(models.Model):
 
     def __str__(self):
         return f"{self.label} - {self.customer.user.username}"
+    
 
 
-# --- 3. ORDER & TRANSACTION MODELS ---
+
+
+
+
+
+
+
+
+    
+# --- B. PRODUCT & INVENTORY MODELS ---
+class Category(models.Model):
+    name = models.CharField(max_length=100, unique=True) # Added unique=True
+    slug = models.SlugField(unique=True, blank=True)
+    image = models.ImageField(upload_to='categories/', null=True, blank=True)
+    description = models.TextField(blank=True, null=True) # Useful for SEO later
+
+    class Meta:
+        verbose_name_plural = "Categories"
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+    
+class Brand(models.Model):
+    name = models.CharField(max_length=100, unique=True) # Added unique=True
+    slug = models.SlugField(unique=True, blank=True)
+    logo = models.ImageField(upload_to='brands/', null=True, blank=True)
+    description = models.TextField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
+
+class Supplier(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    contact_person = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone_number = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True)
+    erp_id = models.CharField(max_length=50, blank=True, null=True, help_text="Supplier ID in Focus ERP")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['name']
+
+class UnitOfMeasure(models.Model):
+    name = models.CharField(max_length=50, unique=True) # e.g., "Bale", "Piece"
+    short_name = models.CharField(max_length=10, unique=True) # e.g., "bl", "pc"
+    
+    is_base_unit = models.BooleanField(default=False, help_text="Is this the smallest unit (e.g., Piece)?")
+    base_unit = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='conversions')
+    conversion_factor = models.DecimalField(max_digits=10, decimal_places=2, default=1.0, help_text="How many base units are in this unit? (e.g., 1 Bale = 12 Pieces)")
+
+    class Meta:
+        verbose_name = "Unit of Measure"
+        verbose_name_plural = "Units of Measure"
+
+    def __str__(self):
+        return self.short_name
+    
+class Product(models.Model):
+
+    item_code = models.CharField(max_length=50, unique=True, null=True, help_text="Focus ERP item code")
+    name = models.CharField(max_length=255)
+    slug = models.SlugField(unique=True, blank=True) 
+    description = models.TextField(blank=True, null=True)   
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+    supplier = models.ForeignKey(
+        Supplier, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='products'
+    )
+    unit_of_measure = models.ForeignKey(UnitOfMeasure, on_delete=models.SET_NULL, null=True, related_name='products')
+    old_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    retail_price = models.DecimalField(max_digits=12, decimal_places=2)
+    wholesale_price = models.DecimalField(max_digits=12, decimal_places=2)
+    average_rating = models.PositiveIntegerField(default=4)      
+    image = models.ImageField(upload_to='products/', null=True, blank=True) 
+    last_sync_time = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)    
+
+
+    is_trending = models.BooleanField(default=False)
+    is_best_seller = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+
+    @property
+    def discount_percentage(self):
+        if self.old_price and self.old_price > self.retail_price:
+            discount = ((self.old_price - self.retail_price) / self.old_price) * 100
+            return f"-{int(discount)}%"
+        return None
+    
+    @property
+    def amount_saved(self):
+        if self.old_price and self.old_price > self.retail_price:
+            return self.old_price - self.retail_price
+        return 0
+    
+    @property
+    def current_stock(self):
+        """Calculates current stock level in base units from ledger."""
+        total = self.stock_ledger.aggregate(total=Sum('quantity'))['total']
+        return total or 0
+    
+    @property
+    def image_url(self):
+        if self.image and hasattr(self.image, 'url'):
+            return self.image.url
+        # Return a link to a default "no-image" icon in your static folder
+        return "/static/assets/images/placeholder.jpg"
+
+    def save(self, *args, **kwargs):
+        if not self.slug: self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.item_code} - {self.name}"   
+       
+
+    # --- Properties to match your template logic ---
+    @property
+    def has_discount(self):
+        return self.old_price is not None and self.old_price > self.retail_price
+    
+
+
+
+
+
+
+
+class StockLedger(models.Model):
+    TRANSACTION_TYPES = [
+        ('PURCHASE', 'Stock In'),
+        ('SALE', 'Stock Out'),
+        ('ADJUSTMENT', 'Adjustment'),
+    ]
+
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_ledger')
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
+    
+    # We store the converted piece count here
+    quantity = models.IntegerField(help_text="Quantity in pieces (Positive for In, Negative for Out)")
+    
+    # This will hold your Order Number or 'BULK_IMPORT_DATE'
+    reference_number = models.CharField(max_length=100, blank=True, null=True)
+    
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name_plural = "Stock Ledger"
+        ordering = ['-timestamp']
+
+    def __str__(self):
+        return f"{self.product.item_code} | {self.transaction_type} | {self.quantity}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# --- C. ORDER & TRANSACTION MODELS ---
 
 class Order(models.Model):
     STATUS_CHOICES = [
@@ -212,6 +263,19 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return f"{self.quantity} x {self.product.name}"
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # --- 4. PAYMENT (M-PESA) MODELS ---

@@ -98,7 +98,7 @@
     </section>
 
     <div class="section-wrapper">
-                           
+
         <section class="category-promo-wrapper container mt-40">
             <div class="row">
                 <div class="col-lg-8">
@@ -168,596 +168,124 @@
                 <!-- Tabs Content  -->
                 <div class="tab-content">
 
-                    <div id="li-new-product" class="tab-pane show active" role="tabpanel">
-
+                    <div id="li-new-product" class="tab-pane active show" role="tabpanel">
                         <div class="row">
-
                             <div class="product-active owl-carousel">
-                                
+                                {% for product in new_products %}
                                 <div class="col-lg-12">
-                                    <!-- Main Card: Adjusted proportions (Wider & Shorter) -->
                                     <div class="product-card-ap">
-                                        
-                                        <!-- Bookmark: Positioned relatively to the wider frame -->
                                         <div class="product-bookmark-ap">
                                             <span class="bookmark-text">NEW</span>
                                             <div class="bookmark-notch"></div>
                                         </div>
 
-                                        <!-- Image Frame -->
                                         <div class="product-image-container">
                                             <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/choco_primo_144x10g.webp" alt="Choco Primo">
+                                                <a href="{% url 'product_detail' product.id %}">
+                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
                                                 </a>
                                             </div>
                                         </div>
 
-                                        <!-- Content: Text and Pricing on a more compact vertical scale -->
                                         <div class="product-text-content">
-                                            <h5 class="brand-subtext">Choco Primo</h5>
-                                            <h4 class="product-main-title">Choco Primo 144x10g</h4>
+                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
+                                            <h4 class="product-main-title">{{ product.name }}</h4>
                                             
                                             <div class="pricing-alignment-row">
                                                 <div class="price-stack">
                                                     <span class="currency-symbol">ksh</span>
-                                                    <span class="price-val">620.00</span>
+                                                    <span class="price-val">{{ product.retail_price }}</span>
                                                 </div>
                                                 <div class="rating-info">
-                                    <div class="stars-row">
-                                        <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                    </div>
-                                    <div class="discount-line">
-                                        <hr>
-                                        <span class="discount-text">Discount 7%</span>
-                                    </div>
-                                </div>
+                                                    <div class="stars-row">
+                                                        {% for i in "12345" %}
+                                                            {% if product.average_rating >= forloop.counter %}
+                                                                <i class="fa fa-star"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-star-o"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="discount-line">
+                                                        <hr>
+                                                        <span class="discount-text">
+                                                            {% if product.amount_saved > 0 %} 
+                                                                Save ksh {{ product.amount_saved }}
+                                                            {% else %}
+                                                                &nbsp; 
+                                                            {% endif %}
+                                                        </span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
 
-                                        <!-- Action Button -->
                                         <a href="#" class="btn-full-width">ADD TO CART</a>
                                     </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- minimalist product-card-ap start -->
-                                    <div class="product-card-ap">
-                                        <!-- New Arrival Bookmark -->
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-
-                                        <!-- Image Container -->
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/alpa_fat_100x50g.webp" alt="Alpa Fat">
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Text Content -->
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">Alpa Fat</h5>
-                                            <h4 class="product-main-title">Alpa Fat 100x50g</h4>
-                                            
-                                            <div class="pricing-alignment-row">
-                                    <div class="price-stack">
-                                        <span class="currency-symbol">ksh</span>
-                                        <span class="price-val">1030.00</span>
                                     </div>
-                                    <div class="rating-info">
-                                        <div class="stars-row">
-                                            <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                        </div>
-                                        <!-- This container stays even if empty to maintain spacing -->
-                                        <div class="discount-line">
-                                            <hr>
-                                            <span class="discount-text">
-                                                {% if product.discount %} 
-                                                    Discount {{ product.discount }}% 
-                                                {% else %}
-                                                    &nbsp; <!-- Keeps the row height uniform -->
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-
-                                        <!-- Action Button -->
-                                        <a href="#" class="btn-full-width">ADD TO CART</a>
-                                    </div>
-                                    <!-- minimalist product-card-ap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- minimalist product-card-ap start -->
-                                    <div class="product-card-ap">
-                                        <!-- New Arrival Bookmark -->
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-
-                                        <!-- Image Container -->
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/Alpa_fat_17kg.webp" alt="Alpa Fat 17kg">
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Text Content -->
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">Alpa Fat</h5>
-                                            <h4 class="product-main-title">Alpa Fat 17kg</h4>
-                                            
-                                            <div class="pricing-alignment-row">
-                                    <div class="price-stack">
-                                        <span class="currency-symbol">ksh</span>
-                                        <span class="price-val">1030.00</span>
-                                    </div>
-                                    <div class="rating-info">
-                                        <div class="stars-row">
-                                            <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                        </div>
-                                        <!-- This container stays even if empty to maintain spacing -->
-                                        <div class="discount-line">
-                                            <hr>
-                                            <span class="discount-text">
-                                                {% if product.discount %} 
-                                                    Discount {{ product.discount }}% 
-                                                {% else %}
-                                                    &nbsp; <!-- Keeps the row height uniform -->
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-
-                                        <!-- Action Button -->
-                                        <a href="#" class="btn-full-width">ADD TO CART</a>
-                                    </div>
-                                    <!-- minimalist product-card-ap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <div class="product-card-ap">
-                                        <!-- New Arrival Bookmark -->
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-
-                                        <!-- Image Container -->
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/alpa_fat_100x50g.webp" alt="Alpa Fat">
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Text Content -->
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">Alpa Fat</h5>
-                                            <h4 class="product-main-title">Alpa Fat 100x50g</h4>
-                                            
-                                            <div class="pricing-alignment-row">
-                                    <div class="price-stack">
-                                        <span class="currency-symbol">ksh</span>
-                                        <span class="price-val">1030.00</span>
-                                    </div>
-                                    <div class="rating-info">
-                                        <div class="stars-row">
-                                            <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                        </div>
-                                        <!-- This container stays even if empty to maintain spacing -->
-                                        <div class="discount-line">
-                                            <hr>
-                                            <span class="discount-text">
-                                                {% if product.discount %} 
-                                                    Discount {{ product.discount }}% 
-                                                {% else %}
-                                                    &nbsp; <!-- Keeps the row height uniform -->
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-
-                                        <!-- Action Button -->
-                                        <a href="#" class="btn-full-width">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- Main Card: Adjusted proportions (Wider & Shorter) -->
-                                    <div class="product-card-ap">
-                                        
-                                        <!-- Bookmark: Positioned relatively to the wider frame -->
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-
-                                        <!-- Image Frame -->
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/choco_primo_144x10g.webp" alt="Choco Primo">
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Content: Text and Pricing on a more compact vertical scale -->
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">Choco Primo</h5>
-                                            <h4 class="product-main-title">Choco Primo 144x10g</h4>
-                                            
-                                            <div class="pricing-alignment-row">
-                                    <div class="price-stack">
-                                        <span class="currency-symbol">ksh</span>
-                                        <span class="price-val">1030.00</span>
-                                    </div>
-                                    <div class="rating-info">
-                                        <div class="stars-row">
-                                            <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                        </div>
-                                        <!-- This container stays even if empty to maintain spacing -->
-                                        <div class="discount-line">
-                                            <hr>
-                                            <span class="discount-text">
-                                                {% if product.discount %} 
-                                                    Discount {{ product.discount }}% 
-                                                {% else %}
-                                                    &nbsp; <!-- Keeps the row height uniform -->
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-
-                                        <!-- Action Button -->
-                                        <a href="#" class="btn-full-width">ADD TO CART</a>
-                                    </div>
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- minimalist product-card-ap start -->
-                                    <div class="product-card-ap">
-                                        <!-- New Arrival Bookmark -->
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-
-                                        <!-- Image Container -->
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' 1 %}">
-                                                    <img src="media/Alpa_fat_17kg.webp" alt="Alpa Fat 17kg">
-                                                </a>
-                                            </div>
-                                        </div>
-
-                                        <!-- Text Content -->
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">Alpa Fat</h5>
-                                            <h4 class="product-main-title">Alpa Fat 17kg</h4>
-                                            
-                                            <div class="pricing-alignment-row">
-                                    <div class="price-stack">
-                                        <span class="currency-symbol">ksh</span>
-                                        <span class="price-val">1030.00</span>
-                                    </div>
-                                    <div class="rating-info">
-                                        <div class="stars-row">
-                                            <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                        </div>
-                                        <!-- This container stays even if empty to maintain spacing -->
-                                        <div class="discount-line">
-                                            <hr>
-                                            <span class="discount-text">
-                                                {% if product.discount %} 
-                                                    Discount {{ product.discount }}% 
-                                                {% else %}
-                                                    &nbsp; <!-- Keeps the row height uniform -->
-                                                {% endif %}
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                                        </div>
-
-                                        <!-- Action Button -->
-                                        <a href="#" class="btn-full-width">ADD TO CART</a>
-                                    </div>
-                                    <!-- minimalist product-card-ap end -->
-                                </div>
-
+                                {% endfor %}
                             </div>
-
                         </div>
-
                     </div>
 
                     <div id="li-top-offer" class="tab-pane" role="tabpanel">
+                        <div class="row">
+                            <div class="product-active owl-carousel">
+                                {% for product in top_offers %}
+                                <div class="col-lg-12">
+                                    <div class="product-card-ap">
+                                        <div class="product-bookmark-ap">
+                                            <span class="bookmark-text">OFFER</span>
+                                            <div class="bookmark-notch"></div>
+                                        </div>
 
-                                <div class="row">
-
-                                    <div class="product-active owl-carousel">
-
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <!-- Bookmark -->
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
-                                                </div>
-
-                                                <!-- Image -->
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/atilla_tc_green_12x1ltr.webp" alt="Atilla Product">
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Content -->
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">Atilla</h5>
-                                                    <h4 class="product-main-title">
-                                                        Atilla Toilet Cleaner Apple Green 12x1ltr
-                                                    </h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">2635.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- Button -->
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-
+                                        <div class="product-image-container">
+                                            <div class="image-inner-frame">
+                                                <a href="{% url 'product_detail' product.id %}">
+                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                </a>
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
+                                        <div class="product-text-content">
+                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
+                                            <h4 class="product-main-title">{{ product.name }}</h4>
+                                            
+                                            <div class="pricing-alignment-row">
+                                                <div class="price-stack">
+                                                    <span class="currency-symbol">ksh</span>
+                                                    <span class="price-val">{{ product.retail_price }}</span>
                                                 </div>
-
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/cil_brown_rice_24x1kg.webp" alt="CIL Product">
-                                                        </a>
+                                                <div class="rating-info">
+                                                    <div class="stars-row">
+                                                        {% for i in "12345" %}
+                                                            {% if product.average_rating >= forloop.counter %}
+                                                                <i class="fa fa-star"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-star-o"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="discount-line">
+                                                        <hr>
+                                                        <span class="discount-text">
+                                                            {% if product.amount_saved > 0 %} 
+                                                                Save ksh {{ product.amount_saved }}
+                                                            {% else %}
+                                                                &nbsp; 
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
-
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">CIL</h5>
-                                                    <h4 class="product-main-title">CIL Brown Rice 24x1kg</h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">7015.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                                <i class="fa fa-star-o"></i>
-                                                            </div>
-
-                                                            <div class="discount-line">
-                                                                <hr>
-                                                                <span class="discount-text">Discount 7%</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-
                                             </div>
                                         </div>
 
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
-                                                </div>
-
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/balu_tp_white_4x10s.webp" alt="Balu">
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">Balu</h5>
-                                                    <h4 class="product-main-title">Balu Toilet Paper White 4x10s</h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">630.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
-                                                </div>
-
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/captain_cook_corn_oil_4x5ltr.webp" alt="Captain Cook">
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">Captain Cook</h5>
-                                                    <h4 class="product-main-title">Captain Cook Corn Oil 4x5ltr</h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">7470.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                                            </div>
-
-                                                            <div class="discount-line">
-                                                                <hr>
-                                                                <span class="discount-text">Discount 7%</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
-                                                </div>
-
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/chapa_mandashi_6x4kg.webp" alt="Chapa Mandashi">
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">Chapa Mandashi</h5>
-                                                    <h4 class="product-main-title">Chapa Mandashi 6x4kg</h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">5300.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-
-                                                <div class="product-bookmark-ap">
-                                                    <span class="bookmark-text">OFFER</span>
-                                                    <div class="bookmark-notch"></div>
-                                                </div>
-
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="#">
-                                                            <img src="media/choco_primo_144x10g.webp" alt="Choco Primo">
-                                                        </a>
-                                                    </div>
-                                                </div>
-
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">Choco Primo</h5>
-                                                    <h4 class="product-main-title">Choco Primo 144x10g</h4>
-
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">620.00</span>
-                                                        </div>
-
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                <i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-o"></i><i class="fa fa-star-o"></i>
-                                                            </div>
-
-                                                            <div class="discount-line">
-                                                                <hr>
-                                                                <span class="discount-text">Discount 7%</span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <a href="#" class="btn-full-width">ADD TO CART</a>
-                                            </div>
-                                        </div>
-
+                                        <a href="#" class="btn-full-width">ADD TO CART</a>
                                     </div>
-
-                                </div>
-
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     </div>
 
                 </div> <!-- End of Tabs Content  -->
@@ -766,6 +294,12 @@
 
         </section>           
 
+        <section id="heading-i" class="section-heading container">
+            <span>Trending Now</span>
+            <h2>The Current Favorites</h2>
+            <p>Shop the high-demand essentials currently leading the market for retailers and households.</p>      
+        </section>
+        
         <section class="product-area pt-60 pb-45 li-trending-product">
 
             <div class="container">
@@ -774,510 +308,84 @@
 
                     <div class="col-lg-12">
 
-                        <!-- Tabs Header - Header Name/Tabs  -->
                         <div class="li-product-tab li-trending-product-tab">
                             <h2>
                                 <span>Trending Products</span>
                             </h2>
                             <ul class="nav li-product-menu li-trending-product-menu">
-                                <li><a class="active" data-toggle="tab" href="#tab1"><span>Cooking Oils</span></a></li>
-                                <li><a  data-toggle="tab" href="#tab2"><span>Flour and Grains</span></a></li>                            
-                            </ul>               
-                        </div> <!-- End of Tabs Header - Header Name/Tabs  -->
+                                {% for item in trending_data %}
+                                <li class="{% if forloop.first %}active{% endif %}">
+                                    <a class="{% if forloop.first %}active{% endif %}" data-toggle="tab" href="#trending-{{ item.category.id }}">
+                                        {{ item.category.name }}
+                                    </a>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
 
-                        <!-- Tabs Content  -->
                         <div class="tab-content li-tab-content li-trending-product-content">
-
-                            <!-- Tab 1 Content  -->       
-                            <div id="tab1" class="tab-pane show active fade in">
-
+                            {% for item in trending_data %}
+                            <div id="trending-{{ item.category.id }}" class="tab-pane fade {% if forloop.first %}show active in{% endif %}" role="tabpanel">
                                 <div class="row">
-                                    
                                     <div class="product-active owl-carousel">
-
+                                        {% for product in item.products %}
                                         <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/cil_brown_rice_24x1kg.png');">
-                                                    <a href="">
-                                                        <img src="media/cil_brown_rice_24x1kg.png" alt="Li's Product Image">
-                                                    </a>
+                                            <div class="product-card-ap">
+                                                <div class="product-bookmark-ap" style="background: #ffb100;">
+                                                    <span class="bookmark-text">HOT</span>
+                                                    <div class="bookmark-notch" style="border-right-color: #ffb100;"></div>
                                                 </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">CIL</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
+
+                                                <div class="product-image-container">
+                                                    <div class="image-inner-frame">
+                                                        <a href="{% url 'product_detail' product.id %}">
+                                                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                        </a>
+                                                    </div>
+                                                </div>
+
+                                                <div class="product-text-content">
+                                                    <h5 class="brand-subtext">{{ product.brand.name }}</h5>
+                                                    <h4 class="product-main-title">{{ product.name }}</h4>
+                                                    
+                                                    <div class="pricing-alignment-row">
+                                                        <div class="price-stack">
+                                                            <span class="currency-symbol">ksh</span>
+                                                            <span class="price-val">{{ product.retail_price }}</span>
+                                                        </div>
+                                                        <div class="rating-info">
+                                                            <div class="stars-row">
+                                                                {% for i in "12345" %}
+                                                                    {% if product.average_rating >= forloop.counter %}
+                                                                        <i class="fa fa-star"></i>
+                                                                    {% else %}
+                                                                        <i class="fa fa-star-o"></i>
+                                                                    {% endif %}
+                                                                {% endfor %}
+                                                            </div>
+                                                            <div class="discount-line">
+                                                                <hr>
+                                                                <span class="discount-text">
+                                                                    {% if product.amount_saved > 0 %} 
+                                                                        Save ksh {{ product.amount_saved }}
+                                                                    {% else %}
+                                                                        &nbsp; 
+                                                                    {% endif %}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                        <h4><a class="product_name" href="product-detail.html">CIL Brown Rice 24x1kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 7015.00</span>
-                                                            <span class="old-price">ksh 7115.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
 
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/balu_tp_white_4x10s.png');">
-                                                    <a href="#">
-                                                        <img src="media/balu_tp_white_4x10s.png" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Balu</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Balu Toilet Paper White 4x10s</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 630.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
+                                                <a href="#" class="btn-full-width">ADD TO CART</a>
                                             </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/captain_cook_corn_oil_4x5ltr.png');">
-                                                    <a href="#">
-                                                        <img src="media/captain_cook_corn_oil_4x5ltr.png" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Captain Cook</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Captain Cook Corn Oil 4x5ltr</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 7470.00</span>
-                                                            <span class="old-price">ksh 7600.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
                                             </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/chapa_mandashi_6x4kg.png');">
-                                                    <a href="#">
-                                                        <img src="media/chapa_mandashi_6x4kg.png" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Chapa Mandashi</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Chapa Mandashi 6x4kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 5300.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image blurred-bg" style="--bg-image: url('/media/choco_primo_144x10g.png');">
-                                                    <a href="#">
-                                                        <img src="media/choco_primo_144x10g.png" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">Choco Primo</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Choco Primo 144x10g</a></h4>
-                                                        <div class="price-box">ksh 620.00</span>
-                                                            <span class="old-price">ksh 700.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
+                                        {% endfor %}
                                     </div>
-
                                 </div>
-
-                            </div> <!-- End of Tab 2 Content  -->       
-
-                            <!-- Tab 2 Content -->
-                            <div id="tab2" class="tab-pane fade">
-
-                                <div class="row">
-
-                                    <div class="product-active owl-carousel">
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/alpa_fat_100x50g.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Alpa Fat</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Alpa Fat 100x50g</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 1030.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>                                
-                                        </div>                       
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/Alpa_fat_17kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Alpa Fat</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="product-detail.html">Alpa Fat 17kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 3460.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">Amaize</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="product-detail.html">Amaize Maize Meal 24X1kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 1960.00</span>
-                                                            <span class="old-price">ksh 2450.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="shop-left-sidebar.html">Amana</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="product-detail.html">Amana Long Grain Rice 24x1kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price">ksh 4680.00</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="{% url 'product_detail' 1 %}">
-                                                        <img src="media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Alpa Fat</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 1790.00</span>
-                                                            <span class="old-price">ksh 1990.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="#"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                        <div class="col-lg-12">
-                                            <!-- single-product-wrap start -->
-                                            <div class="single-product-wrap">
-                                                <div class="product-image">
-                                                    <a href="#">
-                                                        <img src="media/ama_sugar_10x2kg.webp" alt="Li's Product Image">
-                                                    </a>
-                                                </div>
-                                                <div class="product_desc">
-                                                    <div class="product_desc_info">
-                                                        <div class="product-review">
-                                                            <h5 class="manufacturer">
-                                                                <a href="#">Amana</a>
-                                                            </h5>
-                                                            <div class="rating-box">
-                                                                <ul class="rating">
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                    <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                        <h4><a class="product_name" href="#">Amana Sugar 10x2kg</a></h4>
-                                                        <div class="price-box">
-                                                            <span class="new-price new-price-2">ksh 4000.00</span>
-                                                            <span class="old-price">ksh 4380.00</span>
-                                                            <span class="discount-percentage">-7%</span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="add-actions">
-                                                        <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                            <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <!-- single-product-wrap end -->
-                                        </div>
-
-                                    </div>
-
-                                </div>
-
-                            </div>  <!-- End of Tab 2 Content  -->            
-
-                        </div> 
+                            </div>
+                            {% endfor %}
+                        </div>
 
                     </div>
 
@@ -1285,6 +393,12 @@
 
             </div>
 
+        </section>
+
+        <section id="heading-i" class="section-heading container">
+            <span>Gold Standard</span>
+            <h2>Our Top-Selling Essentials</h2>
+            <p>Explore the tried-and-tested products that consistently lead our charts for quality and reliability.</p>      
         </section>
 
         <section class="product-area pb-45 li-laptop-product li-trendding-products best-sellers">
@@ -1295,320 +409,72 @@
 
                     <div class="col-lg-12">
                         
-                        <!-- Tabs Header - Header Name/Tabs  -->
                         <div class="li-section-title">
                             <h2>
                                 <span>Bestsellers</span>
                             </h2>
-                        </div> <!-- End of Tabs Header - Header Name/Tabs  -->
+                        </div>
 
                         <div class="row">
-
-                            <div class="product-active owl-carousel">                                    
-
+                            <div class="product-active owl-carousel">
+                                {% for product in bestsellers %}
                                 <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="{% url 'product_detail' 1 %}">
-                                                <img src="media/captain_cook_corn_oil_4x5ltr.webp" alt="Li's Product Image">
-                                            </a>
+                                    <div class="product-card-ap">
+                                        <div class="product-bookmark-ap" style="background: #e91e63;">
+                                            <span class="bookmark-text">BEST</span>
+                                            <div class="bookmark-notch" style="border-right-color: #e91e63;"></div>
                                         </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Captain Cook</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
+
+                                        <div class="product-image-container">
+                                            <div class="image-inner-frame">
+                                                <a href="{% url 'product_detail' product.id %}">
+                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <div class="product-text-content">
+                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
+                                            <h4 class="product-main-title">{{ product.name }}</h4>
+                                            
+                                            <div class="pricing-alignment-row">
+                                                <div class="price-stack">
+                                                    <span class="currency-symbol">ksh</span>
+                                                    <span class="price-val">{{ product.retail_price }}</span>
+                                                </div>
+                                                <div class="rating-info">
+                                                    <div class="stars-row">
+                                                        {% for i in "12345" %}
+                                                            {% if product.average_rating >= forloop.counter %}
+                                                                <i class="fa fa-star"></i>
+                                                            {% else %}
+                                                                <i class="fa fa-star-o"></i>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </div>
+                                                    <div class="discount-line">
+                                                        <hr>
+                                                        <span class="discount-text">
+                                                            {% if product.amount_saved > 0 %} 
+                                                                Save ksh {{ product.amount_saved }}
+                                                            {% else %}
+                                                                &nbsp; 
+                                                            {% endif %}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <h4><a class="product_name" href="#">Captain Cook Corn Oil 4x5ltr</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 7470.00</span>
-                                                    <span class="old-price">ksh 7600.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
                                             </div>
                                         </div>
+
+                                        <a href="#" class="btn-full-width">ADD TO CART</a>
                                     </div>
-                                    <!-- single-product-wrap end -->
+                                    </div>
+                                {% empty %}
+                                <div class="col-12 text-center">
+                                    <p>Check back soon for our top-selling items!</p>
                                 </div>
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="{% url 'product_detail' 1 %}">
-                                                <img src="media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Alpa Fat</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 1790.00</span>
-                                                    <span class="old-price">ksh 1990.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="#"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="media/ama_sugar_10x2kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Amana</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Amana Sugar 10x2kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 4000.00</span>
-                                                    <span class="old-price">ksh 4380.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>                    
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="media/amaiza_mmeal_24x1kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="shop-left-sidebar.html">Amaize</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="product-detail.html">Amaize Maize Meal 24X1kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 1960.00</span>
-                                                    <span class="old-price">ksh 2450.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="media/amana_long_grain_rice_24x1kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="shop-left-sidebar.html">Amana</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="product-detail.html">Amana Long Grain Rice 24x1kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price">ksh 4680.00</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="{% url 'product_detail' 1 %}">
-                                                <img src="media/alpa_fat_10kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Alpa Fat</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Alpa Fat 10kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 1790.00</span>
-                                                    <span class="old-price">ksh 1990.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="#"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>
-
-                                <div class="col-lg-12">
-                                    <!-- single-product-wrap start -->
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="#">
-                                                <img src="media/ama_sugar_10x2kg.webp" alt="Li's Product Image">
-                                            </a>
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">Amana</a>
-                                                    </h5>
-                                                    <div class="rating-box">
-                                                        <ul class="rating">
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                            <li class="no-star"><i class="fa fa-star-o"></i></li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <h4><a class="product_name" href="#">Amana Sugar 10x2kg</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price new-price-2">ksh 4000.00</span>
-                                                    <span class="old-price">ksh 4380.00</span>
-                                                    <span class="discount-percentage">-7%</span>
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active"><a href="#">Add to cart</a></li>
-                                                    <li><a class="links-details" href="wishlist.html"><i class="fa fa-heart-o"></i></a></li>
-                                                    <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- single-product-wrap end -->
-                                </div>
-
+                                {% endfor %}
                             </div>
-
                         </div>
 
                     </div> <!-- Li's Section Area End Here -->
@@ -1617,6 +483,80 @@
 
             </div>
 
+        </section>
+
+        
+
+        <section class="order-steps-section pt-60 pb-60 bg-light">
+            <div class="container">
+                <div class="section-heading text-center mb-50">
+                    <span>Seamless Procurement</span>
+                    <h2>Three Simple Steps to Order</h2>
+                    <p>We’ve simplified the supply chain so you can focus on your core business.</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="step-card">
+                            <div class="step-icon-wrapper">
+                                <i class="fa fa-search"></i>
+                                <span class="step-badge">01</span>
+                            </div>
+                            <div class="step-card-body">
+                                <h4>Select Products</h4>
+                                <p>Browse our digital catalogue for high-quality essentials. From grains to household items, find everything your retail shop or organization needs.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="step-card">
+                            <div class="step-icon-wrapper">
+                                <i class="fa fa-shopping-basket"></i>
+                                <span class="step-badge">02</span>
+                            </div>
+                            <div class="step-card-body">
+                                <h4>Confirm Your Order</h4>
+                                <p>Review your selection and submit your order details. Our team quickly processes your request to ensure competitive pricing and stock availability.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-6">
+                        <div class="step-card">
+                            <div class="step-icon-wrapper">
+                                <i class="fa fa-truck"></i>
+                                <span class="step-badge">03</span>
+                            </div>
+                            <div class="step-card-body">
+                                <h4>Swift Fulfillment</h4>
+                                <p>Experience reliable delivery directly to your premises. We handle the logistics so that your essentials arrive safely and on time.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-us-summary pt-60 pb-60 bg-light" style="margin-top: 60px;">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <div class="about-image">
+                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" alt="Our Distribution" class="img-fluid rounded shadow">
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="about-text-content pl-30">
+                            <span class="badge">About Mahitaji</span>
+                            <h2 class="mt-10">Streamlining Essential Supply Chains</h2>
+                            <p class="lead">We bridge the gap between top manufacturers and the points of need—whether it's a local retail shelf, a family kitchen, or a large-scale organization.</p>
+                            <p>By focusing on efficiency and consistency, we ensure that fast-moving consumer goods are always within reach. Our platform is designed to handle the complexities of bulk ordering so you can focus on growing your business or managing your household with ease.</p>
+                            <a href="{% url 'products' %}" class="btn shop-btn-outline mt-20">Learn More About Our Process</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
     </div>
@@ -1628,6 +568,67 @@
 {% block extra_css %}
     
 <style>
+
+    .step-card {
+        background: #fff;
+        padding: 40px 30px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease;
+        height: 100%;
+        position: relative;
+        border: 1px solid #eee;
+    }
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        border-color: #313761; /* Matches your brand theme */
+    }
+
+    .step-icon-wrapper {
+        width: 80px;
+        height: 80px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 25px;
+        position: relative;
+        color: #313761;
+        font-size: 2rem;
+    }
+
+    .step-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        background: #313761;
+        color: #fff;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+    }
+
+    .step-card-body h4 {
+        font-size: 1.25rem;
+        margin-bottom: 15px;
+        color: #1a1a1a;
+        font-weight: 700;
+    }
+
+    .step-card-body p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: #666;
+        margin-bottom: 0;
+    }
 
     .badge {
         color: #ffffff;
