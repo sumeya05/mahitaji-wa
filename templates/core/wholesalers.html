@@ -47,7 +47,7 @@
 
                             </div>
                             <div class="toolbar-amount">
-                                <span>Showing 1 to 9 of 15</span>
+                                <span>Showing {{ products.start_index }} to {{ products.end_index }} of {{ products.paginator.count }}</span>
                             </div>
                         </div>
 
@@ -111,7 +111,11 @@
                                                     </div>
                                                     <div class="add-actions">
                                                         <ul class="add-actions-link">
-                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
+                                                            <li class="add-cart active">
+                                                                <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
+                                                                    + CART
+                                                                </button>
+                                                            </li>
                                                             <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
                                                             <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
                                                         </ul>
@@ -162,14 +166,20 @@
                                                         <div class="price-box">
                                                             <span class="new-price">ksh {{ product.wholesale_price }}</span>
                                                         </div>
-                                                        <p>{{ product.description }}</p>
+                                                        {% if product.description %}
+                                                            <p>{{ product.description }}</p>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
                                             </div>
                                             <div class="col-lg-4 col-md-12">
                                                 <div class="add-actions">
                                                     <ul class="add-actions-link">
-                                                        <li class="add-cart active"><a href="#">Add to cart</a></li>
+                                                        <li class="add-cart active">
+                                                            <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
+                                                                ADD TO CART
+                                                            </button>
+                                                        </li>
                                                         <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
                                                         <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
                                                     </ul>
@@ -183,19 +193,38 @@
 
                             <div class="paginatoin-area">
                                 <div class="row">
-                                    <div class="col-lg-6 col-md-6">
-                                        <p>Showing 1-9 of 13 item(s)</p>
+                                    <div class="toolbar-amount">
+                                        <span>Showing {{ products.start_index }} to {{ products.end_index }} of {{ products.paginator.count }}</span>
                                     </div>
                                     <div class="col-lg-6 col-md-6">
                                         <ul class="pagination-box">
-                                            <li><a href="#" class="Previous"><i class="fa fa-chevron-left"></i> Previous</a>
-                                            </li>
-                                            <li class="active"><a href="#">1</a></li>
-                                            <li><a href="#">2</a></li>
-                                            <li><a href="#">3</a></li>
-                                            <li>
-                                                <a href="#" class="Next"> Next <i class="fa fa-chevron-right"></i></a>
-                                            </li>
+                                            {% if products.has_previous %}
+                                                <li>
+                                                    <a href="?page={{ products.previous_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Previous">
+                                                        <i class="fa fa-chevron-left"></i> Previous
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for num in products.paginator.page_range %}
+                                                {% if products.number == num %}
+                                                    <li class="active"><a href="#">{{ num }}</a></li>
+                                                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                                                    <li>
+                                                        <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}">
+                                                            {{ num }}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if products.has_next %}
+                                                <li>
+                                                    <a href="?page={{ products.next_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Next">
+                                                        Next <i class="fa fa-chevron-right"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </div>

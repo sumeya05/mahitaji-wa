@@ -10,6 +10,7 @@ import json
 from datetime import datetime
 from django.urls import reverse
 from django.db.models import F, Q, Count
+from django.core.paginator import Paginator
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
@@ -32,6 +33,7 @@ from .serializers import (
 )
 from .forms import RegisterForm  
 from .cart import Cart
+
 
 
 
@@ -90,12 +92,18 @@ def retailers(request):
     if selected_cats:
         all_products = all_products.filter(category_id__in=selected_cats)
 
+    # 5. Apply Pagination
+    paginator = Paginator(all_products.distinct(), 12) # Show 12 products per page
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
     context = {
-        'products': all_products.distinct(), # Use your variable name 'products'
+        'products': products_page, # This now contains only the items for the current page
         'selected_brands': selected_brands,
         'selected_cats': selected_cats,
     }
     return render(request, 'core/retailers.html', context)
+    
 
 
 def wholesalers(request):
@@ -112,11 +120,20 @@ def wholesalers(request):
     if selected_cats:
         all_products = all_products.filter(category_id__in=selected_cats)
 
+    # 3. Apply Pagination (e.g., 12 products per page)
+    paginator = Paginator(all_products.distinct(), 12) 
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # 4. Pass objects to context
     context = {
-        'products': all_products.distinct(), # Variable name used in your template
+        'products': products_page, 
         'selected_brands': selected_brands,
         'selected_cats': selected_cats,
+        'categories': Category.objects.all(),
+        'brands': Brand.objects.all(),
     }
+
     return render(request, 'core/wholesalers.html', context)
 
 def products(request):
@@ -131,11 +148,20 @@ def products(request):
     if selected_cats:
         all_products = all_products.filter(category_id__in=selected_cats)
 
+    # 3. Apply Pagination (12 products per page)
+    paginator = Paginator(all_products.distinct(), 12) 
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # 4. Update Context
     context = {
-        'products': all_products.distinct(),
+        'products': products_page, 
         'selected_brands': selected_brands,
         'selected_cats': selected_cats,
+        'categories': Category.objects.all(),
+        'brands': Brand.objects.all(),
     }
+    
     return render(request, 'core/products.html', context)
 
 def product_detail(request, pk):
@@ -229,8 +255,6 @@ def cart_update(request):
         cart_total = cart.get_total_price()
         response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
         return response
-
-
 
 
 @login_required

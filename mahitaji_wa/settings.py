@@ -122,7 +122,8 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+# 1. Set the Time Zone to Nairobi (GMT+3)
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
