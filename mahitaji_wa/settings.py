@@ -72,6 +72,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'core.context_processors.category_renderer',
+                'core.context_processors.cart',
             ],
         },
     },
@@ -192,3 +194,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 # AI API Key
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+CART_SESSION_ID = 'cart'
+# settings.py

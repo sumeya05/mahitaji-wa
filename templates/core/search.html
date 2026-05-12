@@ -1,104 +1,106 @@
 {% extends "base/base.html" %}
 {% load static %}
 
-{% block title %}Search | Mahitaji{% endblock %}
+{% block title %}Search Results for "{{ query }}" | Mahitaji{% endblock %}
 
 {% block content %}
 
-<header class="search-page-header">
-    <div class="search-container-wide">
-        <div class="search-input-wrapper">
-            <i class="fa-solid fa-magnifying-glass"></i>
-            <input type="text" placeholder="Search for brands, products..." value="Flour">
-            <button class="search-btn-large">Search</button>
-        </div>
-    </div>
-</header>
-
-<div class="results-meta">
-    <span>Showing <strong>6</strong> results for "Flour"</span>
-
-    <select style="padding:5px; border-radius:5px; border:1px solid var(--border-color);">
-        <option>Sort by: Relevance</option>
-        <option>Price: Low to High</option>
-        <option>Price: High to Low</option>
-    </select>
-</div>
-
-<main class="search-grid">
-
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">EXE Wheat Flour</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 2,150</span>
-                <button class="add-btn">Add</button>
+<main class="body-wrapper">
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="active">Search Results</li>
+                </ul>
             </div>
         </div>
     </div>
 
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">Pembe Maize Flour</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 1,850</span>
-                <button class="add-btn">Add</button>
+    <div class="content-wraper pt-60 pb-60">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="li-section-title">
+                        <h2>
+                            <span>Results for: "{{ query }}"</span>
+                        </h2>
+                        <p class="pt-10">{{ products.count }} items found</p>
+                    </div>
+
+                    <div class="shop-products-wrapper">
+                        <div class="tab-content">
+                            <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
+                                <div class="product-area shop-product-area">
+                                    <div class="row">
+
+                                        {% for product in products %}
+                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
+                                            <div class="single-product-wrap">
+                                                <div class="product-image">
+                                                    <a href="{% url 'product_detail' product.id %}">
+                                                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                    </a>
+                                                    {% if product.discount_percentage %}
+                                                        <span class="sticker">{{ product.discount_percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="product_desc">
+                                                    <div class="product_desc_info">
+                                                        <div class="product-review">
+                                                            <h5 class="manufacturer">
+                                                                <a href="#">{{ product.brand.name }}</a>
+                                                            </h5>
+                                                            <div class="rating-box">
+                                                                <ul class="rating">
+                                                                    {% for i in "12345" %}
+                                                                        <li>
+                                                                            {% if product.average_rating >= forloop.counter %}
+                                                                                <i class="fa fa-star"></i>
+                                                                            {% else %}
+                                                                                <i class="fa fa-star-o"></i>
+                                                                            {% endif %}
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
+                                                        <div class="price-box">
+                                                            <span class="new-price">ksh {{ product.retail_price }}</span>
+                                                            {% if product.old_price %}
+                                                                <span class="old-price">ksh {{ product.old_price }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="add-actions">
+                                                        <ul class="add-actions-link">
+                                                            <li class="add-cart active"><a href="#">Add to cart</a></li>
+                                                            <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
+                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% empty %}
+
+                                        <div class="col-12 text-center pt-60 pb-60">
+                                            <img src="{% static 'assets/images/no-results.jpg' %}" alt="No results" style="max-width: 200px; opacity: 0.5;">
+                                            <h3 class="mt-30">Oops! No products found.</h3>
+                                            <p>Try checking your spelling or using more general keywords.</p>
+                                            <a href="{% url 'home' %}" class="btn btn-primary mt-20" style="background: #313761; border: none; padding: 10px 30px;">Back to Home</a>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">Ajab All Purpose</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 2,050</span>
-                <button class="add-btn">Add</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">EXE Wheat Flour</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 2,150</span>
-                <button class="add-btn">Add</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">Pembe Maize Flour</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 1,850</span>
-                <button class="add-btn">Add</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="product-card">
-        <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff" class="product-image">
-        <div class="product-info">
-            <p class="product-name">Ajab All Purpose</p>
-            <p class="product-sku">12 X 2KG (Bale)</p>
-            <div class="price-box">
-                <span class="price">KSh 2,050</span>
-                <button class="add-btn">Add</button>
-            </div>
-        </div>
-    </div>
-
 </main>
 
 {% endblock %}

@@ -28,85 +28,60 @@
                         <div class="col-lg-6 col-12">
                             <form action="#">
                                 <div class="checkbox-form">
-                                    <h3>Billing Details</h3>
-                                    <div class="row">
-                                        <div class="col-md-12">
-                                            <div class="country-select clearfix">
-                                                <label>Country <span class="required">*</span></label>
-                                                <select class="nice-select wide">
-                                                  <option data-display="Kenya">Kenya</option>
-                                                  <option value="ug">Uganda</option>
-                                                  <option value="tz">Tanzania</option>
-                                                  <option value="rwa">Rwanda</option>
-                                                  <option value="bur">Burundi</option>
-                                                  <option value="ssd">South Sudan</option>
-                                                </select>
-                                            </div>
+                                <h3>Billing Details</h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="checkout-form-list">
+                                            <label>First Name <span class="required">*</span></label>
+                                            <input placeholder="" type="text" id="first_name" 
+                                                value="{{ request.user.first_name }}">
                                         </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>First Name <span class="required">*</span></label>
-                                                <input placeholder="" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>Last Name <span class="required">*</span></label>
-                                                <input placeholder="" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="checkout-form-list">
-                                                <label>Company Name</label>
-                                                <input placeholder="" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="checkout-form-list">
-                                                <label>Address <span class="required">*</span></label>
-                                                <input placeholder="Street address" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="checkout-form-list">
-                                                <input placeholder="Apartment, suite, unit etc. (optional)" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="checkout-form-list">
-                                                <label>Town / City <span class="required">*</span></label>
-                                                <input type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>State / County <span class="required">*</span></label>
-                                                <input placeholder="" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>Postcode / Zip <span class="required">*</span></label>
-                                                <input placeholder="" type="text">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>Email Address <span class="required">*</span></label>
-                                                <input placeholder="" type="email">
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="checkout-form-list">
-                                                <label>Phone  <span class="required">*</span></label>
-                                                <input type="text">
-                                            </div>
-                                        </div>
-                                        
                                     </div>
+                                    <div class="col-md-6">
+                                        <div class="checkout-form-list">
+                                            <label>Last Name <span class="required">*</span></label>
+                                            <input placeholder="" type="text" id="last_name" 
+                                                value="{{ request.user.last_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Email Address <span class="required">*</span></label>
+                                            <input placeholder="" type="email" id="email_address" 
+                                                value="{{ request.user.email }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Phone <span class="required">*</span></label>
+                                            <input type="text" id="phone_number" 
+                                                value="{{ profile.phone_number }}">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Address <span class="required">*</span></label>
+                                            <input placeholder="Street address" type="text" id="address" name="address"
+                                                value="{{ primary_address.physical_address|default:'' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Town / City <span class="required">*</span></label>
+                                            <input placeholder="e.g Nairobi" type="text" id="city_town" name="city"
+                                                value="{{ primary_address.city|default:'' }}">
+                                        </div>
+                                    </div>
+
+
                                 </div>
+                            </div>
                             </form>
                         </div>
+
                         <div class="col-lg-6 col-12">
                             <div class="your-order">
                                 <h3>Your order</h3>
@@ -119,23 +94,26 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                            {% for item in cart %}
                                             <tr class="cart_item">
-                                              <td class="cart-product-name">Alpa Fat 100x50gm Satchet (5KG Carton)<strong class="product-quantity"> × 1</strong></td>
-                                              <td class="cart-product-total"><span class="amount">ksh 1030.00</span></td>  
+                                            <td class="cart-product-name">
+                                                {{ item.product.name }} 
+                                                <strong class="product-quantity"> × {{ item.qty }}</strong>
+                                            </td>
+                                            <td class="cart-product-total">
+                                                <span class="amount">ksh {{ item.total_price }}</span>
+                                            </td>  
                                             </tr>
-                                            <tr class="cart_item">
-                                              <td class="cart-product-name">Alpa Fat 10kg Carton<strong class="product-quantity"> × 1</strong></td>
-                                              <td class="cart-product-total"><span class="amount">ksh 1790.00</span></td>  
-                                            </tr>
+                                            {% endfor %}
                                         </tbody>
                                         <tfoot>
                                             <tr class="cart-subtotal">
                                                 <th>Cart Subtotal</th>
-                                                <td><span class="amount">ksh 2820.00</span></td>
+                                                <td><span class="amount">ksh {{ cart.get_total_price }}</span></td>
                                             </tr>
                                             <tr class="order-total">
                                                 <th>Order Total</th>
-                                                <td><strong><span class="amount">ksh 2820.00</span></strong></td>
+                                                <td><strong><span class="amount">ksh {{ cart.get_total_price }}</span></strong></td>
                                             </tr>
                                         </tfoot>
                                     </table>
@@ -149,6 +127,7 @@
                     <div class="row">
                          <div class="col-lg-6 col-12">
                             <div class="your-order">
+
                                 <h3>Make Payment</h3>
                                 <div class="payment-method">
                                     <div class="payment-accordion">
@@ -156,19 +135,19 @@
                                           
                                           <div class="card">
                                             <div class="card-header" id="#payment-1">
-                                              <h5 class="panel-title">
-                                                <a class="" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                  Cash on Delivery.
-                                                </a>
-                                              </h5>
+                                                <h5 class="panel-title">
+                                                    <a class="" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                        Cash on Delivery.
+                                                    </a>
+                                                </h5>
                                             </div>
-                                            <div id="collapseOne" class="collapse show" data-parent="#accordion">
-                                              <div class="card-body">
-                                                <p>Make your payment when you receive the package.<br>
-                                                <strong>Offer available for selected customers</strong>.</p>
-                                              </div>
+
+                                            <div id="collapseOne" class="collapse show" data-method="cod" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <p>Pay with cash upon delivery to your doorstep.</p>
+                                                </div>
                                             </div>
-                                          </div><br>
+                                        </div>
 
                                           <div class="card">
                                             <div class="card-header" id="payment-2">
@@ -178,23 +157,21 @@
                                                     </a>
                                                 </h5>
                                             </div>
-                                            <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                            
+                                            <div id="collapseTwo" class="collapse" data-method="mpesa" data-parent="#accordion">
                                                 <div class="card-body">
-                                                    <p>Please enter your M-Pesa number below to receive the payment prompt.</p>
+                                                    <p>Please enter your M-Pesa number below. When you click <strong>Place Order</strong> at the bottom, you will receive a prompt on your phone.</p>
+                                                    
                                                     <div class="checkout-form-list">
                                                         <label>M-Pesa Number <span class="required">*</span></label>
                                                         <input type="text" id="mpesa_phone" placeholder="e.g. 0712345678" value="{{ request.user.customerprofile.phone_number|default:'' }}">
                                                     </div>
-                                                    <input type="hidden" id="order_total_val" value="1"> 
-                                                    
-                                                    <div class="order-button-payment mt-20">
-                                                        <button type="button" id="stkPushBtn" class="btn btn-success w-100" style="background-color: #49b04d; border: none; color: white; padding: 10px;">
-                                                            Send STK Push
-                                                        </button>
-                                                    </div>
+
                                                     <div id="mpesa-status" class="mt-10 d-none alert alert-info"></div>
                                                 </div>
                                             </div>
+                                        </div>
+
                                         </div>
 
                                         </div>
@@ -218,54 +195,100 @@
 {% block extra_js %}
 
 <script>
-document.getElementById('stkPushBtn').addEventListener('click', function() {
-    const phone = document.getElementById('mpesa_phone').value;
-    const amount = document.getElementById('order_total_val').value;
-    const statusDiv = document.getElementById('mpesa-status');
-    const btn = this;
+// 1. Identify the 'Place Order' button
+// Note: In your HTML, it's an <input type="submit">. Let's target it.
+const placeOrderBtn = document.querySelector('.order-button-payment input');
 
-    if (!phone) {
-        alert("Please enter a phone number");
+placeOrderBtn.addEventListener('click', function(e) {
+    e.preventDefault(); // Stop the page from refreshing
+
+    // 2. Detect which payment panel is currently open
+    const activePanel = document.querySelector('#accordion .collapse.show');
+    const paymentMethod = activePanel ? activePanel.getAttribute('data-method') : 'cod';
+
+    // 3. Gather Billing Data (Ensure your inputs have these IDs!)
+    const formData = {
+        first_name: document.getElementById('first_name').value,
+        last_name: document.getElementById('last_name').value,
+        email: document.getElementById('email_address').value,
+        phone: document.getElementById('phone_number').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city_town').value,
+        payment_method: paymentMethod
+    };
+
+    // Validation check
+    if (!formData.first_name || !formData.address) {
+        alert("Please fill in the required billing details.");
         return;
     }
+const successUrlBase = "{% url 'order-success' order_number='0' %}";
+console.log(formData);
 
-    // UI Feedback
-    btn.innerText = "Sending Prompt...";
-    btn.disabled = true;
-    statusDiv.classList.remove('d-none');
-    statusDiv.innerText = "Please check your phone for the M-Pesa pin prompt.";
-
-    fetch("{% url 'pay' %}", {
-        method: "POST",
+    // 4. STEP 1: Create the Order (The Anchor)
+    fetch("{% url 'place-order' %}", {
+        method: 'POST',
         headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": "{{ csrf_token }}",
-            "X-Requested-With": "XMLHttpRequest"
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
         },
-        body: JSON.stringify({
-            "phone": phone,
-            "amount": amount
-        })
+        body: JSON.stringify(formData)
     })
     .then(response => response.json())
     .then(data => {
-        if (data.status === "success") {
-            statusDiv.classList.replace('alert-info', 'alert-success');
-            statusDiv.innerText = "STK Push sent! Complete the payment on your phone.";
-        } else {
-            statusDiv.classList.replace('alert-info', 'alert-danger');
-            statusDiv.innerText = "Error: " + data.message;
-            btn.disabled = false;
-            btn.innerText = "Retry STK Push";
+        if (data.status === 'success') {
+            if (paymentMethod === 'mpesa') {
+                const mpesaPhone = document.getElementById('mpesa_phone').value || formData.phone;
+                autoInitiateMpesa(data.order_id, mpesaPhone, data.order_number);
+            } else {
+                const identifier = data.order_number || data.order_id;
+                const finalUrl = successUrlBase.replace('0', identifier);
+                window.location.href = finalUrl;
+            }
         }
     })
-    .catch(error => {
-        console.error("Error:", error);
-        statusDiv.classList.replace('alert-info', 'alert-danger');
-        statusDiv.innerText = "Failed to connect to the server.";
-        btn.disabled = false;
-    });
+    .catch(error => console.error('Error:', error));
 });
+
+function autoInitiateMpesa(orderId, phone, order_number) {
+    // Show a loading state so the user knows something is happening
+    placeOrderBtn.value = "Sending M-Pesa Prompt...";
+    placeOrderBtn.disabled = true;
+
+    fetch("{% url 'pay' %}", {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({
+            "order_id": orderId,
+            "phone": phone
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === "success") {
+            alert("Please enter your M-Pesa PIN on your phone.");
+            
+            // Start checking for payment success every 3 seconds
+            const checkStatusInterval = setInterval(() => {
+                fetch(`/check-payment-status/${orderNumber}/`)
+                    .then(res => res.json())
+                    .then(statusData => {
+                        if (statusData.status === 'paid') {
+                            clearInterval(checkStatusInterval); // Stop checking
+                            // Redirect to the success page
+                            window.location.href = "{% url 'order-success' '0' %}".replace('0', orderNumber);
+                        }
+                    });
+            }, 3000); // 3 seconds
+
+            // Optional: Stop checking after 60 seconds (timeout)
+            setTimeout(() => clearInterval(checkStatusInterval), 60000);
+        }
+    });
+}
 </script>
 
 {% endblock %}

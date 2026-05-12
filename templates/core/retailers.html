@@ -223,65 +223,48 @@
 
                 <div class="col-lg-3 order-2 order-lg-1">
                     <div class="sidebar-categores-box">
-
                         <div class="sidebar-title">
                             <h2>Filter By</h2>
                         </div>
 
-                        <button class="btn-clear-all mb-sm-30 mb-xs-30">Clear all</button>
+                        <a href="{% url 'retailers' %}" class="btn-clear-all mb-sm-30 mb-xs-30" style="text-align:center; display:block;">Clear all</a>
 
-                        <div class="filter-sub-area pt-sm-10 pt-xs-10">
-                            <h5 class="filter-sub-titel">Brand</h5>
-                            <div class="categori-checkbox">
-                                <form action="#">
+                        <form action="{% url 'retailers' %}" method="GET" id="filter-form">
+    
+                            <div class="filter-sub-area">
+                                <h5 class="filter-sub-titel">Brand</h5>
+                                <div class="categori-checkbox">
                                     <ul>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Ajab (150)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Coca-Cola (12)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Soko (11)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Del Monte (150)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Kensalt (12)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Exe (11)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Ketepa (150)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Jetlak (12)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Tropical Heat (11)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Kapa Oil (12)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Pembe (11)</a></li>
+                                        {% for brand in brands %}
+                                        <li>
+                                            <input type="checkbox" name="brand" value="{{ brand.id }}"
+                                                {% if brand.id|stringformat:"i" in selected_brands %}checked{% endif %}
+                                                onchange="this.form.submit()">
+                                            <a href="#">{{ brand.name }} ({{ brand.products.count }})</a>
+                                        </li>
+                                        {% endfor %}
                                     </ul>
-                                </form>
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="filter-sub-area pt-sm-10 pt-xs-10">
-                            <h5 class="filter-sub-titel">Categories</h5>
-                            <div class="categori-checkbox">
-                                <form action="#">
+                            <div class="filter-sub-area">
+                                <h5 class="filter-sub-titel">Categories</h5>
+                                <div class="categori-checkbox">
                                     <ul>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Grains (10)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Cereals (10)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Flour (6)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Fats (10)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Oils (10)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Soft Drinks (6)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Beverages (10)</a></li>
-                                        <li><input type="checkbox" name="product-categori"><a href="#">Detergents (6)</a></li>
+                                        {% for cat in categories %}
+                                        <li>
+                                            <input type="checkbox" name="category_filter" value="{{ cat.id }}"
+                                                {% if cat.id|stringformat:"i" in selected_cats %}checked{% endif %}
+                                                onchange="this.form.submit()">
+                                            <a href="#">{{ cat.name }} ({{ cat.products.count }})</a>
+                                        </li>
+                                        {% endfor %}
                                     </ul>
-                                </form>
+                                </div>
                             </div>
-                        </div>
+                        </form>
 
-                        <div class="filter-sub-area pt-sm-10 pt-xs-10">
-                            <h5 class="filter-sub-titel">Size</h5>
-                            <div class="size-checkbox">
-                                <form action="#">
-                                    <ul>
-                                        <li><input type="checkbox" name="product-size"><a href="#">Bales (3)</a></li>
-                                        <li><input type="checkbox" name="product-size"><a href="#">Cartons (3)</a></li>
-                                    </ul>
-                                </form>
-                            </div>
-                        </div>
-                        
-                    </div>                   
+                    </div>
                 </div>
 
             </div>

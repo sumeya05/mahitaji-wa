@@ -1,5 +1,4 @@
 from urllib import request
-
 from django.shortcuts import render, redirect, get_object_or_404
 from rest_framework import viewsets, permissions
 from django.contrib.auth import logout, login, authenticate
@@ -10,8 +9,7 @@ from django_daraja.mpesa.core import MpesaClient
 import json
 from datetime import datetime
 from django.urls import reverse
-from django.db.models import F, Count
-
+from django.db.models import F, Q, Count
 
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
@@ -21,26 +19,23 @@ from django.utils.encoding import force_bytes
 
 import google.generativeai as genai
 from django.conf import settings
+from django_daraja.mpesa.core import MpesaClient
 
-
-# --- Protected Views ---
 from django.contrib.auth.decorators import login_required
-
 from django.contrib.auth import update_session_auth_hash
-
-# Import models, serializers, and the RegisterForm we'll create
 from .models import (
-    Product, Category, Order, CustomerProfile, 
-    MpesaTransaction, Address
+    Product, Category, Brand, Order, CustomerProfile, 
+    MpesaTransaction, Address, OrderItem
 )
 from .serializers import (
     ProductSerializer, CategorySerializer, OrderSerializer
 )
-from .forms import RegisterForm  # Make sure to create this in core/forms.py
+from .forms import RegisterForm  
+from .cart import Cart
+
 
 
 # 1. Template & Auth Views
-
 def home(request):
     # 1. New Products: Ordered by newest first
     new_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
@@ -75,29 +70,73 @@ def home(request):
         'trending_data': trending_data, # Use this for your dynamic tabs
         'bestsellers': bestsellers,
     }
-    
     return render(request, 'core/home.html', context)
 
 
 
 def retailers(request):
-    # Fetch active products and optimize for brand and UOM lookup
+    # 1. Start with all active products
     all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
+
+    # 2. Grab filter data from the GET request
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    # 3. Apply Brand Filter if any are checked
+    if selected_brands:
+        all_products = all_products.filter(brand_id__in=selected_brands)
+
+    # 4. Apply Category Filter if any are checked
+    if selected_cats:
+        all_products = all_products.filter(category_id__in=selected_cats)
+
     context = {
-        'products': all_products
+        'products': all_products.distinct(), # Use your variable name 'products'
+        'selected_brands': selected_brands,
+        'selected_cats': selected_cats,
     }
     return render(request, 'core/retailers.html', context)
 
 
 def wholesalers(request):
-    # Fetch active products for wholesalers
-    products = Product.objects.filter(is_active=True).select_related('brand')
-    return render(request, 'core/wholesalers.html', {'products': products})
+    # Get initial queryset (Following your existing logic)
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
+
+    # Grab filter data from the GET request
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    # Apply Filters
+    if selected_brands:
+        all_products = all_products.filter(brand_id__in=selected_brands)
+    if selected_cats:
+        all_products = all_products.filter(category_id__in=selected_cats)
+
+    context = {
+        'products': all_products.distinct(), # Variable name used in your template
+        'selected_brands': selected_brands,
+        'selected_cats': selected_cats,
+    }
+    return render(request, 'core/wholesalers.html', context)
 
 def products(request):
-    # Fetch all active products for the general catalog
-    products = Product.objects.filter(is_active=True).select_related('brand')
-    return render(request, 'core/products.html', {'products': products})
+    # This usually shows the full catalog
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
+
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    if selected_brands:
+        all_products = all_products.filter(brand_id__in=selected_brands)
+    if selected_cats:
+        all_products = all_products.filter(category_id__in=selected_cats)
+
+    context = {
+        'products': all_products.distinct(),
+        'selected_brands': selected_brands,
+        'selected_cats': selected_cats,
+    }
+    return render(request, 'core/products.html', context)
 
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
@@ -113,19 +152,168 @@ def product_detail(request, pk):
     })
 
 
-
-
-
-
-
 def search(request):
-    return render(request, 'core/search.html')
+    query = request.GET.get('q')
+    
+    # Get lists of selected IDs from the checkboxes
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+    
+    products = Product.objects.filter(is_active=True)
+    
+    # 1. Text Search
+    if query:
+        products = products.filter(
+            Q(name__icontains=query) | 
+            Q(description__icontains=query) |
+            Q(brand__name__icontains=query)
+        )
+
+    # 2. Filter by Brand (Multiple)
+    if selected_brands:
+        products = products.filter(brand_id__in=selected_brands)
+
+    # 3. Filter by Category (Multiple)
+    if selected_cats:
+        products = products.filter(category_id__in=selected_cats)
+
+    return render(request, 'core/search.html', {
+        'products': products.distinct(),
+        'query': query,
+        'selected_brands': selected_brands,
+        'selected_cats': selected_cats,
+        'brands': Brand.objects.annotate(p_count=Count('products')).filter(p_count__gt=0),
+    })
 
 def shopping_cart(request):
-    return render(request, 'core/shopping-cart.html')
+    """Renders the main cart page"""
+    cart = Cart(request)
+    return render(request, 'core/shopping-cart.html', {'cart': cart})
 
+def cart_add(request):
+    """Handles adding products to the cart via AJAX"""
+    cart = Cart(request)
+    if request.POST.get('action') == 'post':
+        product_id = int(request.POST.get('product_id'))
+        product_qty = int(request.POST.get('product_qty'))
+        product = get_object_or_404(Product, id=product_id)
+        
+        cart.add(product=product, quantity=product_qty)
+        
+        cart_quantity = cart.__len__()
+        response = JsonResponse({'qty': cart_quantity})
+        return response
+
+def cart_delete(request):
+    """Removes an item from the cart via AJAX"""
+    cart = Cart(request)
+    if request.POST.get('action') == 'post':
+        product_id = int(request.POST.get('product_id'))
+        cart.delete(product_id=product_id)
+        
+        cart_quantity = cart.__len__()
+        cart_total = cart.get_total_price()
+        response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
+        return response
+
+def cart_update(request):
+    """Updates the quantity of an item already in the cart"""
+    cart = Cart(request)
+    if request.POST.get('action') == 'post':
+        product_id = int(request.POST.get('product_id'))
+        product_qty = int(request.POST.get('product_qty'))
+        
+        cart.update(product_id=product_id, qty=product_qty)
+        
+        cart_quantity = cart.__len__()
+        cart_total = cart.get_total_price()
+        response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
+        return response
+
+
+
+
+@login_required
 def checkout(request):
-    return render(request, 'core/checkout.html')
+    cart = Cart(request)
+    # Get the user's profile
+    profile = get_object_or_404(CustomerProfile, user=request.user)
+    
+    # Fetch the billing address specifically
+    primary_address = Address.objects.filter(customer=profile, label='Billing Address').first()
+
+    context = {
+        'cart': cart,
+        'profile': profile,
+        'primary_address': primary_address, # This matches your dashboard logic
+    }
+    return render(request, 'core/checkout.html', context)
+
+import uuid
+@login_required
+def place_order(request):
+    if request.method == 'POST':
+        try:
+            cart = Cart(request)
+            data = json.loads(request.body)
+            order_number = str(uuid.uuid4()).split('-')[0].upper() 
+            # 1. Create the Order (The Anchor)s
+            order = Order.objects.create(
+                order_number=f"MAH-{order_number}", # Generates a short unique ID
+                customer=request.user.customerprofile,
+                full_name=f"{data.get('first_name')} {data.get('last_name')}",
+                email=data.get('email'),
+                phone=data.get('phone'),
+                address=data.get('address'),
+                city=data.get('city', 'Nairobi'),
+                total_amount=cart.get_total_price(), # Corrected field name
+                status='PENDING' # Consistent with STATUS_CHOICES
+            )
+    
+
+            # 2. Save Order Items
+            for item in cart:
+                OrderItem.objects.create(
+                    order=order,
+                    product=item['product'],
+                    price_at_purchase=item['price'], # Corrected field name
+                    quantity=item['qty']
+                )
+
+            payment_method = data.get('payment_method')
+            
+            # 3. Return response for Step 2
+            return JsonResponse({
+                'status': 'success',
+                'order_id': order.id,
+                'payment_method': payment_method,
+                'order_number': order.order_number
+            })
+
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+
+
+
+@login_required
+def order_success(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
+    
+    # Initialize and clear the cart
+    cart = Cart(request)
+    cart.clear()
+    
+    # EXTRA SAFETY: Manually pop the key using the string 'cart' 
+    # and 'session_cart' just in case there's a naming mismatch
+    request.session.pop('cart', None)
+    request.session.pop('session_cart', None)
+    
+    # Mark as modified to ensure the deletions above are committed
+    request.session.modified = True
+    
+    return render(request, 'core/order-success.html', {'order': order})
+
+
 
 
 # Auth Views
@@ -329,117 +517,98 @@ class OrderViewSet(viewsets.ModelViewSet):
 
 
 # 3. MPESA
-import json
-from django.http import JsonResponse
 
-from django_daraja.mpesa.core import MpesaClient
 
+@login_required
 def initiate_stk_push(request):
     if request.method == "POST":
         try:
-            # 1. Parse data from frontend
             data = json.loads(request.body)
+            order_id = data.get('order_id')
+            order = get_object_or_404(Order, id=order_id)
+            
+            # Safeguard: Normalizing phone number
             raw_phone = data.get('phone')
-            # Ensure amount is an integer for Safaricom's API
-            amount = int(data.get('amount', 1))
-
-            # 2. Format phone (ensures 254... format)
             if raw_phone.startswith('0'):
                 phone_number = '254' + raw_phone[1:]
-            elif raw_phone.startswith('7'):
+            elif raw_phone.startswith('7') or raw_phone.startswith('1'): # Supports newer 01... prefixes
                 phone_number = '254' + raw_phone
             else:
                 phone_number = raw_phone
 
-            # 3. Handle the Order
-            try:
-                # In views.py Step 3
-                order_instance = Order.objects.filter(customer__user=request.user).latest('id')
-            except Order.DoesNotExist:
-                order_instance = None 
-
-            # 4. M-Pesa Configuration
+            # M-Pesa Configuration
             cl = MpesaClient()
-            account_reference = 'Mahitaji_Order'
-            transaction_desc = 'Wholesale Payment'
-            # Use ngrok URL for local testing or request.build_absolute_uri(reverse('callback'))
-            callback_url = 'https://abc6-185-177-124-199.ngrok-free.app/mpesa/callback/'
+            amount = int(order.total_amount)
+            account_ref = f"Order_{order.id}"
+            callback_url = 'https://your-ngrok-url.ngrok-free.app/mpesa/callback/'
             
-            # Trigger the STK Push
-            response = cl.stk_push(phone_number, amount, account_reference, transaction_desc, callback_url)
+            response = cl.stk_push(phone_number, amount, account_ref, 'Mahitaji Payment', callback_url)
 
-            # 5. Prevent Duplicate Entry error
-            # If a transaction for this order exists, update it; otherwise, create it.
-            if order_instance:
-                MpesaTransaction.objects.update_or_create(
-                    order=order_instance,
-                    defaults={
-                        'checkout_request_id': response.checkout_request_id,
-                        'merchant_request_id': response.merchant_request_id,
-                        'amount': amount,
-                        'phone_number': phone_number,
-                        'is_success': False 
-                    }
-                )
+            # Log Transaction with Order link
+            MpesaTransaction.objects.update_or_create(
+                order=order,
+                defaults={
+                    'checkout_request_id': response.checkout_request_id,
+                    'merchant_request_id': response.merchant_request_id,
+                    'amount': amount,
+                    'phone_number': phone_number,
+                    'is_success': False
+                }
+            )
             
-            return JsonResponse({"status": "success", "response": str(response)})
-        
+            return JsonResponse({"status": "success", "checkout_id": response.checkout_request_id})
         except Exception as e:
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
+        
+@login_required
+def check_payment_status(request, order_number):
+    order = get_object_or_404(Order, order_number=order_number)
+    # Check if a successful transaction exists for this order
+    transaction = MpesaTransaction.objects.filter(order=order, is_success=True).exists()
     
-    return JsonResponse({"status": "error", "message": "Invalid request"}, status=400)
+    if transaction:
+        return JsonResponse({'status': 'paid'})
+    return JsonResponse({'status': 'pending'})
 
 
 @csrf_exempt
 def mpesa_callback(request):
-    if request.method == 'POST':
-        try:
-            data = json.loads(request.body)
-            stk_callback = data['Body']['stkCallback']
-            
-            checkout_id = stk_callback['CheckoutRequestID']
-            result_code = stk_callback['ResultCode']
-            result_desc = stk_callback['ResultDesc']
-            
-            # Fetch the record initiated earlier
-            transaction = MpesaTransaction.objects.get(checkout_request_id=checkout_id)
-            transaction.response_description = result_desc
-            
-            if result_code == 0:
-                # Success! Extract metadata
-                metadata = stk_callback['CallbackMetadata']['Item']
-                
-                for item in metadata:
-                    name = item.get('Name')
-                    value = item.get('Value')
-                    
-                    if name == 'MpesaReceiptNumber':
-                        transaction.receipt_number = value
-                    elif name == 'TransactionDate':
-                        # Format: 20260415093015
-                        transaction.transaction_date = datetime.strptime(str(value), '%Y%m%d%H%M%S')
-                
-                transaction.is_success = True
-                
-                # Update Order Status automatically
-                order = transaction.order
-                order.status = 'Completed' # Or whatever choice matches your Order model
-                order.save()
+    try:
+        data = json.loads(request.body)
+        stk_callback = data['Body']['stkCallback']
+        result_code = stk_callback['ResultCode']
+        checkout_request_id = stk_callback['CheckoutRequestID']
 
-            else:
-                transaction.is_success = False
+        # Find the specific transaction
+        transaction = MpesaTransaction.objects.get(checkout_request_id=checkout_request_id)
+
+        if result_code == 0:
+            # Successful Payment - Parse Metadata items
+            metadata = stk_callback['CallbackMetadata']['Item']
+            receipt_no = ""
+            for item in metadata:
+                if item['Name'] == 'MpesaReceiptNumber':
+                    receipt_no = item['Value']
             
+            # Update Transaction
+            transaction.is_success = True
+            transaction.mpesa_receipt_number = receipt_no # Ensure this field exists in your model
             transaction.save()
-            return JsonResponse({"ResultCode": 0, "ResultDesc": "Success"})
 
-        except MpesaTransaction.DoesNotExist:
-            return JsonResponse({"ResultCode": 1, "ResultDesc": "Transaction not found"}, status=404)
-        except Exception as e:
-            return JsonResponse({"ResultCode": 1, "ResultDesc": str(e)}, status=500)
-
-    return JsonResponse({"status": "error"}, status=400)
-
-
+            # Update Order
+            order = transaction.order
+            order.payment_status = 'Paid'
+            order.save()
+            
+            return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
+        else:
+            # Failed Payment
+            transaction.is_success = False
+            transaction.save()
+            return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment Failed"})
+            
+    except Exception as e:
+        return JsonResponse({"ResultCode": 1, "ResultDesc": f"Internal Error: {str(e)}"})
 
 
 

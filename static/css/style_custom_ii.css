@@ -132,6 +132,7 @@
     text-decoration: none;
     border-radius: 0 !important; /* Sharp corners to match card */
     transition: background 0.2s ease;
+    border: none;
 }
 
 .btn-full-width:hover {

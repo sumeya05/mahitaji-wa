@@ -1,0 +1,264 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %} Checkout | Mahitaji{% endblock %}
+
+{% block content %}
+<main class="body-wrapper">
+
+            <!-- Begin Li's Breadcrumb Area -->
+            <div class="breadcrumb-area">
+                <div class="container">
+                    <div class="breadcrumb-content">
+                        <ul>
+                            <li><a href="{% url 'home' %}">Home</a></li>
+                            <li><a href="{% url 'shopping-cart' %}">Shopping Cart</a></li>
+                            <li class="active">Checkout</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <!-- Li's Breadcrumb Area End Here -->
+            <!--Checkout Area Strat-->
+            <div class="checkout-area pt-60 pb-30">
+                <div class="container">
+
+                    <div class="row">
+
+                        <div class="col-lg-6 col-12">
+                            <form action="#">
+                                <div class="checkbox-form">
+                                <h3>Billing Details</h3>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="checkout-form-list">
+                                            <label>First Name <span class="required">*</span></label>
+                                            <input placeholder="" type="text" id="first_name" 
+                                                value="{{ request.user.first_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="checkout-form-list">
+                                            <label>Last Name <span class="required">*</span></label>
+                                            <input placeholder="" type="text" id="last_name" 
+                                                value="{{ request.user.last_name }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Email Address <span class="required">*</span></label>
+                                            <input placeholder="" type="email" id="email_address" 
+                                                value="{{ request.user.email }}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Phone <span class="required">*</span></label>
+                                            <input type="text" id="phone_number" 
+                                                value="{{ profile.phone_number }}">
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Address <span class="required">*</span></label>
+                                            <input placeholder="Street address" type="text" id="address" name="address"
+                                                value="{{ primary_address.physical_address|default:'' }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="checkout-form-list">
+                                            <label>Town / City <span class="required">*</span></label>
+                                            <input type="text" id="city_town" name="city"
+                                                value="{{ primary_address.city|default:'Nairobi' }}">
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            </form>
+                        </div>
+
+                        <div class="col-lg-6 col-12">
+                            <div class="your-order">
+                                <h3>Your order</h3>
+                                <div class="your-order-table table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th class="cart-product-name">Product</th>
+                                                <th class="cart-product-total">Total</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for item in cart %}
+                                            <tr class="cart_item">
+                                            <td class="cart-product-name">
+                                                {{ item.product.name }} 
+                                                <strong class="product-quantity"> × {{ item.qty }}</strong>
+                                            </td>
+                                            <td class="cart-product-total">
+                                                <span class="amount">ksh {{ item.total_price }}</span>
+                                            </td>  
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                        <tfoot>
+                                            <tr class="cart-subtotal">
+                                                <th>Cart Subtotal</th>
+                                                <td><span class="amount">ksh {{ cart.get_total_price }}</span></td>
+                                            </tr>
+                                            <tr class="order-total">
+                                                <th>Order Total</th>
+                                                <td><strong><span class="amount">ksh {{ cart.get_total_price }}</span></strong></td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                                              
+
+                    </div>
+
+                    <div class="row">
+                         <div class="col-lg-6 col-12">
+                            <div class="your-order">
+                                <h3>Make Payment</h3>
+                                <div class="payment-method">
+                                    <div class="payment-accordion">
+                                        <div id="accordion">
+                                          
+                                          <div class="card">
+                                            <div class="card-header" id="#payment-1">
+                                              <h5 class="panel-title">
+                                                <a class="" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                                  Cash on Delivery.
+                                                </a>
+                                              </h5>
+                                            </div>
+                                            <div id="collapseOne" class="collapse show" data-parent="#accordion">
+                                              <div class="card-body">
+                                                <p>Make your payment when you receive the package.<br>
+                                                <strong>Offer available for selected customers</strong>.</p>
+                                              </div>
+                                            </div>
+                                          </div><br>
+
+                                          <div class="card">
+                                            <div class="card-header" id="payment-2">
+                                                <h5 class="panel-title">
+                                                    <a class="collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                        Lipa Na Mpesa
+                                                    </a>
+                                                </h5>
+                                            </div>
+                                            <div id="collapseTwo" class="collapse" data-parent="#accordion">
+                                                <div class="card-body">
+                                                    <p>Please enter your M-Pesa number below to receive the payment prompt.</p>
+                                                    <div class="checkout-form-list">
+                                                        <label>M-Pesa Number <span class="required">*</span></label>
+                                                        <input type="text" id="mpesa_phone" placeholder="e.g. 0712345678" value="{{ request.user.customerprofile.phone_number|default:'' }}">
+                                                    </div>
+                                                    <input type="hidden" id="order_total_val" value="1"> 
+                                                    
+                                                    <div class="order-button-payment mt-20">
+                                                        <button type="button" id="stkPushBtn" class="btn btn-success w-100" style="background-color: #49b04d; border: none; color: white; padding: 10px;">
+                                                            Send STK Push
+                                                        </button>
+                                                    </div>
+                                                    <div id="mpesa-status" class="mt-10 d-none alert alert-info"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        </div>
+                                        <div class="order-button-payment">
+                                            <input value="Place Order" type="submit">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <!--Checkout Area End-->
+            <!-- Begin Footer Area -->
+</main>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+document.getElementById('place-order-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+
+    // Collect Form Data
+    const formData = {
+        full_name: document.getElementById('first_name').value + " " + document.getElementById('last_name').value,
+        email: document.getElementById('email_address').value,
+        phone: document.getElementById('phone_number').value,
+        address: document.getElementById('address').value,
+        city: document.getElementById('city_town').value,
+        payment_method: document.querySelector('input[name="payment_method"]:checked').value
+    };
+
+    // Step 1: Create the Order
+    fetch("{% url 'place-order' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            if (data.payment_method === 'mpesa') {
+                // Step 2a: Trigger STK Push using the new Order ID
+                triggerMpesaPush(formData.phone, data.order_id);
+            } else {
+                // Step 2b: Cash on Delivery Success
+                alert("Order Placed Successfully!");
+                window.location.href = "{% url 'home' %}"; // Or an order success page
+            }
+        } else {
+            alert("Error: " + data.message);
+        }
+    });
+});
+
+function triggerMpesaPush(phone, orderId) {
+    const statusDiv = document.getElementById('mpesa-status');
+    statusDiv.classList.remove('d-none');
+    statusDiv.innerText = "Initializing M-Pesa Payment...";
+
+    fetch("{% url 'pay' %}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: JSON.stringify({
+            "phone": phone,
+            "order_id": orderId
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === "success") {
+            statusDiv.innerText = "Prompt sent! Enter PIN on your phone to complete order.";
+            // You can add a poller here to check if payment is complete
+        }
+    });
+}
+</script>
+
+{% endblock %}

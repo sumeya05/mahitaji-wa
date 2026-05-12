@@ -38,34 +38,39 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td class="li-product-remove"><a href="#"><i class="fa fa-times"></i></a></td>
-                                                <td class="li-product-thumbnail"><a href="{% url 'product_detail' 1 %}"><img class="li-product-thumbnail-img" src="/media/alpa_fat_100x50g.webp" alt="Li's Product Image"></a></td>
-                                                <td class="li-product-name"><a href="{% url 'product_detail' 1 %}">Alpa Fat 100x50gm Satchet (5KG Carton)</a></td>
-                                                <td class="li-product-price"><span class="amount">ksh 1030.00</span></td>
+                                            {% for item in cart %}
+                                            {% with product=item.product %}
+                                            <tr id="product-row-{{ product.id }}">
+                                                <td class="li-product-remove">
+                                                    <button class="delete-product" data-index="{{ product.id }}" style="background:none; border:none;">
+                                                        <i class="fa fa-times"></i>
+                                                    </button>
+                                                </td>
+                                                <td class="li-product-thumbnail">
+                                                    <a href="{% url 'product_detail' product.pk %}">
+                                                        <img src="{{ product.image_url }}" alt="" style="width:70px;">
+                                                    </a>
+                                                </td>
+                                                <td class="cart-product-name"><a href="#">{{ product.name }}</a></td>
+                                                <td class="li-product-price"><span class="amount">ksh {{ item.price }}</span></td>
                                                 <td class="quantity">
                                                     <div class="cart-plus-minus">
-                                                        <input class="cart-plus-minus-box" value="1" type="text">
-                                                        <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
-                                                        <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
+                                                        <input class="cart-plus-minus-box update-qty" 
+                                                            data-index="{{ item.product.id }}" 
+                                                            value="{{ item.qty }}" 
+                                                            type="text">
                                                     </div>
                                                 </td>
-                                                <td class="product-subtotal"><span class="amount">ksh 1030.00</span></td>
+                                                <td class="product-subtotal">
+                                                    <span class="amount" id="subtotal-{{ product.id }}">ksh {{ item.total_price }}</span>
+                                                </td>
                                             </tr>
+                                            {% endwith %}
+                                            {% empty %}
                                             <tr>
-                                                <td class="li-product-remove"><a href="#"><i class="fa fa-times"></i></a></td>
-                                                <td class="li-product-thumbnail"><a href="{% url 'product_detail' 2 %}"><img class="li-product-thumbnail-img" src="/media/alpa_fat_10kg.webp" alt="Li's Product Image"></a></td>
-                                                <td class="li-product-name"><a href="{% url 'product_detail' 2 %}">Alpa Fat 10kg Carton</a></td>
-                                                <td class="li-product-price"><span class="amount">ksh 1790.00</span></td>
-                                                <td class="quantity">
-                                                    <div class="cart-plus-minus">
-                                                        <input class="cart-plus-minus-box" value="1" type="text">
-                                                        <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
-                                                        <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
-                                                    </div>
-                                                </td>
-                                                <td class="product-subtotal"><span class="amount">ksh 1790.00</span></td>
+                                                <td colspan="6" class="text-center">Your cart is empty.</td>
                                             </tr>
+                                            {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>
@@ -82,18 +87,20 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-5 ml-auto">
                                         <div class="cart-page-total">
                                             <h2>Cart totals</h2>
                                             <ul>
-                                                <li>Subtotal <span>ksh 2820.00</span></li>
-                                                <li>Total <span>ksh 2820.00</span></li>
+                                                <li>Subtotal <span id="cart-subtotal">ksh {{ cart.get_total_price }}</span></li>
+                                                <li>Total <span id="cart-total-final">ksh {{ cart.get_total_price }}</span></li>
                                             </ul>
                                             <a href="{% url 'checkout' %}">Proceed to checkout</a>
                                         </div>
                                     </div>
                                 </div>
+
                             </form>
                         </div>
                     </div>

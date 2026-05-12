@@ -29,21 +29,21 @@ class ProductAdmin(ImportExportModelAdmin): # Inherit from ImportExportModelAdmi
     
     # Keep your full list_display to see all important info at a glance
     list_display = [
-        'item_code', 'name', 'brand', 'category', 
-        'unit_of_measure', 'retail_price', 'wholesale_price', 
-        'current_stock', 'is_active'
+        'item_code', 'name',
+        'unit_of_measure', 'old_price','retail_price', 'wholesale_price', 
+        'current_stock', 'is_trending','is_best_seller', 'is_active'
     ]
     
     # Keep your readonly fields so the stock property doesn't crash the edit page
     readonly_fields = ['current_stock']
     
     # Keep these for better usability
-    list_filter = ['category', 'brand', 'unit_of_measure', 'is_active']
+    list_filter = ['category', 'brand', 'unit_of_measure', 'supplier', 'is_active']
     search_fields = ['name', 'item_code']
     prepopulated_fields = {'slug': ('name',)}
     
     # Keep this so you can change prices quickly without opening every product
-    list_editable = ['retail_price', 'wholesale_price', 'is_active']
+    list_editable = ['is_active']
 
     # This makes the property look nice in the admin list
     def current_stock(self, obj):

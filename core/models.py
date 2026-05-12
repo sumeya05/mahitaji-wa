@@ -121,7 +121,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, blank=True) 
     description = models.TextField(blank=True, null=True)   
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, related_name='products')
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     supplier = models.ForeignKey(
         Supplier, 
@@ -130,10 +130,10 @@ class Product(models.Model):
         blank=True, 
         related_name='products'
     )
-    unit_of_measure = models.ForeignKey(UnitOfMeasure, on_delete=models.SET_NULL, null=True, related_name='products')
+    unit_of_measure = models.ForeignKey(UnitOfMeasure, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     old_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    retail_price = models.DecimalField(max_digits=12, decimal_places=2)
-    wholesale_price = models.DecimalField(max_digits=12, decimal_places=2)
+    retail_price = models.DecimalField(default=100, max_digits=12, decimal_places=2, null=True, blank=True)
+    wholesale_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True,)
     average_rating = models.PositiveIntegerField(default=4)      
     image = models.ImageField(upload_to='products/', null=True, blank=True) 
     last_sync_time = models.DateTimeField(auto_now=True)
@@ -233,17 +233,24 @@ class StockLedger(models.Model):
 # --- C. ORDER & TRANSACTION MODELS ---
 
 class Order(models.Model):
-    STATUS_CHOICES = [
-        ('PENDING', 'Pending Payment'),
-        ('PAID', 'Processing'),
-        ('SHIPPED', 'In Transit'),
+    STATUS_CHOICES = (
+        ('PENDING', 'Pending'),
+        ('PAID', 'Paid'),
+        ('FAILED', 'Failed'),
+        ('SHIPPED', 'Shipped'),
         ('DELIVERED', 'Delivered'),
         ('CANCELLED', 'Cancelled'),
-    ]
-
-    order_number = models.CharField(max_length=50, unique=True)
-    customer = models.ForeignKey(CustomerProfile, on_delete=models.CASCADE, related_name='orders')
-    address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)
+    )
+    
+    customer = models.ForeignKey(CustomerProfile, on_delete=models.SET_NULL, null=True, related_name='orders')
+    order_number = models.CharField(max_length=20, unique=True)
+    
+    # --- SNAPSHOT FIELDS ---
+    full_name = models.CharField(max_length=255, blank=True, null=True)
+    email = models.EmailField(blank=True, null=True)
+    phone = models.CharField(max_length=20, blank=True, null=True)
+    address = models.TextField(blank=True, null=True) # Now a text field to store the exact delivery spot
+    city = models.CharField(max_length=100, default="Nairobi")
     
     total_amount = models.DecimalField(max_digits=12, decimal_places=2)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')

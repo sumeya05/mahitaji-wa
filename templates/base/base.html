@@ -63,65 +63,68 @@
 
                     <!-- Search: Centered and Wider -->
                     <div class="col-lg-6 col-md-6">
-                        <form action="#" class="hm-searchbox custom-search-wide">
-                            <select class="nice-select select-search-category">
-                                <option value="0">All</option>                       
-                                <option value="1">Flour</option>                
-                                <option value="2">Cooking Oil</option>                              
-                                <option value="3">Toiletries</option>            
-                                <option value="4">Detergents</option>                          
-                                <option value="5">Bar Soaps</option>                                
-                                <option value="6">Cereals</option>                           
-                                <option value="7">Baking Additives</option>
-                                <option value="8">Soft Drinks</option>
+                        <form action="{% url 'search' %}" method="GET" class="hm-searchbox custom-search-wide">
+                            <select name="category" class="nice-select select-search-category">
+                                <option value="0">All Categories</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>
+                                        {{ cat.name }}
+                                    </option>
+                                {% endfor %}
                             </select>
-                            <input type="text" placeholder="Enter your search key ...">
-                            <button class="li-btn" type="submit"><i class="fa fa-search"></i></button>
+                            
+                            <input type="text" name="q" placeholder="Enter your search key ..." value="{{ query|default:'' }}">
+                            
+                            <button class="li-btn" type="submit">
+                                <i class="fa fa-search"></i>
+                            </button>
                         </form>
                     </div>
 
                     <div class="col-lg-3 col-md-3 text-right">
                         <div class="header-middle-right" style="justify-content: flex-end;">
                             <ul class="hm-menu">
-                                <li class="hm-minicart" title="My Shopping Cart">
-
+                                <li class="hm-minicart" title="My Shopping cart">
                                     <div class="hm-minicart-trigger">
                                         <span class="item-icon"></span>
-                                        <span class="item-text">ksh 2820.00                                                        
-                                        <span class="cart-item-count">2</span></span>
+                                        <span class="item-text">
+                                            ksh {{ cart.get_total_price }}
+                                            <span class="cart-item-count" id="cart-qty">{{ cart|length }}</span>
+                                        </span>
                                     </div>
-
                                     <span></span>
-
                                     <div class="minicart">
-
-                                        <ul class="minicart-product-list">
+                                        <ul class="minicart-product-list" id="minicart-list">
+                                            {% for item in cart %}
+                                            {% with product=item.product %}
                                             <li>
-                                                <a href="{% url 'product_detail' 1 %}" class="minicart-product-image"><img src="/media/alpa_fat_100x50g.webp" alt="cart products"></a>
+                                                <a href="{% url 'product_detail' product.pk %}" class="minicart-product-image">
+                                                    <img src="{{ product.image_url }}" alt="cart products">
+                                                </a>
                                                 <div class="minicart-product-details">
-                                                    <h6><a href="{% url 'product_detail' 1 %}">Alpa Fat 100x50gm Satchet</a></h6><span>ksh 1030.00 x 1</span>
+                                                    <h6><a href="{% url 'product_detail' product.pk %}">{{ product.name }}</a></h6>
+                                                    <span>ksh {{ item.price }} x {{ item.qty }}</span>
                                                 </div>
-                                                <button class="close" title="Remove"><i class="fa fa-close"></i></button>
+                                                <button class="close delete-product" data-index="{{ product.id }}" title="Remove">
+                                                    <i class="fa fa-close"></i>
+                                                </button>
                                             </li>
-                                            <li>
-                                                <a href="{% url 'product_detail' 1 %}" class="minicart-product-image"><img src="/media/alpa_fat_10kg.webp" alt="cart products"></a>
-                                                <div class="minicart-product-details">
-                                                    <h6><a href="{% url 'product_detail' 1 %}">Alpa Fat 10kg Carton</a></h6><span>ksh 1790.00 x 1</span>
-                                                </div>
-                                                <button class="close" title="Remove"><i class="fa fa-close"></i></button>
-                                            </li>
+                                            {% endwith %}
+                                            {% empty %}
+                                            <li>Your cart is empty</li>
+                                            {% endfor %}
                                         </ul>
-
-                                        <p class="minicart-total">SUBTOTAL:<span>ksh 2820.00</span></p>
-
+                                        <p class="minicart-total">SUBTOTAL: <span id="cart-total">ksh {{ cart.get_total_price }}</span></p>
                                         <div class="minicart-button">
-                                            <a href="{% url 'shopping-cart' %}" class="li-button li-button-fullwidth li-button-dark"><span>View Full Cart</span></a>
-                                            <a href="{% url 'checkout' %}" class="li-button li-button-fullwidth"><span>Checkout</span></a>
+                                            <a href="{% url 'shopping-cart' %}" class="li-button li-button-fullwidth li-button-dark">
+                                                <span>View Full Cart</span>
+                                            </a>
+                                            <a href="{% url 'checkout' %}" class="li-button li-button-fullwidth">
+                                                <span>Checkout</span>
+                                            </a>
                                         </div>
-
                                     </div>
-
-                                </li><!-- End of Mini Cart Area -->
+                                </li>
 
                                 <!-- My Account Area -->
                                 <li class="hm-wishlist" title="My Account">
@@ -463,6 +466,7 @@
 
     </footer>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- -- Modernizr js - Should Stay in Header -- -->
     <script src="{% static 'js/vendor/modernizr-2.8.3.min.js' %}"></script>
     <script src="{% static 'js/vendor/jquery-1.12.4.min.js' %}"></script>
@@ -489,103 +493,173 @@
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/main_custom.js' %}"></script>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- EXISTING CHAT LOGIC ---
+        const chatToggle = document.getElementById('chatToggle');
+        const chatWindow = document.getElementById('chatWindow');
+        const closeChat = document.getElementById('closeChat');
+        const chatInput = document.getElementById('chatInput');
+        const sendBtn = document.getElementById('sendMsg');
+        const chatBody = document.getElementById('chatBody');
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const chatToggle = document.getElementById('chatToggle');
-            const chatWindow = document.getElementById('chatWindow');
-            const closeChat = document.getElementById('closeChat');
-            const chatInput = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendMsg');
-            const chatBody = document.getElementById('chatBody');
+        function appendToUI(text, role) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${role}`;
+            msgDiv.textContent = text;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+            return msgDiv;
+        }
 
-            // --- 1. Helper to add messages to the UI ---
-            function appendToUI(text, role) {
-                const msgDiv = document.createElement('div');
-                msgDiv.className = `message ${role}`;
-                msgDiv.textContent = text;
-                chatBody.appendChild(msgDiv);
-                chatBody.scrollTop = chatBody.scrollHeight;
-                return msgDiv;
-            }
+        const savedChat = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
+        savedChat.forEach(msg => { appendToUI(msg.text, msg.role); });
 
-            // --- 2. Load History from LocalStorage ---
-            const savedChat = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
-            savedChat.forEach(msg => {
-                appendToUI(msg.text, msg.role);
+        if (chatToggle && chatWindow) {
+            chatToggle.addEventListener('click', function(e) {
+                e.preventDefault();
+                chatWindow.classList.toggle('d-none');
+                if (!chatWindow.classList.contains('d-none')) { chatInput.focus(); }
             });
+        }
 
-            // --- 3. Toggle Logic ---
-            if (chatToggle && chatWindow) {
-                chatToggle.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    chatWindow.classList.toggle('d-none');
-                    if (!chatWindow.classList.contains('d-none')) {
-                        chatInput.focus();
-                    }
+        if (closeChat) {
+            closeChat.addEventListener('click', () => chatWindow.classList.add('d-none'));
+        }
+
+        let activeSendBtn = sendBtn;
+        if (sendBtn) {
+            activeSendBtn = sendBtn.cloneNode(true);
+            sendBtn.parentNode.replaceChild(activeSendBtn, sendBtn);
+        }
+
+        async function startAiChat() {
+            const message = chatInput.value.trim();
+            if (!message) return;
+            appendToUI(message, 'user');
+            chatInput.value = '';
+            const loadingDiv = appendToUI('Thinking...', 'assistant');
+            try {
+                const response = await fetch('/ai-assistant-chat/', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({ 'message': message })
                 });
+                const data = await response.json();
+                chatBody.removeChild(loadingDiv);
+                appendToUI(data.reply, 'assistant');
+                const chatData = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
+                chatData.push({role: 'user', text: message});
+                chatData.push({role: 'assistant', text: data.reply});
+                localStorage.setItem('mahitaji_chat', JSON.stringify(chatData));
+            } catch (error) {
+                if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
+                appendToUI("Connection error. Please try again.", "assistant");
             }
+        }
 
-            if (closeChat) {
-                closeChat.addEventListener('click', () => chatWindow.classList.add('d-none'));
-            }
+        if (activeSendBtn) activeSendBtn.addEventListener('click', startAiChat);
+        if (chatInput) {
+            chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') startAiChat(); });
+        }
 
-            // --- 4. Clone Button to Wipe Theme Baggage ---
-            let activeSendBtn = sendBtn;
-            if (sendBtn) {
-                activeSendBtn = sendBtn.cloneNode(true);
-                sendBtn.parentNode.replaceChild(activeSendBtn, sendBtn);
-            }
+        // ==========================================
+        // --- NEW CART LOGIC (AJAX with jQuery) ---// ==========================================
+// --- NEW CART LOGIC (AJAX with jQuery) ---
+// ==========================================
 
-            // --- 5. AI Chat Logic ---
-            async function startAiChat() {
-                const message = chatInput.value.trim();
-                if (!message) return;
+// 1. ADD TO CART
+$(document).on('click', '.add-to-cart-btn', function (e) {
 
-                // Show user message in UI
-                appendToUI(message, 'user');
-                chatInput.value = '';
+    e.preventDefault();
 
-                // Show typing indicator
-                const loadingDiv = appendToUI('Thinking...', 'assistant');
+    var productid = $(this).val();
 
-                try {
-                    const response = await fetch('/ai-assistant-chat/', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRFToken': '{{ csrf_token }}',
-                            'Content-Type': 'application/x-www-form-urlencoded',
-                        },
-                        body: new URLSearchParams({ 'message': message })
-                    });
+    $.ajax({
+        type: 'POST',
+        url: '{% url "cart_add" %}',
+        data: {
+            product_id: productid,
+            product_qty: 1,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
 
-                    const data = await response.json();
-                    chatBody.removeChild(loadingDiv);
-                    
-                    // Show AI message in UI
-                    appendToUI(data.reply, 'assistant');
+        success: function (json) {
+            $('#cart-qty').text(json.qty);
+            alert("Added to cart!");
+        },
 
-                    // --- 6. SAVE TO LOCALSTORAGE ---
-                    const chatData = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
-                    chatData.push({role: 'user', text: message});
-                    chatData.push({role: 'assistant', text: data.reply});
-                    localStorage.setItem('mahitaji_chat', JSON.stringify(chatData));
+        error: function (xhr, errmsg, err) {
+            console.log(xhr.responseText);
+        }
+    });
+});
 
-                } catch (error) {
-                    if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
-                    appendToUI("Connection error. Please try again.", "assistant");
-                }
-            }
 
-            // --- 7. Event Listeners ---
-            if (activeSendBtn) activeSendBtn.addEventListener('click', startAiChat);
-            if (chatInput) {
-                chatInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') startAiChat();
-                });
-            }
-        });
-        </script>
+// 2. DELETE FROM CART
+$(document).on('click', '.delete-product', function (e) {
+
+    e.preventDefault();
+
+    var productid = $(this).data('index');
+
+    $.ajax({
+        type: 'POST',
+        url: '{% url "cart_delete" %}',
+        data: {
+            product_id: productid,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+
+        success: function (json) {
+
+            $('#cart-qty').text(json.qty);
+            $('#cart-total').text('ksh ' + json.total);
+            $('#cart-subtotal').text('ksh ' + json.total);
+            $('#cart-total-final').text('ksh ' + json.total);
+
+            $('#product-row-' + productid).remove();
+        }
+    });
+});
+
+
+// 3. UPDATE QUANTITY
+$(document).on('change', '.update-qty', function (e) {
+
+    e.preventDefault();
+
+    var productid = $(this).data('index');
+    var qty = $(this).val();
+
+    $.ajax({
+        type: 'POST',
+        url: '{% url "cart_update" %}',
+        data: {
+            product_id: productid,
+            product_qty: qty,
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            action: 'post'
+        },
+
+        success: function (json) {
+            location.reload();
+        }
+    });
+});
+
+// This forces the AJAX to run when the + or - buttons are clicked
+$(document).on('click', '.qtybutton', function () {
+    $(this).parent().find('input').trigger('change');
+});
+        
+    });
+    </script>
 
     {% block extra_js %}
 
