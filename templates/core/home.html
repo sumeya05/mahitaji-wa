@@ -10,94 +10,140 @@
 
     <section class="hero">
 
-                        <div class="hero-slider">
-                            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_four.png');"></div>
-                            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_two.png');"></div>
-                            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_five.png');"></div>
-                            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_three.png');"></div>       
-                        </div>
+        <div class="hero-slider">
+            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_four.png');"></div>
+            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_two.png');"></div>
+            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_five.png');"></div>
+            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_three.png');"></div>       
+        </div>
 
-                        <div class="rotary-wrapper">
+        <div class="rotary-wrapper">
+            <div class="middle-container">
+                <a href="#"><img src="{% static 'assets/logos/1.gif' %}" alt="Logo" class="center-logo"></a>
+            </div>
 
-                            <div class="middle-container">
-                                <a href="#"><img src="{% static 'assets/logos/1.gif' %}" alt="Logo" class="center-logo"></a>
-                            </div>
+            <div id="categories" class="categories-container">
+                <div class="category-item">
+                    <a href="{% url 'products' %}" class="category-link" data-category="cereals">
+                        <img src="{% static 'assets/categories/cereals.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <span class="category-tooltip">Cereals</span>
+                    </a>
+                </div>
+                <div class="category-item">
+                    <a href="{% url 'products' %}" class="category-link" data-category="oils">
+                        <img src="{% static 'assets/categories/oils.png' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <span class="category-tooltip">Oils</span>
+                    </a>
+                </div>                                               
+                <div class="category-item">
+                    <a href="{% url 'products' %}" class="category-link" data-category="drinks">
+                        <img src="{% static 'assets/categories/drinks.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <span class="category-tooltip">Drinks</span>
+                    </a>
+                </div>  
+                <div class="category-item">
+                    <a href="{% url 'products' %}" class="category-link" data-category="soaps">
+                        <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <span class="category-tooltip">Soaps</span>
+                    </a>
+                </div>  
+                <div class="category-item">
+                    <a href="{% url 'products' %}" class="category-link" data-category="flour">
+                        <img src="{% static 'assets/categories/flour.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <span class="category-tooltip">Flour</span>
+                    </a>
+                </div>  
+            </div>
 
-                            <div id="categories" class="categories-container">
+            <div id="suppliers" class="ring suppliers-container desktop-only">
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"><span class="supplier-name">Ajab</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"><span class="supplier-name">Coca-Cola</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"><span class="supplier-name">Soko</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"><span class="supplier-name">Del Monte</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"><span class="supplier-name">Kensalt</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"><span class="supplier-name">EXE</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"><span class="supplier-name">Ketepa</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"><span class="supplier-name">Jetlak</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"><span class="supplier-name">Tropical Heat</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"><span class="supplier-name">Kapa Oil</span></a>
+                <a href="{% url 'products' %}" class="supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"><span class="supplier-name">Pembe</span></a>
+            </div>
+        </div>
 
-                                <div class="category-item">
-                                    <a href="{% url 'products' %}" class="category-link" data-category="cereals">
-                                        <img src="{% static 'assets/categories/cereals.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                                        <span class="category-tooltip">Cereals</span>
-                                    </a>
-                                </div>
+        <div id="ourSuppliers" class="mobile-only-bar">
+            <h3>Browse By Brand</h3>
+            <div class="suppliersCarousel">
+                <div id="suppliers-mobile" class="cards-container suppliers-mobile-track">
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"></a>
+                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"></a>
+                </div>
+            </div>                
+        </div>
 
-                                <div class="category-item">
-                                    <a href="{% url 'products' %}" class="category-link" data-category="oils">
-                                        <img src="{% static 'assets/categories/oils.png' %}" alt="Cereals Category Icon" width="100" height="100">
-                                        <span class="category-tooltip">Oils</span>
-                                    </a>
-                                </div>                                               
-
-                                <div class="category-item">
-                                    <a href="{% url 'products' %}" class="category-link" data-category="drinks">
-                                        <img src="{% static 'assets/categories/drinks.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                                        <span class="category-tooltip">Drinks</span>
-                                    </a>
-                                </div>  
-
-                                <div class="category-item">
-                                    <a href="{% url 'products' %}" class="category-link" data-category="soaps">
-                                        <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                                        <span class="category-tooltip">Soaps</span>
-                                    </a>
-                                </div>  
-
-                                <div class="category-item">
-                                    <a href="{% url 'products' %}" class="category-link" data-category="flour">
-                                        <img src="{% static 'assets/categories/flour.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                                        <span class="category-tooltip">Flour</span>
-                                    </a>
-                                </div>  
-                                
-                            </div>
-
-                            <div id="suppliers" class="ring suppliers-container desktop-only">
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"><span class="supplier-name">Ajab</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"><span class="supplier-name">Coca-Cola</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"><span class="supplier-name">Soko</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"><span class="supplier-name">Del Monte</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"><span class="supplier-name">Kensalt</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"><span class="supplier-name">EXE</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"><span class="supplier-name">Ketepa</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"><span class="supplier-name">Jetlak</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"><span class="supplier-name">Tropical Heat</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"><span class="supplier-name">Kapa Oil</span></a>
-                                <a href="{% url 'products' %}" class="supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"><span class="supplier-name">Pembe</span></a>
-                            </div>
-                        </div>
-
-                        <div id="ourSuppliers" class="mobile-only-bar">
-                            <h3>Browse By Brand</h3>
-                            <div class="suppliersCarousel">
-                                <div id="suppliers-mobile" class="cards-container suppliers-mobile-track">
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"></a>
-                                    <a href="{% url 'products' %}"  class="mobile-supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"></a>
-                            </div>
-                        </div>                
-                    
     </section>
 
     <div class="section-wrapper">
+
+        <section class="eclipse-hero-slider-wrap" id="eclipseMainSlider">
+            <div class="eclipse-slider-stage">
+                
+                <div class="eclipse-slide active-slide" style="background: radial-gradient(circle at 75% 50%, #113f33 0%, #061914 100%);">
+                    <div class="eclipse-slide-grid">
+                        <div class="eclipse-slide-content">
+                            <span class="eclipse-badge">EXCLUSIVE BULK ALLOCATIONS</span>
+                            <h1 class="eclipse-title">MEGA <br><span class="eclipse-gradient-text">DEALS</span></h1>
+                            <p class="eclipse-subtitle">Direct manufacturer pricing on fast-moving household and food essentials. Unlock up to 70% off standard trade listings today.</p>
+                            <div class="eclipse-action-row">
+                                <a href="{% url 'products' %}" class="eclipse-btn-primary">Secure Stock Now</a>
+                                <a href="{% url 'offers' %}" class="eclipse-btn-link">View Pricing Tiers &#8594;</a>
+                            </div>
+                        </div>
+                        <div class="eclipse-slide-graphic">
+                            <div class="eclipse-studio-frame">
+                                <img src="{% static 'assets/images/four.png' %}" alt="Fast Moving Wholesale Essentials" class="eclipse-floating-asset">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eclipse-slide" style="background: linear-gradient(135deg, #f4f4f7 0%, #e2e2e9 100%);">
+                    <div class="eclipse-slide-grid">
+                        <div class="eclipse-slide-content dark-text">
+                            <span class="eclipse-badge dark">FRESH MILLING ARRIVALS</span>
+                            <h1 class="eclipse-title dark">FLOURS & <br><span class="eclipse-dark-accent">GRAINS.</span></h1>
+                            <p class="eclipse-subtitle dark">Premium long grain rice, high-extraction baking flours, and maize formulations packed and ready for distribution lines.</p>
+                            <div class="eclipse-action-row">
+                                <a href="/category/grains/" class="eclipse-btn-dark">Explore Pack Sizes</a>
+                            </div>
+                        </div>
+                        <div class="eclipse-slide-graphic">
+                            <div class="eclipse-studio-frame">
+                                <img src="{% static 'assets/images/eight.png' %}" alt="Premium Grains Allocations" class="eclipse-floating-asset">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <div class="eclipse-slider-arrows">
+                <button class="eclipse-arrow prev" onclick="window.shiftEclipseSlider(-1)" aria-label="Previous Slide">&#10229;</button>
+                <button class="eclipse-arrow next" onclick="window.shiftEclipseSlider(1)" aria-label="Next Slide">&#10230;</button>
+            </div>
+            <div class="eclipse-slider-indicators">
+                <span class="eclipse-dot active-dot" onclick="window.jumpToEclipseSlide(0)"></span>
+                <span class="eclipse-dot" onclick="window.jumpToEclipseSlide(1)"></span>
+            </div>
+        </section>
 
         <section class="category-promo-wrapper container mt-40">
             <div class="row">
@@ -111,28 +157,22 @@
                                 <a href="{% url 'products' %}" class="shop-btn">View Deals</a>
                             </div>
                         </div>
-                        </div>
+                    </div>
                 </div>
 
                 <div class="col-lg-4">
                     <div class="category-sidebar-grid">
                         <div class="cat-card">
                             <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Soaps">
-                            <div class="cat-overlay">
-                                <span>Soaps</span>
-                            </div>
+                            <div class="cat-overlay"><span>Soaps</span></div>
                         </div>
                         <div class="cat-card">
                             <img src="{% static 'assets/categories/oils.png' %}" alt="Oils">
-                            <div class="cat-overlay">
-                                <span>Oils</span>
-                            </div>
+                            <div class="cat-overlay"><span>Oils</span></div>
                         </div>
                         <div class="cat-card">
                             <img src="{% static 'assets/categories/flour.jpg' %}" alt="Flour">
-                            <div class="cat-overlay">
-                                <span>Flour</span>
-                            </div>
+                            <div class="cat-overlay"><span>Flour</span></div>
                         </div>
                     </div>
                 </div>
@@ -146,28 +186,19 @@
         </section>
 
         <section class="product-area pt-60 pb-50">
-
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-lg-12">
-
-                        <!-- Tabs Headers - Name of Tabs  -->
                         <div class="li-product-tab">
                             <ul class="nav li-product-menu">
                                 <li><a class="active" data-toggle="tab" href="#li-new-product"><span>New Arrivals</span></a></li>
                                 <li><a data-toggle="tab" href="#li-top-offer"><span>Top Offers</span></a></li>
                             </ul>               
-                        </div> <!-- End of Tabs Headers - Name of Tabs  -->
-
+                        </div>
                     </div>
-
                 </div>
                 
-                <!-- Tabs Content  -->
                 <div class="tab-content">
-
                     <div id="li-new-product" class="tab-pane active show" role="tabpanel">
                         <div class="row">
                             <div class="product-active owl-carousel">
@@ -178,7 +209,6 @@
                                             <span class="bookmark-text">NEW</span>
                                             <div class="bookmark-notch"></div>
                                         </div>
-
                                         <div class="product-image-container">
                                             <div class="image-inner-frame">
                                                 <a href="{% url 'product_detail' product.id %}">
@@ -186,11 +216,9 @@
                                                 </a>
                                             </div>
                                         </div>
-
                                         <div class="product-text-content">
                                             <h5 class="brand-subtext">{{ product.brand.name }}</h5>
                                             <h4 class="product-main-title">{{ product.name }}</h4>
-                                            
                                             <div class="pricing-alignment-row">
                                                 <div class="price-stack">
                                                     <span class="currency-symbol">ksh</span>
@@ -219,11 +247,7 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
-                                            ADD TO CART
-                                        </button>
-
+                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
                                     </div>
                                 </div>
                                 {% endfor %}
@@ -241,7 +265,6 @@
                                             <span class="bookmark-text">OFFER</span>
                                             <div class="bookmark-notch"></div>
                                         </div>
-
                                         <div class="product-image-container">
                                             <div class="image-inner-frame">
                                                 <a href="{% url 'product_detail' product.id %}">
@@ -249,11 +272,9 @@
                                                 </a>
                                             </div>
                                         </div>
-
                                         <div class="product-text-content">
                                             <h5 class="brand-subtext">{{ product.brand.name }}</h5>
                                             <h4 class="product-main-title">{{ product.name }}</h4>
-                                            
                                             <div class="pricing-alignment-row">
                                                 <div class="price-stack">
                                                     <span class="currency-symbol">ksh</span>
@@ -282,22 +303,16 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
-                                            ADD TO CART
-                                        </button>
-
+                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
                                     </div>
                                 </div>
                                 {% endfor %}
                             </div>
                         </div>
                     </div>
-
-                </div> <!-- End of Tabs Content  -->
+                </div>
 
             </div>
-
         </section>           
 
         <section id="heading-i" class="section-heading container">
@@ -307,17 +322,11 @@
         </section>
         
         <section class="product-area pt-60 pb-45 li-trending-product">
-
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-lg-12">
-
                         <div class="li-product-tab li-trending-product-tab">
-                            <h2>
-                                <span>Trending Products</span>
-                            </h2>
+                            <h2><span>Trending Products</span></h2>
                             <ul class="nav li-product-menu li-trending-product-menu">
                                 {% for item in trending_data %}
                                 <li class="{% if forloop.first %}active{% endif %}">
@@ -341,7 +350,6 @@
                                                     <span class="bookmark-text">HOT</span>
                                                     <div class="bookmark-notch" style="border-right-color: #ffb100;"></div>
                                                 </div>
-
                                                 <div class="product-image-container">
                                                     <div class="image-inner-frame">
                                                         <a href="{% url 'product_detail' product.id %}">
@@ -349,11 +357,9 @@
                                                         </a>
                                                     </div>
                                                 </div>
-
                                                 <div class="product-text-content">
                                                     <h5 class="brand-subtext">{{ product.brand.name }}</h5>
                                                     <h4 class="product-main-title">{{ product.name }}</h4>
-                                                    
                                                     <div class="pricing-alignment-row">
                                                         <div class="price-stack">
                                                             <span class="currency-symbol">ksh</span>
@@ -382,11 +388,7 @@
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                                <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
-                                                    ADD TO CART
-                                                </button>
-
+                                                <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
                                             </div>
                                         </div>
                                         {% endfor %}
@@ -395,13 +397,111 @@
                             </div>
                             {% endfor %}
                         </div>
-
                     </div>
+                </div>
+            </div>
+        </section>
 
+        <section class="eclipse-hero-slider-wrap" id="eclipseLogisticsSlider">
+            <div class="eclipse-slider-stage">
+                
+                <div class="eclipse-slide active-slide" style="background: radial-gradient(circle at 75% 50%, #1a2e40 0%, #0a141d 100%);">
+                    <div class="eclipse-slide-grid">
+                        <div class="eclipse-slide-content">
+                            <span class="eclipse-badge" style="background-color: #2b6cb0;">FAST-TRACK FULFILLMENT</span>
+                            <h1 class="eclipse-title">DIRECT <br><span class="eclipse-gradient-text" style="background: linear-gradient(90deg, #63b3ed, #4299e1);">LOGISTICS</span></h1>
+                            <p class="eclipse-subtitle">Integrated merchant distribution routes spanning key retail zones. Count on seamless, cross-dock logistics and structured inventory transport lines.</p>
+                            <div class="eclipse-action-row">
+                                <a href="/shop/" class="eclipse-btn-primary" style="background: #3182ce;">Review Routes</a>
+                            </div>
+                        </div>
+                        <div class="eclipse-slide-graphic">
+                            <div class="eclipse-studio-frame">
+                                <img src="{% static 'assets/categories/hero-flash-sale.png' %}" alt="Integrated Supply Chain Management" class="eclipse-floating-asset">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eclipse-slide" style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);">
+                    <div class="eclipse-slide-grid">
+                        <div class="eclipse-slide-content dark-text">
+                            <span class="eclipse-badge dark" style="background-color: #4a5568; color: #fff;">HYGIENE DEALS</span>
+                            <h1 class="eclipse-title dark">SANITEER & <br><span class="eclipse-dark-accent" style="color: #2b6cb0;">CLEANERS.</span></h1>
+                            <p class="eclipse-subtitle dark">Structured high-volume allocations for commercial disinfectants, domestic maintenance lines, and bulk institutional soap reserves.</p>
+                            <div class="eclipse-action-row">
+                                <a href="/category/hygiene/" class="eclipse-btn-dark">Inspect Tier Pricing</a>
+                            </div>
+                        </div>
+                        <div class="eclipse-slide-graphic">
+                            <div class="eclipse-studio-frame">
+                                <img src="{% static 'assets/categories/flour.jpg' %}" alt="Bulk Protective Allocations" class="eclipse-floating-asset">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             </div>
+            
+            <div class="eclipse-slider-arrows">
+                <button class="eclipse-arrow prev" onclick="window.shiftLogisticsSlider(-1)" aria-label="Previous Slide">&#10229;</button>
+                <button class="eclipse-arrow next" onclick="window.shiftLogisticsSlider(1)" aria-label="Next Slide">&#10230;</button>
+            </div>
+            <div class="eclipse-slider-indicators">
+                <span class="eclipse-dot active-dot" onclick="window.jumpToLogisticsSlide(0)"></span>
+                <span class="eclipse-dot" onclick="window.jumpToLogisticsSlide(1)"></span>
+            </div>
+        </section>
 
+        <section class="eclipse-curated-grid">
+
+            <div class="eclipse-grid-header">
+                <div class="eclipse-header-left">
+                    <span class="eclipse-meta-tag">WHOLESALE EXCELLENCE</span>
+                    <h2>Curated Commercial Categories</h2>
+                </div>
+                <a href="/shop/" class="eclipse-global-link">Browse Full Index &#8594;</a>
+            </div>
+
+            <div class="eclipse-asymmetric-layout">
+
+                <div class="eclipse-card-massive" style="background: linear-gradient(to right, rgba(14,48,39,0.95) 40%, rgba(14,48,39,0.3) 100%), url('{% static 'assets/banners/grid-bg-1.jpg' %}') center/cover;">
+                    <div class="eclipse-massive-inner">
+                        <span class="eclipse-card-label-hot">HIGH DEMAND</span>
+                        <h3>Fast-Moving Consumer Goods</h3>
+                        <p>Streamline your inventory pipelines with high-turnover household staples, oils, and provisions directly optimized for retail storefront margins.</p>
+                        <div class="eclipse-btn-group">
+                            <a href="/category/fmcg/" class="eclipse-btn-white">Open Order Sheet</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="eclipse-vertical-stack">
+                    <div class="eclipse-split-card" style="background-color: #f5f5f7;">
+                        <div class="eclipse-split-inner">
+                            <span class="eclipse-split-tag">RETAILER PREFERENCE</span>
+                            <h3>Premium Foodstuffs</h3>
+                            <p>Allocations from certified millers across East Africa.</p>
+                            <a href="/category/grains/" class="eclipse-split-action">View Price Tiers &#8594;</a>
+                        </div>
+                        <div class="eclipse-split-visual">
+                            <img src="{% static 'assets/categories/flour.jpg' %}" alt="Foodstuffs Pack Asset" class="eclipse-absolute-product">
+                        </div>
+                    </div>
+
+                    <div class="eclipse-split-card" style="background-color: #edf3f5;">
+                        <div class="eclipse-split-inner">
+                            <span class="eclipse-split-tag">VOLUME PRICE</span>
+                            <h3>Hygiene & Cleaners</h3>
+                            <p>Sanitizers, domestic soaps, and household protective lines.</p>
+                            <a href="/category/hygiene/" class="eclipse-split-action">Check Availability &#8594;</a>
+                        </div>
+                        <div class="eclipse-split-visual">
+                            <img src="{% static 'assets/categories/hygiene_home.jpg' %}" alt="Hygiene Product Asset" class="eclipse-absolute-product">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section id="heading-i" class="section-heading container">
@@ -411,17 +511,11 @@
         </section>
 
         <section class="product-area pb-45 li-laptop-product li-trendding-products best-sellers">
-
             <div class="container">
-
                 <div class="row">
-
                     <div class="col-lg-12">
-                        
                         <div class="li-section-title">
-                            <h2>
-                                <span>Bestsellers</span>
-                            </h2>
+                            <h2><span>Bestsellers</span></h2>
                         </div>
 
                         <div class="row">
@@ -433,7 +527,6 @@
                                             <span class="bookmark-text">BEST</span>
                                             <div class="bookmark-notch" style="border-right-color: #e91e63;"></div>
                                         </div>
-
                                         <div class="product-image-container">
                                             <div class="image-inner-frame">
                                                 <a href="{% url 'product_detail' product.id %}">
@@ -441,11 +534,9 @@
                                                 </a>
                                             </div>
                                         </div>
-
                                         <div class="product-text-content">
                                             <h5 class="brand-subtext">{{ product.brand.name }}</h5>
                                             <h4 class="product-main-title">{{ product.name }}</h4>
-                                            
                                             <div class="pricing-alignment-row">
                                                 <div class="price-stack">
                                                     <span class="currency-symbol">ksh</span>
@@ -474,13 +565,9 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
-                                            ADD TO CART
-                                        </button>
-
+                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
                                     </div>
-                                    </div>
+                                </div>
                                 {% empty %}
                                 <div class="col-12 text-center">
                                     <p>Check back soon for our top-selling items!</p>
@@ -488,16 +575,10 @@
                                 {% endfor %}
                             </div>
                         </div>
-
-                    </div> <!-- Li's Section Area End Here -->
-                    
+                    </div>
                 </div>
-
             </div>
-
         </section>
-
-        
 
         <section class="order-steps-section pt-60 pb-60 bg-light">
             <div class="container">
@@ -550,6 +631,38 @@
             </div>
         </section>
 
+        <section class="premium-trust-bar">
+            <div class="trust-container">
+                <div class="trust-item">
+                    <div class="trust-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="trust-text">
+                        <h3>Trusted Quality</h3>
+                        <p>100% Certified Genuine Brands</p>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <div class="trust-text">
+                        <h3>Lightning Delivery</h3>
+                        <p>Fast, predictable supply chains</p>
+                    </div>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="trust-text">
+                        <h3>Best Wholesale Pricing</h3>
+                        <p>Maximize your retail margins</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section class="about-us-summary pt-60 pb-60 bg-light" style="margin-top: 60px;">
             <div class="container">
                 <div class="row align-items-center">
@@ -572,15 +685,12 @@
         </section>
 
     </div>
-
 </main>
 
 {% endblock %}
 
 {% block extra_css %}
-    
 <style>
-
     .step-card {
         background: #fff;
         padding: 40px 30px;
@@ -592,12 +702,10 @@
         position: relative;
         border: 1px solid #eee;
     }
-
     .step-card:hover {
         transform: translateY(-10px);
-        border-color: #313761; /* Matches your brand theme */
+        border-color: #313761;
     }
-
     .step-icon-wrapper {
         width: 80px;
         height: 80px;
@@ -611,7 +719,6 @@
         color: #313761;
         font-size: 2rem;
     }
-
     .step-badge {
         position: absolute;
         top: 0;
@@ -627,29 +734,24 @@
         justify-content: center;
         font-weight: bold;
     }
-
     .step-card-body h4 {
         font-size: 1.25rem;
         margin-bottom: 15px;
         color: #1a1a1a;
         font-weight: 700;
     }
-
     .step-card-body p {
         font-size: 0.95rem;
         line-height: 1.6;
         color: #666;
         margin-bottom: 0;
     }
-
     .badge {
         color: #ffffff;
     }
     .category-promo-wrapper {
         margin-bottom: 60px;
     }
-
-    /* Main Slider Area */
     .main-promo-slider {
         height: 450px;
         border-radius: 15px;
@@ -657,7 +759,6 @@
         position: relative;
         box-shadow: 0 10px 30px rgba(49, 55, 97, 0.15);
     }
-
     .promo-item {
         height: 100%;
         background-size: cover;
@@ -666,23 +767,20 @@
         align-items: center;
         padding: 60px;
     }
-
     .promo-content h2 {
         color: #fff;
         font-size: 3rem;
         font-weight: 800;
         margin-bottom: 15px;
     }
-
     .promo-content p {
         color: rgba(255, 255, 255, 0.9);
         font-size: 1.2rem;
         margin-bottom: 25px;
         max-width: 400px;
     }
-
     .shop-btn {
-        background: #35a812; /* Golden accent */
+        background: #35a812;
         color: #ffffff;
         padding: 12px 30px;
         border-radius: 5px;
@@ -690,20 +788,16 @@
         text-decoration: none;
         transition: 0.3s;
     }
-
     .shop-btn:hover {
         background: #fff;
         color: #313761;
     }
-
-    /* Category Grid Styling */
     .category-sidebar-grid {
         display: flex;
         flex-direction: column;
         gap: 15px;
         height: 450px;
     }
-
     .cat-card {
         flex: 1;
         position: relative;
@@ -711,14 +805,12 @@
         overflow: hidden;
         cursor: pointer;
     }
-
     .cat-card img {
         width: 100%;
         height: 100%;
         object-fit: cover;
         transition: transform 0.5s ease;
     }
-
     .cat-overlay {
         position: absolute;
         bottom: 0; left: 0; right: 0;
@@ -728,37 +820,32 @@
         font-weight: 700;
         font-size: 1.1rem;
     }
-
     .cat-card:hover img {
         transform: scale(1.1);
     }
-
-    /* Mobile handling */
     @media (max-width: 991px) {
         .main-promo-slider, .category-sidebar-grid { height: auto; }
         .main-promo-slider { height: 350px; margin-bottom: 20px; }
         .category-sidebar-grid { height: 300px; flex-direction: row; }
     }
 </style>
-
 {% endblock %}
 
-
 {% block extra_js %}
-
 <script id="scroll-nav">
 const header = document.querySelector('.header-bottom');
-const hero = document.querySelector('.hero');
+const heroSectionElement = document.querySelector('.hero');
 
-window.addEventListener('scroll', () => {
-    const trigger = hero.offsetHeight - 80;
-
-    if (window.scrollY > trigger) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
-    }
-});
+if (header && heroSectionElement) {
+    window.addEventListener('scroll', () => {
+        const trigger = heroSectionElement.offsetHeight - 80;
+        if (window.scrollY > trigger) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     const slides = [
@@ -768,13 +855,110 @@ document.addEventListener("DOMContentLoaded", function() {
     let current = 0;
     const slider = document.querySelector('.promo-item');
 
-    setInterval(() => {
-        current = (current + 1) % slides.length;
-        slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
-    }, 5000);
+    if (slider) {
+        setInterval(() => {
+            current = (current + 1) % slides.length;
+            slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
+        }, 5000);
+    }
 });
 
-</script>
+// Master Isolated Slider Controller Engine
+(function() {
+    let localEclipseIndex = 0;
+    let localLogisticsIndex = 0;
 
-    
+    // Slide Swapping Handler for Slider Group 1 (#eclipseMainSlider)
+    function applyEclipseSlideState(targetIdx) {
+        const allSlides = document.querySelectorAll('#eclipseMainSlider .eclipse-slide');
+        const allDots = document.querySelectorAll('#eclipseMainSlider .eclipse-dot');
+
+        if (allSlides.length === 0) return;
+
+        if (targetIdx >= allSlides.length) localEclipseIndex = 0;
+        else if (targetIdx < 0) localEclipseIndex = allSlides.length - 1;
+        else localEclipseIndex = targetIdx;
+
+        allSlides.forEach((slide, idx) => {
+            if (idx === localEclipseIndex) {
+                slide.classList.add('active-slide');
+                slide.style.opacity = "1";
+                slide.style.visibility = "visible";
+                slide.style.zIndex = "5";
+            } else {
+                slide.classList.remove('active-slide');
+                slide.style.opacity = "0";
+                slide.style.visibility = "hidden";
+                slide.style.zIndex = "1";
+            }
+        });
+
+        allDots.forEach((dot, idx) => {
+            if (idx === localEclipseIndex) dot.classList.add('active-dot');
+            else dot.classList.remove('active-dot');
+        });
+    }
+
+    // Slide Swapping Handler for Slider Group 2 (#eclipseLogisticsSlider)
+    function applyLogisticsSlideState(targetIdx) {
+        const allSlides = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-slide');
+        const allDots = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-dot');
+
+        if (allSlides.length === 0) return;
+
+        if (targetIdx >= allSlides.length) localLogisticsIndex = 0;
+        else if (targetIdx < 0) localLogisticsIndex = allSlides.length - 1;
+        else localLogisticsIndex = targetIdx;
+
+        allSlides.forEach((slide, idx) => {
+            if (idx === localLogisticsIndex) {
+                slide.classList.add('active-slide');
+                slide.style.opacity = "1";
+                slide.style.visibility = "visible";
+                slide.style.zIndex = "5";
+            } else {
+                slide.classList.remove('active-slide');
+                slide.style.opacity = "0";
+                slide.style.visibility = "hidden";
+                slide.style.zIndex = "1";
+            }
+        });
+
+        allDots.forEach((dot, idx) => {
+            if (idx === localLogisticsIndex) dot.classList.add('active-dot');
+            else dot.classList.remove('active-dot');
+        });
+    }
+
+    // Direct Window Injection for global scope exposure
+    window.shiftEclipseSlider = function(stepValue) {
+        applyEclipseSlideState(localEclipseIndex + stepValue);
+    };
+    window.jumpToEclipseSlide = function(exactIdx) {
+        applyEclipseSlideState(exactIdx);
+    };
+
+    window.shiftLogisticsSlider = function(stepValue) {
+        applyLogisticsSlideState(localLogisticsIndex + stepValue);
+    };
+    window.jumpToLogisticsSlide = function(exactIdx) {
+        applyLogisticsSlideState(exactIdx);
+    };
+
+    function safeInitSliders() {
+        applyEclipseSlideState(0);
+        applyLogisticsSlideState(0);
+        
+        // Balanced independent loops running smoothly at 5-second intervals
+        setInterval(function() { window.shiftEclipseSlider(1); }, 5000);
+        setInterval(function() { window.shiftLogisticsSlider(1); }, 5000);
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", safeInitSliders);
+    } else {
+        safeInitSliders();
+    }
+})();
+</script>
 {% endblock %}

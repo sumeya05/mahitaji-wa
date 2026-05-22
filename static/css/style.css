@@ -4990,7 +4990,8 @@ span.required {
 }
 .price-checkbox li a,.size-checkbox li a,.color-categoriy ul li a,.categori-checkbox ul li a {
   color: #363f4d;
-  font-size: 16px;
+  font-size: 12px;
+  font-weight: 500;
   margin-left: 15px;
   margin-top: 0;
 }

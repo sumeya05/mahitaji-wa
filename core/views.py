@@ -177,6 +177,47 @@ def product_detail(request, pk):
         'related_products': related_products
     })
 
+def offers(request):
+    """
+    Handles rendering the promotional dynamic lot offerings.
+    Filters products that possess a valid markdown discount (old_price > retail_price)
+    or have structural promotional wholesale pricing active.
+    """
+    # 1. Fetch all active products that qualify as an offer
+    # An offer is defined as a product having an old_price greater than its retail_price
+    offer_products = Product.objects.filter(
+        is_active=True,
+        old_price__isnull=False,
+        old_price__gt=F('retail_price')
+    ).select_related('category', 'brand', 'unit_of_measure')
+
+    # 2. Extract Category URL Filter parameters if selected from the sidebar
+    category_slug = request.GET.get('category')
+    if category_slug:
+        # Match against either the name or slug criteria for safety
+        offer_products = offer_products.filter(category__name__icontains=category_slug)
+
+    # 3. Handle Order Sorting Criteria Selection Matrix
+    sort_by = request.GET.get('sort', 'trending')
+    if sort_by == 'price-asc':
+        offer_products = offer_products.order_by('retail_price')
+    elif sort_by == 'price-desc':
+        offer_products = offer_products.order_by('-retail_price')
+    elif sort_by == 'sales':
+        offer_products = offer_products.order_by('-is_best_seller', 'name')
+    else:
+        # Default fallback: highest absolute percentage discount matrix or trending flag
+        offer_products = offer_products.order_by('-is_trending', 'name')
+
+    # 4. Construct context payloads mapping to your templates' variables
+    context = {
+        'offers': offer_products,
+        'current_category': category_slug,
+        'current_sort': sort_by,
+    }
+    
+    return render(request, 'core/offers.html', context)
+
 
 def search(request):
     query = request.GET.get('q')

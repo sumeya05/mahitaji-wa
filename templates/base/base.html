@@ -34,6 +34,7 @@
     <link rel="stylesheet" href="{% static 'css/style_custom.css' %}">
 
     <link rel="stylesheet" href="{% static 'css/style_custom_ii.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style_custom_iii.css' %}">
     <link rel="stylesheet" href="{% static 'css/responsive_custom.css' %}">
 
     {% block extra_css %}
@@ -84,15 +85,18 @@
                     <div class="col-lg-3 col-md-3 text-right">
                         <div class="header-middle-right" style="justify-content: flex-end;">
                             <ul class="hm-menu">
+
                                 <li class="hm-minicart" title="My Shopping cart">
+
                                     <div class="hm-minicart-trigger">
                                         <span class="item-icon"></span>
                                         <span class="item-text">
                                             ksh {{ cart.get_total_price }}
-                                            <span class="cart-item-count" id="cart-qty">{{ cart|length }}</span>
                                         </span>
                                     </div>
+
                                     <span></span>
+
                                     <div class="minicart">
                                         <ul class="minicart-product-list" id="minicart-list">
                                             {% for item in cart %}
@@ -123,7 +127,9 @@
                                                 <span>Checkout</span>
                                             </a>
                                         </div>
+
                                     </div>
+
                                 </li>
 
                                 <!-- My Account Area -->

@@ -172,7 +172,30 @@ class Product(models.Model):
         return "/static/assets/images/placeholder.jpg"
 
     def save(self, *args, **kwargs):
-        if not self.slug: self.slug = slugify(self.name)
+        # 1. Generate the initial slug from the name
+        if not self.slug:
+            self.slug = slugify(self.name)
+        
+        # 2. Check for duplicates
+        # Filter products with the same slug, excluding the current instance (if it's an update)
+        queryset = Product.objects.filter(slug=self.slug)
+        if self.pk:
+            queryset = queryset.exclude(pk=self.pk)
+        
+        # 3. If duplicate found, append a counter
+        if queryset.exists():
+            # Get all slugs that start with this base slug
+            # This helps in finding the highest number (e.g., 'product-001', 'product-002')
+            base_slug = self.slug
+            counter = 1
+            while Product.objects.filter(slug=self.slug).exists():
+                # Check if updating an existing object that already has this slug
+                if self.pk and Product.objects.filter(slug=self.slug).exclude(pk=self.pk).exists() is False:
+                    break
+                    
+                self.slug = f"{base_slug}-{counter:03d}" # :03d pads the number (001, 002)
+                counter += 1
+                
         super().save(*args, **kwargs)
 
     def __str__(self):

@@ -24,6 +24,7 @@ urlpatterns = [
     path('wholesalers/', views.wholesalers, name='wholesalers'),
     path('products/', views.products, name='products'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
+    path('offers/', views.offers, name='offers'),
     path('search/', views.search, name='search'),
     path('shopping-cart/', views.shopping_cart, name='shopping-cart'),
     path('cart-add/', views.cart_add, name='cart_add'),
@@ -32,8 +33,6 @@ urlpatterns = [
     path('checkout/', views.checkout, name='checkout'),
     path('place-order/', views.place_order, name='place-order'),
     path('order-success/<str:order_number>/', views.order_success, name='order-success'),
-    
-    
 
     # user routes
     path('login/', views.login_view, name='login'),

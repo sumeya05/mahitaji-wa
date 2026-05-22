@@ -1081,6 +1081,17 @@ h3.counter
     color: #29571bbd;
 }
 
+
+
+.is-landing-page .footer-newsletter .form-group .btn {
+    background: #084f25f5;
+
+}
+
+.footer-newsletter .form-group .btn:hover {
+    font-size: 14px;
+}
+
 /* home background - with image
 .section-holder {
     position: relative;
