@@ -1,110 +1,278 @@
-{% extends "base/base.html" %}
+{% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %}Categories | Mahitaji{% endblock %}
+{% block title %} Products by Category | Mahitaji {% endblock %}
+
 
 {% block content %}
 
-<!-- MOBILE CATEGORY NAV (STATIC) -->
-<div class="mobile-cat-nav">
-    <a href="#" class="active">Flour & Grains</a>
-    <a href="#">Beverages</a>
-    <a href="#">Sugar & Salt</a>
-    <a href="#">Oils & Fats</a>
-    <a href="#">Personal Care</a>
-    <a href="#">Cleaning</a>
-</div>
-
-<div class="category-layout">
-
-    <!-- SIDEBAR (STATIC) -->
-    <aside class="category-sidebar">
-        <h2>Categories</h2>
-
-        <ul class="cat-list">
-            <li><a href="#" class="active">Flour & Grains <span>(42)</span></a></li>
-            <li><a href="#">Beverages & Drinks <span>(115)</span></a></li>
-            <li><a href="#">Sugar & Salt <span>(18)</span></a></li>
-            <li><a href="#">Oils & Fats <span>(24)</span></a></li>
-            <li><a href="#">Personal Care <span>(80)</span></a></li>
-            <li><a href="#">Cleaning & Laundry <span>(55)</span></a></li>
-        </ul>
-    </aside>
-
-    <!-- MAIN -->
-    <main class="category-main">
-
-        <div class="category-section-header">
-            <h1>Flour & Grains</h1>
-            <p>6 items</p>
+<main class="body-wrapper">
+    
+    <div class="breadcrumb-area">
+        <div class="container">
+            <div class="breadcrumb-content">
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="active">Products by Category</li>
+                </ul>
+            </div>
         </div>
+    </div>
 
-        <!-- STATIC PRODUCT GRID -->
-        <div class="product-grid">
+    <section class="content-wraper pt-60 pb-60">
 
-            <div class="cat-item-card">
-                <div class="item-img">
-                    <img src="{% static 'assets/ajab.jpeg' %}" alt="Ajab">
+        <div class="container">
+                                
+            <div class="row">   
+                <div class="col-lg-9 order-1 order-lg-2">
+                    <!-- shop-top-bar start -->
+                    <div class="shop-top-bar mt-30">
+                        <div class="shop-bar-inner">
+                            <div class="product-view-mode">
+                                <!-- shop-item-filter-list start -->
+                                <ul class="nav shop-item-filter-list" role="tablist">
+                                    <li class="active" role="presentation"><a data-toggle="tab" role="tab" aria-controls="grid-view" href="#grid-view"><i class="fa fa-th"></i></a></li>
+                                    <li role="presentation"><a aria-selected="true" class="active show" data-toggle="tab" role="tab" aria-controls="list-view" href="#list-view"><i class="fa fa-th-list"></i></a></li>
+                                </ul>
+                                <!-- shop-item-filter-list end -->
+                            </div>
+                            <div class="toolbar-amount">
+                                <span>Showing {{ products.start_index }} to {{ products.end_index }} of {{ products.paginator.count }}</span>
+                            </div>
+                        </div>
+                        <!-- product-select-box start -->
+                        <div class="product-select-box">
+                            <div class="product-short">
+                                <p>Sort By:</p>
+                                <select class="nice-select">
+                                    <option value="trending">Relevance</option>
+                                    <option value="sales">Name (A - Z)</option>
+                                    <option value="sales">Name (Z - A)</option>
+                                    <option value="rating">Price (Low &gt; High)</option>
+                                    <option value="date">Rating (Lowest)</option>
+                                    <option value="price-asc">Model (A - Z)</option>
+                                    <option value="price-asc">Model (Z - A)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- product-select-box end -->
+                    </div>
+                    <!-- shop-top-bar end -->
+
+                    <!-- shop-products-wrapper start -->
+                    <div class="shop-products-wrapper">
+                        <div class="tab-content">
+
+                            <div id="grid-view" class="tab-pane fade" role="tabpanel">
+                                <div class="product-area shop-product-area">
+                                    
+                                    <div class="row">
+                                        {% for product in products %}
+                                        <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
+                                            <div class="single-product-wrap">
+                                                <div class="product-image">
+                                                    <a href="{% url 'product_detail' product.id %}">
+                                                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                    </a>
+                                                    {% if product.discount_percentage %}
+                                                        <span class="sticker">{{ product.discount_percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="product_desc">
+                                                    <div class="product_desc_info">
+                                                        <div class="product-review">
+                                                            <h5 class="manufacturer">
+                                                                <a href="#">{{ product.brand.name }}</a>
+                                                            </h5>
+                                                            <div class="rating-box">
+                                                                <ul class="rating">
+                                                                    {% for i in "12345" %}
+                                                                        <li>
+                                                                            {% if product.average_rating >= forloop.counter %}
+                                                                                <i class="fa fa-star"></i>
+                                                                            {% else %}
+                                                                                <i class="fa fa-star-o"></i>
+                                                                            {% endif %}
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
+                                                        <div class="price-box">
+                                                            <span class="new-price">ksh {{ product.retail_price }}</span>
+                                                            {% if product.old_price %}
+                                                                <span class="old-price">ksh {{ product.old_price }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                    <div class="add-actions">
+                                                        <ul class="add-actions-link">
+                                                            <li class="add-cart active">
+                                                                <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
+                                                                    + CART
+                                                                </button>
+                                                            </li>
+                                                            <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
+                                                            <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div id="list-view" class="tab-pane fade product-list-view active show" role="tabpanel">
+
+                                <div class="row">
+                                    <div class="col">
+                                        {% for product in products %}
+                                        <div class="row product-layout-list">
+                                            <div class="col-lg-3 col-md-5">
+                                                <div class="product-image">
+                                                    <a href="{% url 'product_detail' product.id %}">
+                                                        <img src="{{ product.image_url }}" alt="{{ product.name }}">
+                                                    </a>
+                                                    {% if product.discount_percentage %}
+                                                        <span class="sticker">{{ product.discount_percentage }}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-md-7">
+                                                <div class="product_desc">
+                                                    <div class="product_desc_info">
+                                                        <div class="product-review">
+                                                            <h5 class="manufacturer">
+                                                                <a href="#">{{ product.brand.name }}</a>
+                                                            </h5>
+                                                            <div class="rating-box">
+                                                                <ul class="rating">
+                                                                    {% for i in "12345" %}
+                                                                        <li>
+                                                                            {% if product.average_rating >= forloop.counter %}
+                                                                                <i class="fa fa-star"></i>
+                                                                            {% else %}
+                                                                                <i class="fa fa-star-o"></i>
+                                                                            {% endif %}
+                                                                        </li>
+                                                                    {% endfor %}
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
+                                                        <div class="price-box">
+                                                            <span class="new-price">ksh {{ product.retail_price }}</span>
+                                                            {% if product.old_price %}
+                                                                <span class="old-price">ksh {{ product.old_price }}</span>
+                                                            {% endif %}
+                                                        </div>
+                                                        {% if product.description %}
+                                                            <p>{{ product.description }}</p>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-4 col-md-12">
+                                                <div class="add-actions">
+                                                    <ul class="add-actions-link">
+                                                        <li class="add-cart active">
+                                                            <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">
+                                                                ADD TO CART
+                                                            </button>
+                                                        </li>
+                                                        <li><a class="links-details" href="{% url 'wishlist' %}"><i class="fa fa-heart-o"></i></a></li>
+                                                        <li><a href="#" title="quick view" class="quick-view-btn" data-toggle="modal" data-target="#exampleModalCenter"><i class="fa fa-eye"></i></a></li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+
+                            </div>
+                            
+                            <div class="paginatoin-area">
+                                <div class="row">
+                                    <div class="toolbar-amount">
+                                        <span>Showing {{ products.start_index }} to {{ products.end_index }} of {{ products.paginator.count }}</span>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <ul class="pagination-box">
+                                            {% if products.has_previous %}
+                                                <li>
+                                                    <a href="?page={{ products.previous_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Previous">
+                                                        <i class="fa fa-chevron-left"></i> Previous
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+
+                                            {% for num in products.paginator.page_range %}
+                                                {% if products.number == num %}
+                                                    <li class="active"><a href="#">{{ num }}</a></li>
+                                                {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
+                                                    <li>
+                                                        <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}">
+                                                            {{ num }}
+                                                        </a>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+
+                                            {% if products.has_next %}
+                                                <li>
+                                                    <a href="?page={{ products.next_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Next">
+                                                        Next <i class="fa fa-chevron-right"></i>
+                                                    </a>
+                                                </li>
+                                            {% endif %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <!-- shop-products-wrapper end -->
                 </div>
-                <div class="item-info">
-                    <span class="brand-label">Ajab</span>
-                    <h3>Wheat Flour</h3>
-                    <span class="pack-size">12 x 2kg Bundle</span>
-                    <div class="item-footer">
-                        <span class="item-price">KSh 1,950</span>
-                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
+
+                <div class="col-lg-3 order-2 order-lg-1">
+                    <div class="sidebar-categores-box">
+                        <div class="sidebar-title">
+                            <h2>Filter By</h2>
+                        </div>
+
+                        <a href="{% url 'products' %}" class="btn-clear-all mb-sm-30 mb-xs-30" style="text-align:center; display:block;">Clear all</a>
+
+                        <form action="{% url 'products' %}" method="GET" id="filter-form">
+                            <input type="hidden" name="q" value="{{ query|default:'' }}">
+                            <div class="filter-sub-area pt-sm-10 pt-xs-10">
+                                <h5 class="filter-sub-titel">Categories</h5>
+                                <div class="categori-checkbox">
+                                    <ul>
+                                        {% for cat in categories %}
+                                        <li>
+                                            <input type="checkbox" name="category_filter" value="{{ cat.id }}"
+                                                {% if cat.id|stringformat:"i" in selected_cats %}checked{% endif %}
+                                                onchange="this.form.submit()">
+                                            <a href="#">{{ cat.name }} ({{ cat.products.count }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            </div>
 
-            <div class="cat-item-card">
-                <div class="item-img">
-                    <img src="{% static 'assets/soko.jpeg' %}" alt="Soko">
-                </div>
-                <div class="item-info">
-                    <span class="brand-label">Soko</span>
-                    <h3>Maize Meal</h3>
-                    <span class="pack-size">12 x 2kg Bundle</span>
-                    <div class="item-footer">
-                        <span class="item-price">KSh 1,680</span>
-                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                </div>
             </div>
-
-            <div class="cat-item-card">
-                <div class="item-img">
-                    <img src="{% static 'assets/pembe.jpeg' %}" alt="Pembe">
-                </div>
-                <div class="item-info">
-                    <span class="brand-label">Pembe</span>
-                    <h3>Home Baking</h3>
-                    <span class="pack-size">12 x 2kg Bundle</span>
-                    <div class="item-footer">
-                        <span class="item-price">KSh 1,890</span>
-                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cat-item-card">
-                <div class="item-img">
-                    <img src="{% static 'assets/exe.png' %}" alt="EXE">
-                </div>
-                <div class="item-info">
-                    <span class="brand-label">EXE</span>
-                    <h3>Self-Rising Flour</h3>
-                    <span class="pack-size">12 x 2kg Bundle</span>
-                    <div class="item-footer">
-                        <span class="item-price">KSh 2,100</span>
-                        <button class="add-cart-btn"><i class="fa-solid fa-plus"></i></button>
-                    </div>
-                </div>
-            </div>
-
         </div>
+    </section>
 
-    </main>
-</div>
+</main>
 
 {% endblock %}

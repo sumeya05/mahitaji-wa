@@ -1,38 +1,53 @@
 {% extends "base/base.html" %}
 {% load static %}
 
-{% block title %} Hot Deals & Promotional Offers | Mahitaji{% endblock %}
+{% block title %}Hot Deals & Promotional Offers | Mahitaji{% endblock %}
 
 {% block content %}
-<main class="body-wrapper" style="background-color: #f8fafc; padding-bottom: 60px;">
-    <div class="breadcrumb-area" style="background: #ffffff; padding: 18px 0; border-bottom: 1px solid #e2e8f0;">
+<main class="body-wrapper offers-page-wrapper">
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-area">
         <div class="container">
             <div class="breadcrumb-content">
-                <ul style="display: flex; align-items: center; gap: 10px; list-style: none; padding: 0; margin: 0; font-size: 14px;">
-                    <li><a href="{% url 'home' %}" style="color: #64748b; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-home"></i> Home</a></li>
-                    <li style="color: #cbd5e1;">/</li>
-                    <li class="active" style="color: #101935; font-weight: 600;">Promotional Offers</li>
+                <ul>
+                    <li><a href="{% url 'home' %}">Home</a></li>
+                    <li class="active">Promotional Offers</li>
                 </ul>
             </div>
         </div>
     </div>
-    <div class="offers-hero-banner" style="background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); padding: 50px 0; color: #ffffff; margin-bottom: 40px; position: relative; overflow: hidden; border-bottom: 4px solid #3b82f6;">
-        <div class="absolute-decorations" style="position: absolute; right: -30px; top: -30px; opacity: 0.05; font-size: 280px; color: #fff; pointer-events: none; transform: rotate(-15deg);">
-            <i class="fa fa-tags"></i>
-        </div>
+
+    <!-- Premium Hero -->
+    <div class="offers-hero-banner">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-8 col-md-12">
-                    <span style="background: #3b82f6; color: white; padding: 6px 14px; font-size: 11px; font-weight: 700; border-radius: 30px; text-transform: uppercase; letter-spacing: 1px; display: inline-block; margin-bottom: 12px; box-shadow: 0 2px 4px rgba(59,130,246,0.3);">Mahitaji Smart Deals</span>
-                    <h1 style="font-weight: 800; font-size: 38px; margin: 0 0 15px 0; letter-spacing: -0.5px; line-height: 1.2; color: #ffffff;">Maximize Your Margins: High-Volume FMCG Discounts</h1>
-                    <p style="font-size: 15px; opacity: 0.85; max-width: 685px; margin-bottom: 0; line-height: 1.6; color: #e2e8f0;">
-                        Direct distribution pricing on verified consumer goods from Kenya's tier-1 manufacturers. Authenticated batch lots, bulk breaks, and instant retailer clearance tiers.
+                <div class="col-lg-7">
+                    <span class="hero-badge-tag">LIVE • DIRECT FROM MANUFACTURERS</span>
+                    <h1 class="hero-main-heading">Premium FMCG Deals That Move Fast</h1>
+                    <p class="hero-subtext-paragraph">
+                        Verified high-volume stock • Real-time pricing • Direct delivery across Kenya
                     </p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat">
+                            <strong>87</strong> <span>Active Deals</span>
+                        </div>
+                        <div class="stat">
+                            <strong>248M</strong> <span>KES Saved This Month</span>
+                        </div>
+                        <div class="stat">
+                            <strong>1.2K</strong> <span>Retailers Shopping Now</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-4 col-md-12 text-lg-right mt-4 mt-lg-0">
-                    <div style="background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); padding: 20px 25px; border-radius: 12px; display: inline-block; text-align: left; backdrop-filter: blur(4px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);">
-                        <div style="font-size: 12px; opacity: 0.75; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px; margin-bottom: 4px;"><i class="fa fa-shipping-fast" style="color:#3b82f6; margin-right: 4px;"></i> Logistics Guarantee</div>
-                        <div style="font-weight: 700; font-size: 16px; color: #ffffff;">Direct Delivery & Last-Mile Split</div>
+                <div class="col-lg-5 text-lg-right">
+                    <div class="guarantee-box">
+                        <i class="fa fa-shipping-fast"></i>
+                        <div>
+                            <strong>48-Hour Delivery Guarantee</strong><br>
+                            <small>Nairobi • Mombasa • Kisumu • Eldoret</small>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -41,209 +56,281 @@
 
     <div class="content-wraper">
         <div class="container">
-            <div class="row">
+            <div class="row pt-4">
+                <!-- Sidebar Filters (Unified with products.html) -->
+                                <!-- Sidebar Filters -->
                 <div class="col-lg-3 order-2 order-lg-1">
-                    <div class="sidebar-categores-box" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; margin-bottom: 30px; background: #ffffff; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                        <div class="sidebar-title" style="margin-bottom: 20px; border-bottom: 2px solid #f1f5f9; padding-bottom: 12px;">
-                            <h2 style="font-size: 14px; font-weight: 700; color: #0f172a; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;">Active Deal Stock</h2>
+                    <div class="sidebar-categores-box">
+                        <div class="sidebar-title">
+                            <h2>Filter By</h2>
                         </div>
-                        <div class="category-sub-menu">
-                            <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px;">
-                                <li style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
-                                    <a href="?category=Flour" style="color: #475569; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-angle-right" style="color: #3b82f6; margin-right: 8px;"></i> Flour & Cereals</a>
-                                    <span style="background: #f1f5f9; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #1e293b;">Unga Ltd</span>
-                                </li>
-                                <li style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
-                                    <a href="?category=Personal Care" style="color: #475569; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-angle-right" style="color: #3b82f6; margin-right: 8px;"></i> Personal Care</a>
-                                    <span style="background: #f1f5f9; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #1e293b;">African Cotton</span>
-                                </li>
-                                <li style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
-                                    <a href="?category=Tissue Paper" style="color: #475569; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-angle-right" style="color: #3b82f6; margin-right: 8px;"></i> Tissue & Sanitary</a>
-                                    <span style="background: #e0f2fe; color: #0369a1; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Hot Deals</span>
-                                </li>
-                                <li style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f1f5f9;">
-                                    <a href="?category=Hardware" style="color: #475569; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-angle-right" style="color: #3b82f6; margin-right: 8px;"></i> Hardware Essentials</a>
-                                    <span style="background: #f1f5f9; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #1e293b;">Turaco</span>
-                                </li>
-                                <li style="padding: 10px 0; display: flex; justify-content: space-between; align-items: center;">
-                                    <a href="?category=Beverages" style="color: #475569; font-size: 14px; text-decoration: none; font-weight: 500; transition: color 0.2s;"><i class="fa fa-angle-right" style="color: #3b82f6; margin-right: 8px;"></i> Drinks & Beverages</a>
-                                    <span style="background: #f1f5f9; font-size: 11px; padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #1e293b;">Aneek</span>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
 
-                    <div class="sidebar-banner" style="background: #0f172a; color: white; padding: 26px; border-radius: 12px; position: relative; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-                        <h4 style="font-weight: 700; font-size: 15px; margin-bottom: 12px; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; letter-spacing: 0.5px;">
-                            <i class="fa fa-shield-alt" style="color: #3b82f6;"></i> Direct Matrix
-                        </h4>
-                        <p style="font-size: 13px; line-height: 1.6; opacity: 0.8; margin-bottom: 18px; color: #cbd5e1;">
-                            All dynamic pricing tiers and bulk breaks are synchronised directly with manufacturing systems. Zero intermediate fees, 100% authentic inventory allocation.
-                        </p>
-                        <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 14px; font-size: 13px; font-weight: 500; color: #3b82f6; display: flex; align-items: center; gap: 6px;">
-                            <i class="fa fa-check-circle" style="color:#10b981;"></i> Verified Hub Stocked
-                        </div>
+                        <a href="{% url 'offers' %}" class="btn-clear-all mb-sm-30 mb-xs-30" style="text-align:center; display:block;">Clear all</a>
+
+                        <form action="{% url 'offers' %}" method="GET" id="filter-form">
+
+                            <div class="filter-sub-area pt-sm-10 pt-xs-10">
+                                <h5 class="filter-sub-titel">Categories</h5>
+                                <div class="categori-checkbox">
+                                    <ul>
+                                        {% for cat in categories %}
+                                        <li>
+                                            <input type="checkbox" name="category_filter" value="{{ cat.id }}"
+                                                {% if cat.id|stringformat:"i" in selected_cats %}checked{% endif %}
+                                                onchange="this.form.submit()">
+                                            <a href="#">{{ cat.name }} ({{ cat.offers_count }})</a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
+                <!-- Main Content -->
                 <div class="col-lg-9 order-1 order-lg-2">
-                    <div class="shop-top-bar" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                        <div class="shop-bar-inner" style="display: flex; align-items: center; gap: 15px;">
+                    <div class="shop-top-bar mt-30">
+                        <div class="shop-bar-inner">
                             <div class="product-view-mode">
-                                <ul class="nav shop-item-filter-list" role="tablist" style="display: flex; gap: 4px; list-style: none; padding: 0; margin: 0;">
-                                    <li class="active" role="presentation" style="margin: 0;">
-                                        <a aria-selected="true" class="active show" data-toggle="tab" role="tab" href="#grid-view" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #cbd5e1; background: #0f172a; color: #ffffff; border-radius: 6px; transition: all 0.2s;" title="Grid View">
-                                            <i class="fa fa-th" style="font-size: 14px;"></i>
-                                        </a>
+                                <ul class="nav shop-item-filter-list" role="tablist">
+                                    <li class="active" role="presentation">
+                                        <a onclick="switchView('grid')" id="grid-btn" href="#"><i class="fa fa-th"></i></a>
                                     </li>
-                                    <li role="presentation" style="margin: 0;">
-                                        <a data-toggle="tab" role="tab" href="#list-view" style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border: 1px solid #cbd5e1; background: #ffffff; color: #475569; border-radius: 6px; transition: all 0.2s;" title="List View">
-                                            <i class="fa fa-list" style="font-size: 14px;"></i>
-                                        </a>
+                                    <li role="presentation">
+                                        <a onclick="switchView('list')" id="list-btn" href="#"><i class="fa fa-th-list"></i></a>
                                     </li>
                                 </ul>
                             </div>
-                            <div class="toolbar-amount" style="font-size: 13px; color: #64748b; font-weight: 500;">
-                                Showing active promotional dynamic SKU offerings matching filters
+                            <div class="toolbar-amount">
+                                Showing {{ offers.start_index }} to {{ offers.end_index }} of {{ offers.paginator.count }} deals
                             </div>
                         </div>
-                        <div class="product-select-box">
-                            <div class="product-short" style="display: flex; align-items: center; gap: 10px; font-size: 14px;">
-                                <label style="margin: 0; font-weight: 600; color: #0f172a;">Sort By:</label>
-                                <select class="nice-select" style="border: 1px solid #cbd5e1; padding: 8px 14px; border-radius: 6px; font-size: 13px; background: #ffffff; color: #334155; font-weight: 500; height: auto; line-height: normal;">
-                                    <option value="trending">Highest Discount</option>
-                                    <option value="sales">Bestsellers</option>
-                                    <option value="price-asc">Price: Low to High</option>
-                                    <option value="price-desc">Price: High to Low</option>
-                                </select>
-                            </div>
+                        <div class="product-short">
+                            <select class="nice-select" onchange="sortProducts(this.value)">
+                                <option value="discount">Highest Discount</option>
+                                <option value="price-low">Price: Low to High</option>
+                                <option value="price-high">Price: High to Low</option>
+                                <option value="newest">Newest First</option>
+                            </select>
                         </div>
                     </div>
 
-                    <div class="shop-products-wrapper">
-                        <div class="tab-content">
-                            <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
-                                <div class="product-area shop-product-area">
-                                    <div class="row">
-                                        {% if offers %}
-                                            {% for product in offers %}
-                                                <div class="col-lg-4 col-md-4 col-sm-6" style="margin-bottom: 30px; display: flex;">
-                                                    <div class="single-product-wrap" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; background: #ffffff; position: relative; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.02); width: 100%; display: flex; flex-direction: column; justify-content: space-between;">
-                                                        
-                                                        <div class="product-label-matrix" style="position: absolute; top: 12px; left: 12px; z-index: 5; display: flex; flex-direction: column; gap: 4px; align-items: flex-start;">
-                                                            <span style="background: #3b82f6; color: white; font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(59,130,246,0.2);">PROMO</span>
-                                                            {% if product.is_trending %}
-                                                                <span style="background: #f59e0b; color: white; font-size: 10px; padding: 4px 8px; border-radius: 6px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 4px rgba(245,158,11,0.2);">TRENDING</span>
-                                                            {% endif %}
-                                                        </div>
-
-                                                        <div class="product-image" style="text-align: center; margin-top: 15px; margin-bottom: 15px; position: relative; padding: 10px; height: 160px; display: flex; align-items: center; justify-content: center;">
-                                                            <a href="{% url 'product_detail' product.id %}" style="display: block; width: 100%;">
-                                                               <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-height: 150px; object-fit: contain; max-width: 100%; width: auto; margin: 0 auto;">
-                                                            </a>
-                                                        </div>
-
-                                                        <div class="product_desc" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-end; padding-top: 5px;">
-                                                            <div class="product_desc_info">
-                                                                <div class="manufacturer" style="margin-bottom: 6px;">
-                                                                    <span style="font-size: 11px; color: #3b82f6; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">{{ product.brand|default:"Authorized FMCG Stock" }}</span>
-                                                                </div>
-                                                                <h4 style="font-size: 14px; font-weight: 600; line-height: 1.5; margin: 0 0 14px 0; min-height: 42px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; color: #0f172a;">
-                                                                    <a class="product_name" href="{% url 'product_detail' product.id %}" style="color: #0f172a; text-decoration: none; transition: color 0.2s;">{{ product.name }}</a>
-                                                                </h4>
-                                                                
-                                                                <div class="price-box-matrix" style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
-                                                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                                                                        <span style="font-size: 12px; color: #64748b; font-weight: 500;">Retail Price:</span>
-                                                                        <span style="font-weight: 700; color: #1e293b; font-size: 14px;">KES {{ product.retail_price }} <small style="font-weight: 500; color:#64748b;">/{{ product.unit_of_measure|default:"PC" }}</small></span>
-                                                                    </div>
-                                                                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 6px;">
-                                                                        <span style="font-size: 12px; color: #1e3a8a; font-weight: 600;">Wholesale Price:</span>
-                                                                        <span style="font-weight: 800; color: #1e3a8a; font-size: 15px;">KES {{ product.wholesale_price }}</span>
-                                                                    </div>
-                                                                    {% if product.old_price %}
-                                                                        <div style="font-size: 11px; color: #94a3b8; text-decoration: line-through; text-align: right; margin-top: 4px; font-weight: 500;">
-                                                                            Was KES {{ product.old_price }}
-                                                                        </div>
-                                                                    {% endif %}
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="action-trigger-block">
-                                                                <form action="{% url 'cart_add' %}" method="POST" class="ajax-cart-submit-form" style="margin: 0; padding: 0;">
-                                                                    {% csrf_token %}
-                                                                    <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                                    <input type="hidden" name="quantity" value="1">
-                                                                    <button type="submit" class="btn-add-to-cart-trigger" style="width: 100%; background: #0f172a; color: white; border: none; padding: 12px; font-weight: 700; font-size: 12px; text-transform: uppercase; border-radius: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(15,23,42,0.15);">
-                                                                        <i class="fa fa-shopping-basket" style="font-size: 13px;"></i> Add to Cart
-                                                                    </button>
-                                                                </form>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                    <!-- Grid View -->
+                    <div id="grid-view" class="products-container grid-view active">
+                        <div class="product-area shop-product-area">
+                            <div class="row">
+                                {% for product in offers %}
+                                <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
+                                    <div class="single-product-wrap">
+                                        <div class="product-image">
+                                            <a href="{% url 'product_detail' product.id %}">
+                                                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+                                            </a>
+                                            {% if product.discount_percent %}
+                                                <span class="sticker">-{{ product.discount_percent }}%</span>
+                                            {% endif %}
+                                        </div>
+                                        <div class="product_desc">
+                                            <div class="product_desc_info">
+                                                <div class="product-review">
+                                                    <h5 class="manufacturer">
+                                                        <a href="#">{{ product.brand|default:"Mahitaji Direct" }}</a>
+                                                    </h5>
                                                 </div>
-                                            {% endfor %}
-                                        {% else %}
-                                            <div class="col-12 text-center" style="padding: 80px 20px; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; margin: 0 15px;">
-                                                <div style="font-size: 54px; color: #94a3b8; margin-bottom: 18px;"><i class="fa fa-tags"></i></div>
-                                                <h3 style="font-weight: 700; color: #0f172a; font-size: 20px; margin-bottom: 8px;">No Active Promotional Dynamic Lots Found</h3>
-                                                <p style="color: #64748b; max-width: 480px; margin: 0 auto 24px auto; font-size: 14px; line-height: 1.6;">All tier-1 promotional quotas have been exhausted for today. Sign up for wholesale restock triggers.</p>
-                                                <a href="{% url 'home' %}" style="background: #3b82f6; color: white; padding: 12px 28px; font-weight: 700; font-size: 13px; text-transform: uppercase; border-radius: 8px; display: inline-block; text-decoration: none; box-shadow: 0 4px 6px -1px rgba(59,130,246,0.3);">Return to Central Catalog</a>
+                                                <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
+                                                <div class="price-box">
+                                                    <span class="new-price">KES {{ product.wholesale_price }}</span>
+                                                    {% if product.old_price %}
+                                                        <span class="old-price">KES {{ product.old_price }}</span>
+                                                    {% endif %}
+                                                </div>
                                             </div>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div id="list-view" class="tab-pane fade" role="tabpanel">
-                                <div class="row">
-                                    <div class="col-12">
-                                        {% for product in offers %}
-                                            <div class="row single-product-wrap product-list-row" style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; background: #ffffff; margin-bottom: 20px; align-items: center; margin-left: 0; margin-right: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
-                                                <div class="col-lg-3 col-md-4 text-center">
-                                                    <div class="product-image" style="padding: 10px; height: 140px; display: flex; align-items: center; justify-content: center;">
-                                                        <a href="{% url 'product_detail' product.id %}" style="display: block; width: 100%;">
-                                                            <img src="{{ product.image_url }}" alt="{{ product.name }}" style="max-height: 130px; object-fit: contain; max-width: 100%; width: auto; margin: 0 auto;">
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-6 col-md-5 mt-3 mt-md-0">
-                                                    <div class="product_desc_info" style="padding: 0 5px;">
-                                                        <span style="font-size: 11px; color: #3b82f6; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">{{ product.brand|default:"Authorized Partner SKU" }}</span>
-                                                        <h4 style="font-size: 18px; font-weight: 700; margin: 6px 0 12px 0; color: #0f172a; line-height: 1.4;">
-                                                            <a href="{% url 'product_detail' product.id %}" style="color: #0f172a; text-decoration: none;">{{ product.name }}</a>
-                                                        </h4>
-                                                        <p style="font-size: 13px; color: #64748b; line-height: 1.6; margin-bottom: 12px;">Category assignment: <strong style="color: #334155;">{{ product.category }}</strong>. Sourced under strict quality agreements with direct last-mile delivery protocols across retail networks.</p>
-                                                        <div style="font-size: 12px; color: #475569; font-weight: 500;"><i class="fa fa-boxes" style="color:#3b82f6; margin-right: 4px;"></i> Base Unit of Measure (UOM): <strong style="color: #0f172a;">{{ product.uom|default:"PC" }}</strong></div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-lg-3 col-md-3 mt-4 mt-md-0" style="border-left: 1px dashed #cbd5e1; padding-left: 24px;">
-                                                    <div class="price-box-matrix" style="margin-bottom: 16px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                                                        <div style="font-size: 12px; color: #64748b; font-weight: 500; display: flex; justify-content: space-between; margin-bottom: 4px;">Retail Unit: <strong style="color:#334155; font-size:13px;">KES {{ product.retail_price }}</strong></div>
-                                                        <div style="font-size: 13px; color: #1e3a8a; font-weight: 700; display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed #cbd5e1; padding-top: 6px; margin-top: 6px;">Wholesale Break: <strong style="font-size:16px; font-weight:800;">KES {{ product.wholesale_price }}</strong></div>
-                                                        {% if product.old_price %}
-                                                            <div style="font-size: 11px; text-decoration: line-through; color: #94a3b8; text-align: right; margin-top: 4px; font-weight: 500;">Was KES {{ product.old_price }}</div>
-                                                        {% endif %}
-                                                    </div>
-                                                    <form action="{% url 'cart_add' %}" method="POST" class="ajax-cart-submit-form" style="margin: 0; padding: 0;">
-                                                        {% csrf_token %}
-                                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                                        <input type="hidden" name="quantity" value="1">
-                                                        <button type="submit" class="btn-add-to-cart-trigger" style="width: 100%; background: #0f172a; color: white; border: none; padding: 11px; font-weight: 700; font-size: 12px; text-transform: uppercase; border-radius: 8px; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(15,23,42,0.1);">
-                                                            Add to Basket
+                                            <div class="add-actions">
+                                                <ul class="add-actions-link">
+                                                    <li class="add-cart active">
+                                                        <button onclick="addToCart({{ product.id }})" class="btn-full-width add-to-cart-btn">
+                                                            + CART
                                                         </button>
-                                                    </form>
-                                                </div>
+                                                    </li>
+                                                </ul>
                                             </div>
-                                        {% endfor %}
+                                        </div>
                                     </div>
                                 </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
+
+                    <!-- List View -->
+                    <div id="list-view" class="products-container list-view">
+                        {% for product in offers %}
+                        <div class="row product-layout-list">
+                            <div class="col-lg-3 col-md-5">
+                                <div class="product-image">
+                                    <a href="{% url 'product_detail' product.id %}">
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
+                                    </a>
+                                    {% if product.discount_percent %}
+                                        <span class="sticker">-{{ product.discount_percent }}%</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-lg-5 col-md-7">
+                                <div class="product_desc">
+                                    <div class="product_desc_info">
+                                        <h5 class="manufacturer">
+                                            <a href="#">{{ product.brand|default:"Mahitaji Direct" }}</a>
+                                        </h5>
+                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
+                                        <div class="price-box">
+                                            <span class="new-price">KES {{ product.wholesale_price }}</span>
+                                            {% if product.old_price %}
+                                                <span class="old-price">KES {{ product.old_price }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-12">
+                                <div class="add-actions">
+                                    <ul class="add-actions-link">
+                                        <li class="add-cart active">
+                                            <button onclick="addToCart({{ product.id }})" class="btn-full-width add-to-cart-btn">
+                                                ADD TO CART
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Pagination -->
+                    {% if offers.has_other_pages %}
+                    <div class="paginatoin-area mt-5">
+                        <div class="row">
+                            <div class="col-lg-6 col-md-6">
+                                <ul class="pagination-box">
+                                    {% if offers.has_previous %}
+                                        <li>
+                                            <a href="?page={{ offers.previous_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Previous">
+                                                <i class="fa fa-chevron-left"></i> Previous
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% for num in offers.paginator.page_range %}
+                                        {% if offers.number == num %}
+                                            <li class="active"><a href="#">{{ num }}</a></li>
+                                        {% elif num > offers.number|add:'-3' and num < offers.number|add:'3' %}
+                                            <li>
+                                                <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}">
+                                                    {{ num }}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if offers.has_next %}
+                                        <li>
+                                            <a href="?page={{ offers.next_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Next">
+                                                Next <i class="fa fa-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                 </div>
             </div>
         </div>
     </div>
 </main>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .offers-hero-banner {
+        background: linear-gradient(135deg, #1e3a8a, #134639);
+        color: white;
+        padding: 100px 0 80px;
+        position: relative;
+    }
+    .hero-badge-tag {
+        background: #e5a93b;
+        color: #0e3027;
+        padding: 8px 20px;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.95rem;
+        display: inline-block;
+        margin-bottom: 20px;
+    }
+    .hero-main-heading {
+        font-size: 2.8rem;
+        line-height: 1.1;
+        font-weight: 800;
+    }
+
+    .sidebar-categores-box {
+        background: #ffffff;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .products-container {
+        display: none;
+    }
+    .products-container.active {
+        display: block;
+    }
+
+    .product-layout-list {
+        margin-bottom: 20px;
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function switchView(view) {
+        document.querySelectorAll('.products-container').forEach(el => el.classList.remove('active'));
+        document.getElementById(view + '-view').classList.add('active');
+
+        document.getElementById('grid-btn').parentElement.classList.toggle('active', view === 'grid');
+        document.getElementById('list-btn').parentElement.classList.toggle('active', view === 'list');
+    }
+
+    function addToCart(productId) {
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart_add" %}',
+            data: {
+                product_id: productId,
+                product_qty: 1,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function () {
+                alert("Product added to cart!");
+            }
+        });
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        switchView('grid');
+    });
+</script>
 {% endblock %}

@@ -177,45 +177,85 @@ def product_detail(request, pk):
         'related_products': related_products
     })
 
+
+
+
+
+
+
+
+
+
+
+
+
+def categories(request):
+    return render(request, 'core/categories.html')
+
+def brands(request):
+    return render(request, 'core/brands.html')
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 def offers(request):
-    """
-    Handles rendering the promotional dynamic lot offerings.
-    Filters products that possess a valid markdown discount (old_price > retail_price)
-    or have structural promotional wholesale pricing active.
-    """
-    # 1. Fetch all active products that qualify as an offer
-    # An offer is defined as a product having an old_price greater than its retail_price
-    offer_products = Product.objects.filter(
-        is_active=True,
-        old_price__isnull=False,
-        old_price__gt=F('retail_price')
-    ).select_related('category', 'brand', 'unit_of_measure')
-
-    # 2. Extract Category URL Filter parameters if selected from the sidebar
-    category_slug = request.GET.get('category')
-    if category_slug:
-        # Match against either the name or slug criteria for safety
-        offer_products = offer_products.filter(category__name__icontains=category_slug)
-
-    # 3. Handle Order Sorting Criteria Selection Matrix
-    sort_by = request.GET.get('sort', 'trending')
-    if sort_by == 'price-asc':
-        offer_products = offer_products.order_by('retail_price')
-    elif sort_by == 'price-desc':
-        offer_products = offer_products.order_by('-retail_price')
-    elif sort_by == 'sales':
-        offer_products = offer_products.order_by('-is_best_seller', 'name')
-    else:
-        # Default fallback: highest absolute percentage discount matrix or trending flag
-        offer_products = offer_products.order_by('-is_trending', 'name')
-
-    # 4. Construct context payloads mapping to your templates' variables
-    context = {
-        'offers': offer_products,
-        'current_category': category_slug,
-        'current_sort': sort_by,
-    }
+    """Offers page with proper filtering and pagination"""
     
+    # Base queryset: Only products with discounts
+    offers_queryset = Product.objects.filter(
+        is_active=True
+    ).filter(
+        Q(old_price__gt=F('wholesale_price')) | 
+        Q(old_price__gt=F('retail_price'))
+    )
+
+    # Get filter values
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    # Apply filters to main queryset
+    if selected_brands:
+        offers_queryset = offers_queryset.filter(brand_id__in=selected_brands)
+    if selected_cats:
+        offers_queryset = offers_queryset.filter(category_id__in=selected_cats)
+
+    # Pagination
+    paginator = Paginator(offers_queryset.select_related('brand', 'category').order_by('-created_at'), 12)
+    page_number = request.GET.get('page')
+    offers_page = paginator.get_page(page_number)
+
+    # === COUNTS FOR FILTERS - ONLY COUNT OFFERS ===
+    brands_with_count = Brand.objects.annotate(
+        offers_count=Count('products', filter=Q(products__is_active=True) & 
+                          (Q(products__old_price__gt=F('products__wholesale_price')) | 
+                           Q(products__old_price__gt=F('products__retail_price'))))
+    ).filter(offers_count__gt=0)
+
+    categories_with_count = Category.objects.annotate(
+        offers_count=Count('products', filter=Q(products__is_active=True) & 
+                          (Q(products__old_price__gt=F('products__wholesale_price')) | 
+                           Q(products__old_price__gt=F('products__retail_price'))))
+    ).filter(offers_count__gt=0)
+
+    context = {
+        'offers': offers_page,
+        'selected_brands': selected_brands,
+        'selected_cats': selected_cats,
+        'brands': brands_with_count,
+        'categories': categories_with_count,
+    }
     return render(request, 'core/offers.html', context)
 
 
