@@ -76,34 +76,69 @@ def home(request):
 
 
 
-def retailers(request):
-    # 1. Start with all active products
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
 
-    # 2. Grab filter data from the GET request
+
+def retailers(request):
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
+
     selected_brands = request.GET.getlist('brand')
     selected_cats = request.GET.getlist('category_filter')
 
-    # 3. Apply Brand Filter if any are checked
     if selected_brands:
         all_products = all_products.filter(brand_id__in=selected_brands)
-
-    # 4. Apply Category Filter if any are checked
     if selected_cats:
         all_products = all_products.filter(category_id__in=selected_cats)
 
-    # 5. Apply Pagination
-    paginator = Paginator(all_products.distinct(), 12) # Show 12 products per page
-    page_number = request.GET.get('page')
+    # Check if any filter is active
+    has_filters = bool(selected_brands) or bool(selected_cats)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # AJAX/Fetch request
+        if has_filters:
+            # Return ALL filtered products (no pagination)
+            products_list = all_products.distinct()
+        else:
+            # Normal pagination for initial load / no filters
+            paginator = Paginator(all_products.distinct(), 12)
+            page_number = request.GET.get('page', 1)
+            products_list = paginator.get_page(page_number)
+
+        products_data = [{
+            'id': p.id,
+            'name': p.name,
+            'brand': p.brand.name if p.brand else '',
+            'brand_id': p.brand.id if p.brand else None,
+            'category_id': p.category.id if p.category else None,
+            'image_url': p.image_url,
+            'retail_price': float(p.retail_price),
+            'old_price': float(p.old_price) if p.old_price else None,
+            'discount_percentage': p.discount_percentage,
+            'average_rating': p.average_rating,
+        } for p in products_list]
+
+        return JsonResponse({'products': products_data, 'has_filters': has_filters})
+
+    # Normal page load (with pagination)
+    paginator = Paginator(all_products.distinct(), 12)
+    page_number = request.GET.get('page', 1)
     products_page = paginator.get_page(page_number)
 
     context = {
-        'products': products_page, # This now contains only the items for the current page
+        'products': products_page,
         'selected_brands': selected_brands,
         'selected_cats': selected_cats,
+        'categories': Category.objects.all(),
+        'brands': Brand.objects.all(),
     }
     return render(request, 'core/retailers.html', context)
-    
+
+
+
+
+
+
+
+
 
 
 def wholesalers(request):
@@ -190,10 +225,57 @@ def product_detail(request, pk):
 
 
 def categories(request):
-    return render(request, 'core/categories.html')
+    # This usually shows the full catalog
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
+
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    if selected_brands:
+        all_products = all_products.filter(brand_id__in=selected_brands)
+    if selected_cats:
+        all_products = all_products.filter(category_id__in=selected_cats)
+
+    # 3. Apply Pagination (12 products per page)
+    paginator = Paginator(all_products.distinct(), 12) 
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # 4. Update Context
+    context = {
+        'products': products_page, 
+        'selected_cats': selected_cats,
+        'categories': Category.objects.all(),
+        'brands': Brand.objects.all(),
+    }
+    
+    return render(request, 'core/categories.html', context)
 
 def brands(request):
-    return render(request, 'core/brands.html')
+    # This usually shows the full catalog
+    all_products = Product.objects.filter(is_active=True).select_related('brand', 'unit_of_measure')
+
+    selected_brands = request.GET.getlist('brand')
+    selected_cats = request.GET.getlist('category_filter')
+
+    if selected_brands:
+        all_products = all_products.filter(brand_id__in=selected_brands)
+    if selected_cats:
+        all_products = all_products.filter(category_id__in=selected_cats)
+
+    # 3. Apply Pagination (12 products per page)
+    paginator = Paginator(all_products.distinct(), 12) 
+    page_number = request.GET.get('page')
+    products_page = paginator.get_page(page_number)
+
+    # 4. Update Context
+    context = {
+        'products': products_page, 
+        'selected_brands': selected_brands,
+        'categories': Category.objects.all(),
+        'brands': Brand.objects.all(),
+    }
+    return render(request, 'core/brands.html', context)
 
 
 

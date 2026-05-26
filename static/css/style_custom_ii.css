@@ -720,16 +720,16 @@ span.current {
     align-items: center;
     justify-content: center;
     width: 45px;
-    border: 2px solid #0b73f5;
+    border: 2px solid #fff;
     border-radius: 8px;
     transition: all 0.3s ease;
-    color: #0b73f5;
+    color: #fff;
 }
 
 /* Unified Hover State: User Icon & Minicart */
 .header-middle-right .hm-menu > li > a:hover,
 .header-middle-right .hm-minicart:hover > a {
-    background: #0b73f5 !important; /* The blue from image_57f0a5.png */
+    /* background: #0b73f5 !important;  The blue from image_57f0a5.png */
     color: #ffffff !important;      /* White icon on hover */
     border: solid 2px #ffffff;
 }
@@ -797,17 +797,15 @@ span.current {
 }
 
 .dropdown-solid .hb-menu nav > ul > li > ul.hb-dropdown li a {
-    color: #333 !important;
+    color: #24654a !important;
 }
 
-.dropdown-solid .hb-menu nav > ul > li > ul.hb-dropdown li a:hover {
-    color: #0056b3 !important;
-}
+
 
 
 /* Target the main navigation links (SHOP, PRODUCTS CATALOG, etc.) */
 .nav-links-custom > li > a {
-    color: #1b4477 !important;   
+    color: #fff !important;   
     font-size: 14px;            /* Keep the size balanced */
     font-weight: 600;           /* Thicker text (Semi-bold) so it doesn't look frail */
     letter-spacing: 1.5px;      /* Adds horizontal breathing room between letters */
@@ -865,7 +863,20 @@ span.current {
 }
 
 .is-landing-page .header-middle {
-    background: transparent !important;
+    background-color: transparent !important;
+}
+
+
+:root {
+    --bran: #1c3f2a;
+}
+
+.header-middle {
+    background: #0f2a1f;
+}
+
+.header-bottom a:hover {
+    color: var(--bran);
 }
 
 .is-landing-page .hm-minicart-trigger {
@@ -931,8 +942,13 @@ span.current {
     border: 1px solid #e6eaf0;
 }
 
+
 .header-bottom {
     transition: all 0.3s ease;
+    background: #0f2a1f;
+}
+.header-bottom a:hover {
+    color: var(--bran);
 }
 
 /* solid navbar after scroll */
@@ -1046,9 +1062,9 @@ span.current {
     border: 2px solid #313761;
 }
 
-.is-landing-page .footer-bottom
+.footer-bottom
  {
-    background-color: #084f25f5; 
+    background-color: #082714f5; 
 }
 
 

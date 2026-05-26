@@ -4,254 +4,246 @@
 {% block title %}Hot Deals & Promotional Offers | Mahitaji{% endblock %}
 
 {% block content %}
-<main class="body-wrapper offers-page-wrapper">
 
-    <!-- Breadcrumb -->
-    <div class="breadcrumb-area">
+<main class="bg-slate-50 min-h-screen">
+
+<div class="breadcrumb-area">
         <div class="container">
             <div class="breadcrumb-content">
                 <ul>
                     <li><a href="{% url 'home' %}">Home</a></li>
-                    <li class="active">Promotional Offers</li>
+                    <li class="active">Offers</li>
                 </ul>
             </div>
         </div>
-    </div>
+</div>
 
-    <!-- Premium Hero -->
-    <div class="offers-hero-banner">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-7">
-                    <span class="hero-badge-tag">LIVE • DIRECT FROM MANUFACTURERS</span>
-                    <h1 class="hero-main-heading">Premium FMCG Deals That Move Fast</h1>
-                    <p class="hero-subtext-paragraph">
-                        Verified high-volume stock • Real-time pricing • Direct delivery across Kenya
-                    </p>
-                    
-                    <div class="hero-stats">
-                        <div class="stat">
-                            <strong>87</strong> <span>Active Deals</span>
-                        </div>
-                        <div class="stat">
-                            <strong>248M</strong> <span>KES Saved This Month</span>
-                        </div>
-                        <div class="stat">
-                            <strong>1.2K</strong> <span>Retailers Shopping Now</span>
-                        </div>
-                    </div>
+<!-- ================= HERO ================= -->
+<section class="relative overflow-hidden bg-gradient-to-br from-[#0f2f27] via-[#134639] to-[#0b1a14] text-white">
+
+    <div class="max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+
+        <!-- TEXT -->
+        <div>
+
+            <span class="inline-block bg-[#e5a93b] text-[#0b1a14] px-4 py-1 rounded-full text-xs font-bold mb-5">
+                LIVE • DIRECT FROM MANUFACTURERS
+            </span>
+
+            <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+                Premium FMCG Deals That Move Fast
+            </h1>
+
+            <p class="mt-4 text-slate-200 text-sm md:text-base max-w-xl">
+                Verified stock • Real-time pricing • Direct delivery across Kenya
+            </p>
+
+            <!-- STATS -->
+            <div class="grid grid-cols-3 gap-6 mt-8">
+
+                <div>
+                    <div class="text-2xl font-black">87</div>
+                    <div class="text-xs text-slate-300">Active Deals</div>
                 </div>
-                <div class="col-lg-5 text-lg-right">
-                    <div class="guarantee-box">
-                        <i class="fa fa-shipping-fast"></i>
-                        <div>
-                            <strong>48-Hour Delivery Guarantee</strong><br>
-                            <small>Nairobi • Mombasa • Kisumu • Eldoret</small>
-                        </div>
-                    </div>
+
+                <div>
+                    <div class="text-2xl font-black text-[#e5a93b]">248M</div>
+                    <div class="text-xs text-slate-300">KES Saved</div>
                 </div>
+
+                <div>
+                    <div class="text-2xl font-black">1.2K</div>
+                    <div class="text-xs text-slate-300">Retailers</div>
+                </div>
+
             </div>
+
         </div>
-    </div>
 
-    <div class="content-wraper">
-        <div class="container">
-            <div class="row pt-4">
-                <!-- Sidebar Filters (Unified with products.html) -->
-                                <!-- Sidebar Filters -->
-                <div class="col-lg-3 order-2 order-lg-1">
-                    <div class="sidebar-categores-box">
-                        <div class="sidebar-title">
-                            <h2>Filter By</h2>
-                        </div>
+        <!-- RIGHT CARD -->
+        <div class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
 
-                        <a href="{% url 'offers' %}" class="btn-clear-all mb-sm-30 mb-xs-30" style="text-align:center; display:block;">Clear all</a>
+            <div class="flex items-center gap-4">
 
-                        <form action="{% url 'offers' %}" method="GET" id="filter-form">
+                <i class="fa fa-shipping-fast text-[#e5a93b] text-2xl"></i>
 
-                            <div class="filter-sub-area pt-sm-10 pt-xs-10">
-                                <h5 class="filter-sub-titel">Categories</h5>
-                                <div class="categori-checkbox">
-                                    <ul>
-                                        {% for cat in categories %}
-                                        <li>
-                                            <input type="checkbox" name="category_filter" value="{{ cat.id }}"
-                                                {% if cat.id|stringformat:"i" in selected_cats %}checked{% endif %}
-                                                onchange="this.form.submit()">
-                                            <a href="#">{{ cat.name }} ({{ cat.offers_count }})</a>
-                                        </li>
-                                        {% endfor %}
-                                    </ul>
-                                </div>
-                            </div>
-                        </form>
+                <div>
+                    <div class="font-bold">48-Hour Delivery Guarantee</div>
+                    <div class="text-xs text-slate-300 mt-1">
+                        Nairobi & Environs
                     </div>
                 </div>
 
-                <!-- Main Content -->
-                <div class="col-lg-9 order-1 order-lg-2">
-                    <div class="shop-top-bar mt-30">
-                        <div class="shop-bar-inner">
-                            <div class="product-view-mode">
-                                <ul class="nav shop-item-filter-list" role="tablist">
-                                    <li class="active" role="presentation">
-                                        <a onclick="switchView('grid')" id="grid-btn" href="#"><i class="fa fa-th"></i></a>
-                                    </li>
-                                    <li role="presentation">
-                                        <a onclick="switchView('list')" id="list-btn" href="#"><i class="fa fa-th-list"></i></a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="toolbar-amount">
-                                Showing {{ offers.start_index }} to {{ offers.end_index }} of {{ offers.paginator.count }} deals
-                            </div>
-                        </div>
-                        <div class="product-short">
-                            <select class="nice-select" onchange="sortProducts(this.value)">
-                                <option value="discount">Highest Discount</option>
-                                <option value="price-low">Price: Low to High</option>
-                                <option value="price-high">Price: High to Low</option>
-                                <option value="newest">Newest First</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <!-- Grid View -->
-                    <div id="grid-view" class="products-container grid-view active">
-                        <div class="product-area shop-product-area">
-                            <div class="row">
-                                {% for product in offers %}
-                                <div class="col-lg-4 col-md-4 col-sm-6 mt-40">
-                                    <div class="single-product-wrap">
-                                        <div class="product-image">
-                                            <a href="{% url 'product_detail' product.id %}">
-                                                <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
-                                            </a>
-                                            {% if product.discount_percent %}
-                                                <span class="sticker">-{{ product.discount_percent }}%</span>
-                                            {% endif %}
-                                        </div>
-                                        <div class="product_desc">
-                                            <div class="product_desc_info">
-                                                <div class="product-review">
-                                                    <h5 class="manufacturer">
-                                                        <a href="#">{{ product.brand|default:"Mahitaji Direct" }}</a>
-                                                    </h5>
-                                                </div>
-                                                <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
-                                                <div class="price-box">
-                                                    <span class="new-price">KES {{ product.wholesale_price }}</span>
-                                                    {% if product.old_price %}
-                                                        <span class="old-price">KES {{ product.old_price }}</span>
-                                                    {% endif %}
-                                                </div>
-                                            </div>
-                                            <div class="add-actions">
-                                                <ul class="add-actions-link">
-                                                    <li class="add-cart active">
-                                                        <button onclick="addToCart({{ product.id }})" class="btn-full-width add-to-cart-btn">
-                                                            + CART
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- List View -->
-                    <div id="list-view" class="products-container list-view">
-                        {% for product in offers %}
-                        <div class="row product-layout-list">
-                            <div class="col-lg-3 col-md-5">
-                                <div class="product-image">
-                                    <a href="{% url 'product_detail' product.id %}">
-                                        <img src="{{ product.image_url }}" alt="{{ product.name }}" loading="lazy">
-                                    </a>
-                                    {% if product.discount_percent %}
-                                        <span class="sticker">-{{ product.discount_percent }}%</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            <div class="col-lg-5 col-md-7">
-                                <div class="product_desc">
-                                    <div class="product_desc_info">
-                                        <h5 class="manufacturer">
-                                            <a href="#">{{ product.brand|default:"Mahitaji Direct" }}</a>
-                                        </h5>
-                                        <h4><a class="product_name" href="{% url 'product_detail' product.id %}">{{ product.name }}</a></h4>
-                                        <div class="price-box">
-                                            <span class="new-price">KES {{ product.wholesale_price }}</span>
-                                            {% if product.old_price %}
-                                                <span class="old-price">KES {{ product.old_price }}</span>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4 col-md-12">
-                                <div class="add-actions">
-                                    <ul class="add-actions-link">
-                                        <li class="add-cart active">
-                                            <button onclick="addToCart({{ product.id }})" class="btn-full-width add-to-cart-btn">
-                                                ADD TO CART
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    </div>
-
-                    <!-- Pagination -->
-                    {% if offers.has_other_pages %}
-                    <div class="paginatoin-area mt-5">
-                        <div class="row">
-                            <div class="col-lg-6 col-md-6">
-                                <ul class="pagination-box">
-                                    {% if offers.has_previous %}
-                                        <li>
-                                            <a href="?page={{ offers.previous_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Previous">
-                                                <i class="fa fa-chevron-left"></i> Previous
-                                            </a>
-                                        </li>
-                                    {% endif %}
-
-                                    {% for num in offers.paginator.page_range %}
-                                        {% if offers.number == num %}
-                                            <li class="active"><a href="#">{{ num }}</a></li>
-                                        {% elif num > offers.number|add:'-3' and num < offers.number|add:'3' %}
-                                            <li>
-                                                <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}">
-                                                    {{ num }}
-                                                </a>
-                                            </li>
-                                        {% endif %}
-                                    {% endfor %}
-
-                                    {% if offers.has_next %}
-                                        <li>
-                                            <a href="?page={{ offers.next_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}" class="Next">
-                                                Next <i class="fa fa-chevron-right"></i>
-                                            </a>
-                                        </li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    {% endif %}
-
-                </div>
             </div>
+
         </div>
+
     </div>
+
+</section>
+
+<!-- ================= MAIN ================= -->
+<section class="py-10">
+
+<div class="max-w-7xl mx-auto px-4">
+
+    <!-- TOP BAR -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm mt-6">
+
+        <!-- INFO -->
+        <div class="text-sm text-slate-600 font-medium flex-1 min-w-0">
+            Showing 
+            <span class="font-semibold text-slate-900">{{ offers.start_index }}</span>
+            to
+            <span class="font-semibold text-slate-900">{{ offers.end_index }}</span>
+            of
+            <span class="font-semibold text-slate-900">{{ offers.paginator.count }}</span>
+            deals
+        </div>
+
+        <!-- SORT -->
+        <div class="w-full lg:w-auto flex-shrink-0">
+
+            <select class="w-full lg:w-auto bg-slate-50 border border-slate-200 text-sm rounded-xl px-4 py-2.5
+                        text-slate-700 font-medium
+                        hover:border-slate-300 hover:bg-white
+                        focus:outline-none focus:ring-2 focus:ring-emerald-500
+                        transition-all">
+
+                <option>Highest Discount</option>
+                <option>Price: Low to High</option>
+                <option>Price: High to Low</option>
+                <option>Newest First</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+    <!-- ================= URGENCY BAR ================= -->
+    <div class="mt-6 bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-3 rounded-2xl flex justify-between items-center">
+
+        <div class="font-semibold text-sm">
+            ⚡ 12 deals expiring in next 24 hours
+        </div>
+
+        <div class="text-xs bg-white/20 px-3 py-1 rounded-full">
+            Auto-updated
+        </div>
+
+    </div>
+
+    <!-- ================= GRID ================= -->
+    <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+
+        {% for product in offers %}
+        <div class="group bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden
+                    hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+
+            <!-- IMAGE -->
+            <div class="relative bg-slate-50 aspect-[1/0.9] flex items-center justify-center">
+
+                <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
+                    <img src="{{ product.image_url }}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition">
+                </a>
+
+                {% if product.discount_percent %}
+                <span class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    -{{ product.discount_percent }}%
+                </span>
+                {% endif %}
+
+            </div>
+
+            <!-- CONTENT -->
+            <div class="p-3 space-y-2">
+
+                <p class="text-xs font-semibold text-emerald-600 uppercase">
+                    {{ product.brand|default:"Mahitaji Direct" }}
+                </p>
+
+                <h4 class="text-sm font-semibold text-slate-900 line-clamp-2">
+                    {{ product.name }}
+                </h4>
+
+                <div class="flex items-center justify-between pt-2">
+
+                    <div>
+                        <div class="text-base font-bold text-slate-900">
+                            KES {{ product.retail_price }}
+                        </div>
+
+                        {% if product.old_price %}
+                        <div class="text-xs text-slate-400 line-through">
+                            KES {{ product.old_price }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="button"
+                            value="{{ product.id }}"
+                            class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-4 py-2 rounded-xl transition-all active:scale-95">
+                        Add To Cart
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- ================= PAGINATION ================= -->
+    {% if offers.has_other_pages %}
+    <div class="mt-10 flex flex-col lg:flex-row justify-between items-center gap-4 text-sm">
+
+        <div class="text-slate-600">
+            Showing {{ offers.start_index }} to {{ offers.end_index }} of {{ offers.paginator.count }}
+        </div>
+
+        <div class="flex gap-2 flex-wrap">
+
+            {% if offers.has_previous %}
+            <a href="?page={{ offers.previous_page_number }}"
+               class="px-3 py-2 bg-white border rounded-xl hover:bg-slate-50">
+                Prev
+            </a>
+            {% endif %}
+
+            {% for num in offers.paginator.page_range %}
+                {% if offers.number == num %}
+                    <span class="px-3 py-2 bg-emerald-600 text-white rounded-xl">
+                        {{ num }}
+                    </span>
+                {% elif num > offers.number|add:'-3' and num < offers.number|add:'3' %}
+                    <a href="?page={{ num }}"
+                       class="px-3 py-2 bg-white border rounded-xl hover:bg-slate-50">
+                        {{ num }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+
+            {% if offers.has_next %}
+            <a href="?page={{ offers.next_page_number }}"
+               class="px-3 py-2 bg-white border rounded-xl hover:bg-slate-50">
+                Next
+            </a>
+            {% endif %}
+
+        </div>
+
+    </div>
+    {% endif %}
+
+</div>
+
+</section>
+
 </main>
+
 {% endblock %}
 
 {% block extra_css %}
@@ -304,6 +296,29 @@
 
 {% block extra_js %}
 <script>
+
+    function animateCounters() {
+    document.querySelectorAll('.counter').forEach(counter => {
+        const target = +counter.dataset.target;
+        let count = 0;
+        const step = Math.ceil(target / 60);
+
+        const update = () => {
+            count += step;
+            if (count >= target) {
+                counter.textContent = target;
+            } else {
+                counter.textContent = count;
+                requestAnimationFrame(update);
+            }
+        };
+
+        update();
+    });
+}
+
+document.addEventListener("DOMContentLoaded", animateCounters);
+
     function switchView(view) {
         document.querySelectorAll('.products-container').forEach(el => el.classList.remove('active'));
         document.getElementById(view + '-view').classList.add('active');

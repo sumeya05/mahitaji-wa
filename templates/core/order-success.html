@@ -2,24 +2,124 @@
 {% load static %}
 
 {% block content %}
-<div class="error404-area pt-30 pb-60">
-    <div class="container">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="error-wrapper text-center ptb-50 border-radius-5">
-                    <div class="error-text">
-                        <h1 style="color: #49b04d;">Thank You!</h1>
-                        <h2>Your order has been placed successfully.</h2>
-                        <p>Order Number: <strong>#{{ order.order_number }}</strong></p>
-                        <p>We've sent a confirmation email to {{ request.user.email }}.</p>
-                    </div>
-                    <div class="error-button">
-                        <a href="{% url 'home' %}" style="background-color: #49b04d; border-radius: 5px;">Continue Shopping</a>
-                        <a href="{% url 'dashboard' %}" class="ml-10" style="background-color: #333; border-radius: 5px;">View My Orders</a>
-                    </div>
+
+<section class="min-h-screen bg-slate-50 flex items-center">
+
+    <div class="w-full">
+
+        <div class="max-w-4xl mx-auto px-6 lg:px-8">
+
+            <!-- SUCCESS HERO -->
+            <div class="text-center mb-10">
+
+                <!-- ICON -->
+                <div class="mx-auto w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center mb-6
+                            animate-pulse">
+                    <i class="fa fa-check text-3xl text-emerald-600"></i>
                 </div>
+
+                <h1 class="text-4xl font-black text-emerald-700 mb-2">
+                    Thank You!
+                </h1>
+
+                <p class="text-lg text-slate-600">
+                    Your order has been placed successfully.
+                </p>
+
             </div>
+
+            <!-- ORDER CARD -->
+            <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-8">
+
+                <!-- ORDER NUMBER -->
+                <div class="text-center mb-6">
+                    <p class="text-slate-500 text-sm uppercase tracking-widest">
+                        Order Confirmation
+                    </p>
+
+                    <h2 class="text-2xl font-bold text-slate-900 mt-2">
+                        #{{ order.order_number }}
+                    </h2>
+
+                    <p class="text-slate-500 mt-2">
+                        A confirmation has been sent to
+                        <span class="font-semibold text-slate-700">{{ request.user.email }}</span>
+                    </p>
+                </div>
+
+                <!-- ORDER STATUS ROW -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center mb-8">
+
+                    <div class="p-4 bg-emerald-50 rounded-xl border border-emerald-100">
+                        <div class="text-emerald-600 font-bold">Confirmed</div>
+                        <div class="text-xs text-slate-500 mt-1">Order Status</div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border">
+                        <div class="font-bold text-slate-800">Processing</div>
+                        <div class="text-xs text-slate-500 mt-1">Fulfillment</div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 rounded-xl border">
+                        <div class="font-bold text-slate-800">1–24 Hrs</div>
+                        <div class="text-xs text-slate-500 mt-1">Delivery Window</div>
+                    </div>
+
+                </div>
+
+                <!-- NEXT STEPS -->
+                <div class="space-y-4 mb-8">
+
+                    <div class="flex gap-3 items-start">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            1
+                        </div>
+                        <p class="text-slate-600">
+                            Our team is verifying your order and preparing dispatch.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3 items-start">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            2
+                        </div>
+                        <p class="text-slate-600">
+                            You will receive SMS updates on delivery progress.
+                        </p>
+                    </div>
+
+                    <div class="flex gap-3 items-start">
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            3
+                        </div>
+                        <p class="text-slate-600">
+                            Your order will be delivered or ready for pickup at Baba Dogo hub.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- CTA BUTTONS -->
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+
+                    <a href="{% url 'home' %}"
+                       class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl transition">
+                        Continue Shopping
+                    </a>
+
+                    <a href="{% url 'dashboard' %}"
+                       class="bg-slate-900 hover:bg-slate-800 text-white font-bold px-6 py-3 rounded-xl transition">
+                        View My Orders
+                    </a>
+
+                </div>
+
+            </div>
+
         </div>
+
     </div>
-</div>
+
+</section>
+
 {% endblock %}

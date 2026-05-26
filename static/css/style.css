@@ -105,7 +105,6 @@ a:hover {
 
 
 a:focus, a:hover {
-	color: #0b73f5;
 	transition: all ease-in-out 0.3s;
 	text-decoration: none;
 }
@@ -113,14 +112,14 @@ a:focus, a:hover {
 
 /* target the span specifically when the parent anchor is hovered */
 a.logo-area:hover .logo-name {
-    color: #313761; /* Forces it to stay your brand blue */
+    color: #fff; /* Forces it to stay your brand blue */
     text-decoration: none !important; /* Prevents underlines */
 	font-size: 38px;
 }
 
 /* ensure the base state is also locked in */
 .logo-name {
-    color: #313761;
+    color: #fff;
     transition: none !important; /* Stops the "flash" by removing the transition */
 }
 
@@ -264,7 +263,7 @@ span.tooltip-content {
 	max-width: 100%;
 }
 .nice-select .option:hover, .nice-select .option.focus, .nice-select .option.selected.focus {
-	color: #0b73f5;
+	color: #24654a;
 	background-color: #b4bae380;
 }
 /* 
@@ -1460,7 +1459,7 @@ textarea:focus {
 /*Header Middle*/
 .header-middle {
 	padding: 30px;
-	background: linear-gradient(to bottom, #7292B5, #B9D1EA);;
+	background: #0f2649db;
 }
 
 .logo-img {
@@ -1563,7 +1562,7 @@ textarea:focus {
 }
 .hm-minicart-trigger {
 	border-radius: 8px;
-    color: #0b73f5;
+    color: #fff;
     height: 45px;
     cursor: pointer;
     display: block;
@@ -1573,7 +1572,6 @@ textarea:focus {
 }
 
 .hm-minicart-trigger:hover {
-		background: #0b73f5;
 		color: #ffffff;
 }
 .item-icon::before {
@@ -1979,7 +1977,7 @@ textarea:focus {
 }
 /*Sticky*/
 .header-sticky.sticky {
-	background: #254369e0;
+	background: #1a452cdb;
 	left: 0;
 	position: fixed;
 	right: 0;

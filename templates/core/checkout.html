@@ -18,176 +18,142 @@
                     </div>
                 </div>
             </div>
-            <!-- Li's Breadcrumb Area End Here -->
-            <!--Checkout Area Strat-->
-            <div class="checkout-area pt-60 pb-30">
-                <div class="container">
 
-                    <div class="row">
+            <section class="py-16 bg-slate-50">
 
-                        <div class="col-lg-6 col-12">
-                            <form action="#">
-                                <div class="checkbox-form">
-                                <h3>Billing Details</h3>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="checkout-form-list">
-                                            <label>First Name <span class="required">*</span></label>
-                                            <input placeholder="" type="text" id="first_name" 
-                                                value="{{ request.user.first_name }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="checkout-form-list">
-                                            <label>Last Name <span class="required">*</span></label>
-                                            <input placeholder="" type="text" id="last_name" 
-                                                value="{{ request.user.last_name }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="checkout-form-list">
-                                            <label>Email Address <span class="required">*</span></label>
-                                            <input placeholder="" type="email" id="email_address" 
-                                                value="{{ request.user.email }}">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-12">
-                                        <div class="checkout-form-list">
-                                            <label>Phone <span class="required">*</span></label>
-                                            <input type="text" id="phone_number" 
-                                                value="{{ profile.phone_number }}">
-                                        </div>
-                                    </div>
+    <div class="max-w-7xl mx-auto px-6 lg:px-8">
 
+        <div class="mb-10">
+            <h2 class="text-3xl font-bold text-slate-900">Checkout</h2>
+            <p class="text-slate-600 mt-2">Complete your order securely and confirm delivery details</p>
+        </div>
 
-                                    <div class="col-md-12">
-                                        <div class="checkout-form-list">
-                                            <label>Address <span class="required">*</span></label>
-                                            <input placeholder="Street address" type="text" id="address" name="address"
-                                                value="{{ primary_address.physical_address|default:'' }}">
-                                        </div>
-                                    </div>
+        <form id="checkout-form">
 
-                                    <div class="col-md-12">
-                                        <div class="checkout-form-list">
-                                            <label>Town / City <span class="required">*</span></label>
-                                            <input placeholder="e.g Nairobi" type="text" id="city_town" name="city"
-                                                value="{{ primary_address.city|default:'' }}">
-                                        </div>
-                                    </div>
+            <div class="grid lg:grid-cols-2 gap-10">
 
+                <!-- BILLING -->
+                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
 
-                                </div>
-                            </div>
-                            </form>
+                    <h3 class="text-xl font-bold text-slate-900 mb-6">Billing Details</h3>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                        <div>
+                            <label class="text-sm">First Name *</label>
+                            <input id="first_name" type="text"
+                                value="{{ request.user.first_name }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
                         </div>
 
-                        <div class="col-lg-6 col-12">
-                            <div class="your-order">
-                                <h3>Your order</h3>
-                                <div class="your-order-table table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="cart-product-name">Product</th>
-                                                <th class="cart-product-total">Total</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {% for item in cart %}
-                                            <tr class="cart_item">
-                                            <td class="cart-product-name">
-                                                {{ item.product.name }} 
-                                                <strong class="product-quantity"> × {{ item.qty }}</strong>
-                                            </td>
-                                            <td class="cart-product-total">
-                                                <span class="amount">ksh {{ item.total_price }}</span>
-                                            </td>  
-                                            </tr>
-                                            {% endfor %}
-                                        </tbody>
-                                        <tfoot>
-                                            <tr class="cart-subtotal">
-                                                <th>Cart Subtotal</th>
-                                                <td><span class="amount">ksh {{ cart.get_total_price }}</span></td>
-                                            </tr>
-                                            <tr class="order-total">
-                                                <th>Order Total</th>
-                                                <td><strong><span class="amount">ksh {{ cart.get_total_price }}</span></strong></td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="text-sm">Last Name *</label>
+                            <input id="last_name" type="text"
+                                value="{{ request.user.last_name }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
                         </div>
-                                              
 
-                    </div>
-
-                    <div class="row">
-                         <div class="col-lg-6 col-12">
-                            <div class="your-order">
-
-                                <h3>Make Payment</h3>
-                                <div class="payment-method">
-                                    <div class="payment-accordion">
-                                        <div id="accordion">
-                                          
-                                          <div class="card">
-                                            <div class="card-header" id="#payment-1">
-                                                <h5 class="panel-title">
-                                                    <a class="" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                                                        Cash on Delivery.
-                                                    </a>
-                                                </h5>
-                                            </div>
-
-                                            <div id="collapseOne" class="collapse show" data-method="cod" data-parent="#accordion">
-                                                <div class="card-body">
-                                                    <p>Pay with cash upon delivery to your doorstep.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                          <div class="card">
-                                            <div class="card-header" id="payment-2">
-                                                <h5 class="panel-title">
-                                                    <a class="collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                                        Lipa Na Mpesa
-                                                    </a>
-                                                </h5>
-                                            </div>
-                                            
-                                            <div id="collapseTwo" class="collapse" data-method="mpesa" data-parent="#accordion">
-                                                <div class="card-body">
-                                                    <p>Please enter your M-Pesa number below. When you click <strong>Place Order</strong> at the bottom, you will receive a prompt on your phone.</p>
-                                                    
-                                                    <div class="checkout-form-list">
-                                                        <label>M-Pesa Number <span class="required">*</span></label>
-                                                        <input type="text" id="mpesa_phone" placeholder="e.g. 0712345678" value="{{ request.user.customerprofile.phone_number|default:'' }}">
-                                                    </div>
-
-                                                    <div id="mpesa-status" class="mt-10 d-none alert alert-info"></div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        </div>
-
-                                        </div>
-                                        <div class="order-button-payment">
-                                            <input value="Place Order" type="submit">
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                        <div class="md:col-span-2">
+                            <label class="text-sm">Email *</label>
+                            <input id="email_address" type="email"
+                                value="{{ request.user.email }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
                         </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-sm">Phone *</label>
+                            <input id="phone_number" type="text"
+                                value="{{ profile.phone_number }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-sm">Address *</label>
+                            <input id="address" type="text"
+                                value="{{ primary_address.physical_address|default:'' }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="text-sm">City *</label>
+                            <input id="city_town" type="text"
+                                value="{{ primary_address.city|default:'' }}"
+                                class="w-full mt-2 px-4 py-3 border rounded-xl">
+                        </div>
+
                     </div>
 
                 </div>
+
+                <!-- ORDER + PAYMENT -->
+                <div class="space-y-6">
+
+                    <!-- ORDER -->
+                    <div class="bg-white rounded-2xl border p-6">
+
+                        <h3 class="text-xl font-bold mb-4">Your Order</h3>
+
+                        {% for item in cart %}
+                        <div class="flex justify-between border-b py-2">
+                            <div>
+                                <div class="font-medium">{{ item.product.name }}</div>
+                                <div class="text-sm text-gray-500">Qty: {{ item.qty }}</div>
+                            </div>
+                            <div class="font-semibold">ksh {{ item.total_price }}</div>
+                        </div>
+                        {% endfor %}
+
+                        <div class="mt-4 flex justify-between font-bold">
+                            <span>Total</span>
+                            <span>ksh {{ cart.get_total_price }}</span>
+                        </div>
+
+                    </div>
+
+                    <!-- PAYMENT -->
+                    <div class="bg-white rounded-2xl border p-6">
+
+                        <h3 class="text-xl font-bold mb-4">Payment Method</h3>
+
+                        <!-- COD -->
+                        <label class="flex gap-3 p-4 border rounded-xl mb-3 cursor-pointer">
+                            <input type="radio" name="payment" value="cod" checked>
+                            <div>
+                                <div class="font-semibold">Cash on Delivery</div>
+                                <div class="text-sm text-gray-500">Pay on delivery</div>
+                            </div>
+                        </label>
+
+                        <!-- MPESA -->
+                        <label class="flex gap-3 p-4 border rounded-xl cursor-pointer">
+                            <input type="radio" name="payment" value="mpesa">
+                            <div class="w-full">
+                                <div class="font-semibold">M-Pesa</div>
+
+                                <input id="mpesa_phone" type="text"
+                                    placeholder="Phone for STK Push"
+                                    value="{{ request.user.customerprofile.phone_number|default:'' }}"
+                                    class="w-full mt-3 px-4 py-3 border rounded-xl">
+                            </div>
+                        </label>
+
+                        <button type="submit"
+                            id="place-order-btn"
+                            class="mt-6 w-full bg-emerald-600 text-white py-4 rounded-xl font-bold hover:bg-emerald-700">
+                            Place Order
+                        </button>
+
+                    </div>
+
+                </div>
+
             </div>
-            <!--Checkout Area End-->
-            <!-- Begin Footer Area -->
+
+        </form>
+
+    </div>
+
+</section>
 </main>
 
 {% endblock %}
@@ -195,100 +161,112 @@
 {% block extra_js %}
 
 <script>
-// 1. Identify the 'Place Order' button
-// Note: In your HTML, it's an <input type="submit">. Let's target it.
-const placeOrderBtn = document.querySelector('.order-button-payment input');
+document.addEventListener("DOMContentLoaded", function () {
 
-placeOrderBtn.addEventListener('click', function(e) {
-    e.preventDefault(); // Stop the page from refreshing
+    const btn = document.getElementById("place-order-btn");
+    const form = document.getElementById("checkout-form");
 
-    // 2. Detect which payment panel is currently open
-    const activePanel = document.querySelector('#accordion .collapse.show');
-    const paymentMethod = activePanel ? activePanel.getAttribute('data-method') : 'cod';
+    if (!btn || !form) return;
 
-    // 3. Gather Billing Data (Ensure your inputs have these IDs!)
-    const formData = {
-        first_name: document.getElementById('first_name').value,
-        last_name: document.getElementById('last_name').value,
-        email: document.getElementById('email_address').value,
-        phone: document.getElementById('phone_number').value,
-        address: document.getElementById('address').value,
-        city: document.getElementById('city_town').value,
-        payment_method: paymentMethod
-    };
+    btn.addEventListener("click", async function (e) {
+        e.preventDefault();
 
-    // Validation check
-    if (!formData.first_name || !formData.address) {
-        alert("Please fill in the required billing details.");
-        return;
-    }
-const successUrlBase = "{% url 'order-success' order_number='0' %}";
-console.log(formData);
+        // payment method FIXED
+        const paymentMethod =
+            document.querySelector('input[name="payment"]:checked')?.value || "cod";
 
-    // 4. STEP 1: Create the Order (The Anchor)
-    fetch("{% url 'place-order' %}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify(formData)
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.status === 'success') {
-            if (paymentMethod === 'mpesa') {
-                const mpesaPhone = document.getElementById('mpesa_phone').value || formData.phone;
-                autoInitiateMpesa(data.order_id, mpesaPhone, data.order_number);
-            } else {
-                const identifier = data.order_number || data.order_id;
-                const finalUrl = successUrlBase.replace('0', identifier);
-                window.location.href = finalUrl;
-            }
+        // collect data
+        const data = {
+            first_name: document.getElementById("first_name")?.value || "",
+            last_name: document.getElementById("last_name")?.value || "",
+            email: document.getElementById("email_address")?.value || "",
+            phone: document.getElementById("phone_number")?.value || "",
+            address: document.getElementById("address")?.value || "",
+            city: document.getElementById("city_town")?.value || "",
+            payment_method: paymentMethod
+        };
+
+        // validation
+        if (!data.first_name || !data.last_name || !data.phone || !data.address) {
+            alert("Please fill all required fields");
+            return;
         }
-    })
-    .catch(error => console.error('Error:', error));
-});
 
-function autoInitiateMpesa(orderId, phone, order_number) {
-    // Show a loading state so the user knows something is happening
-    placeOrderBtn.value = "Sending M-Pesa Prompt...";
-    placeOrderBtn.disabled = true;
+        btn.disabled = true;
+        btn.innerText = "Processing...";
 
-    fetch("{% url 'pay' %}", {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': '{{ csrf_token }}'
-        },
-        body: JSON.stringify({
-            "order_id": orderId,
-            "phone": phone
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === "success") {
-            alert("Please enter your M-Pesa PIN on your phone.");
-            
-            // Start checking for payment success every 3 seconds
-            const checkStatusInterval = setInterval(() => {
-                fetch(`/check-payment-status/${orderNumber}/`)
-                    .then(res => res.json())
-                    .then(statusData => {
-                        if (statusData.status === 'paid') {
-                            clearInterval(checkStatusInterval); // Stop checking
-                            // Redirect to the success page
-                            window.location.href = "{% url 'order-success' '0' %}".replace('0', orderNumber);
-                        }
-                    });
-            }, 3000); // 3 seconds
+        try {
+            const res = await fetch("{% url 'place-order' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify(data)
+            });
 
-            // Optional: Stop checking after 60 seconds (timeout)
-            setTimeout(() => clearInterval(checkStatusInterval), 60000);
+            const result = await res.json();
+
+            if (result.status !== "success") {
+                alert("Order failed");
+                btn.disabled = false;
+                btn.innerText = "Place Order";
+                return;
+            }
+
+            const orderNumber = result.order_number || result.order_id;
+
+            // MPESA FLOW
+            if (paymentMethod === "mpesa") {
+
+                const phone =
+                    document.getElementById("mpesa_phone")?.value || data.phone;
+
+                await fetch("{% url 'pay' %}", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}"
+                    },
+                    body: JSON.stringify({
+                        order_id: result.order_id,
+                        phone: phone
+                    })
+                });
+
+                alert("Check your phone for M-Pesa PIN");
+
+                const interval = setInterval(async () => {
+
+                    const r = await fetch(`/check-payment-status/${orderNumber}/`);
+                    const s = await r.json();
+
+                    if (s.status === "paid") {
+                        clearInterval(interval);
+                        window.location.href =
+                            "{% url 'order-success' '0' %}".replace("0", orderNumber);
+                    }
+
+                }, 3000);
+
+                setTimeout(() => clearInterval(interval), 60000);
+
+            } else {
+
+                window.location.href =
+                    "{% url 'order-success' '0' %}".replace("0", orderNumber);
+
+            }
+
+        } catch (err) {
+            console.error(err);
+            alert("Something went wrong");
+            btn.disabled = false;
+            btn.innerText = "Place Order";
         }
     });
-}
+
+});
 </script>
 
 {% endblock %}

@@ -4,73 +4,109 @@
 {% block title %} Wishlist | Mahitaji{% endblock %}
 
 {% block content %}
-<main class="body-wrapper">
 
-            <!-- Begin Li's Breadcrumb Area -->
-            <div class="breadcrumb-area">
-                <div class="container">
-                    <div class="breadcrumb-content">
-                        <ul>
-                            <li><a href="{% url 'home' %}">Home</a></li>
-                            <li class="active">Wishlist</li>
-                        </ul>
-                    </div>
-                </div>
+<main class="bg-slate-50 min-h-screen">
+
+    <!-- BREADCRUMB -->
+    <div class="max-w-7xl mx-auto px-4 py-6 text-sm text-slate-500">
+        <div class="flex items-center gap-2">
+            <a href="{% url 'home' %}" class="hover:text-emerald-600 transition">Home</a>
+            <span>/</span>
+            <span class="text-slate-900 font-medium">Wishlist</span>
+        </div>
+    </div>
+
+    <!-- PAGE WRAPPER -->
+    <section class="pb-16">
+
+        <div class="max-w-7xl mx-auto px-4">
+
+            <!-- HEADER -->
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-slate-900">My Wishlist</h1>
+                <p class="text-sm text-slate-500 mt-1">Saved products for later</p>
             </div>
-            <!-- Li's Breadcrumb Area End Here -->
 
-            <!--Wishlist Area Strat-->
-            <div class="wishlist-area pt-60 pb-60">
-                <div class="container">
-                    <div class="row">
-                        <div class="col-12">
-                            <form action="#">
-                                <div class="table-content table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th class="li-product-remove"></th>
-                                                <th class="li-product-thumbnail"></th>
-                                                <th class="cart-product-name">Name</th>
-                                                <th class="li-product-price">Unit Price</th>
-                                                <th class="li-product-stock-status"></th>
-                                                <th class="li-product-add-cart"></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td class="li-product-remove"><a href="#"><i class="fa fa-times"></i></a></td>
-                                                <td class="li-product-thumbnail"><a href="{% url 'product_detail' 1 %}"><img class="li-product-thumbnail-img" src="/media/alpa_fat_100x50g.webp" alt=""></a></td>
-                                                <td class="li-product-name"><a href="{% url 'product_detail' 1 %}">Alpa Fat 100x50gm Satchet (5KG Carton)</a></td>
-                                                <td class="li-product-price"><span class="amount">ksh 1030.00</span></td>
-                                                <td class="li-product-stock-status"><span class="in-stock">in stock</span></td>
-                                                <td class="li-product-add-cart"><a href="#">add to cart</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="li-product-remove"><a href="#"><i class="fa fa-times"></i></a></td>
-                                                <td class="li-product-thumbnail"><a href="{% url 'product_detail' 1 %}"><img class="li-product-thumbnail-img" src="/media/alpa_fat_10kg.webp" alt=""></a></td>
-                                                <td class="li-product-name"><a href="{% url 'product_detail' 1 %}">Alpa Fat 10kg Carton</a></td>
-                                                <td class="li-product-price"><span class="amount">ksh 1790.00</span></td>
-                                                <td class="li-product-stock-status"><span class="in-stock">in stock</span></td>
-                                                <td class="li-product-add-cart"><a href="#">add to cart</a></td>
-                                            </tr>
-                                            <tr>
-                                                <td class="li-product-remove"><a href="#"><i class="fa fa-times"></i></a></td>
-                                                <td class="li-product-thumbnail"><a href="#"><img class="li-product-thumbnail-img" src="/media/alpa_fat_10kg.webp" alt=""></a></td>
-                                                <td class="li-product-name"><a href="#">Alpa Fat 20kg</a></td>
-                                                <td class="li-product-price"><span class="amount">ksh 2900.00</span></td>
-                                                <td class="li-product-stock-status"><span class="out-stock">out of stock</span></td>
-                                                <td class="li-product-add-cart"><a href="#">add to cart</a></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </form>
+            <!-- EMPTY STATE (optional hook) -->
+            {% if not wishlist_items %}
+            <div class="bg-white border border-slate-200 rounded-2xl p-10 text-center">
+                <p class="text-slate-500">Your wishlist is empty.</p>
+            </div>
+            {% else %}
+
+            <!-- GRID -->
+            <div class="space-y-4">
+
+                {% for item in wishlist_items %}
+
+                <div class="bg-white border border-slate-200 rounded-2xl shadow-sm
+                            flex flex-col sm:flex-row items-center sm:items-stretch
+                            overflow-hidden hover:shadow-md transition">
+
+                    <!-- IMAGE -->
+                    <div class="w-full sm:w-40 bg-slate-50 flex items-center justify-center p-4">
+                        <a href="{% url 'product_detail' item.product.id %}">
+                            <img src="{{ item.product.image_url }}"
+                                 alt="{{ item.product.name }}"
+                                 class="h-28 object-contain">
+                        </a>
+                    </div>
+
+                    <!-- DETAILS -->
+                    <div class="flex-1 p-4 flex flex-col justify-center gap-2">
+
+                        <a href="{% url 'product_detail' item.product.id %}"
+                           class="text-sm font-semibold text-slate-900 hover:text-emerald-600">
+                            {{ item.product.name }}
+                        </a>
+
+                        <div class="text-sm text-slate-500">
+                            KES {{ item.product.wholesale_price }}
                         </div>
+
+                        <!-- STOCK -->
+                        {% if item.product.stock_status == "in" %}
+                            <span class="text-xs font-semibold text-emerald-600">
+                                In Stock
+                            </span>
+                        {% else %}
+                            <span class="text-xs font-semibold text-red-500">
+                                Out of Stock
+                            </span>
+                        {% endif %}
+
                     </div>
+
+                    <!-- ACTIONS -->
+                    <div class="flex items-center gap-3 p-4">
+
+                        <!-- REMOVE -->
+                        <a href="{% url 'remove_wishlist' item.product.id %}"
+                           class="w-10 h-10 flex items-center justify-center rounded-xl
+                                  bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 transition">
+                            <i class="fa fa-times"></i>
+                        </a>
+
+                        <!-- ADD TO CART -->
+                        <button onclick="addToCart({{ item.product.id }})"
+                                class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold
+                                       px-4 py-2 rounded-xl transition">
+                            Add to Cart
+                        </button>
+
+                    </div>
+
                 </div>
+
+                {% endfor %}
+
             </div>
-            <!--Wishlist Area End-->
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 </main>
 

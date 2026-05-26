@@ -93,746 +93,705 @@
 
     <div class="section-wrapper">
 
-        <section class="eclipse-hero-slider-wrap" id="eclipseMainSlider"> <!-- section for banner / intro part-->
-            <div class="eclipse-slider-stage">
-                
-                <div class="eclipse-slide active-slide" style="background: radial-gradient(circle at 75% 50%, #113f33 0%, #061914 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content">
-                            <span class="eclipse-badge">EXCLUSIVE BULK ALLOCATIONS</span>
-                            <h1 class="eclipse-title">MEGA <br><span class="eclipse-gradient-text">DEALS</span></h1>
-                            <p class="eclipse-subtitle">Direct manufacturer pricing on fast-moving household and food essentials. Unlock up to 70% off standard trade listings today.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-primary">Secure Stock Now</a>
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">View Pricing Tiers &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/four.png' %}" alt="Fast Moving Wholesale Essentials" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
+        <section class="relative w-full bg-emerald-900 text-white py-16 lg:py-24 overflow-hidden">
+
+    <!-- BACKGROUND GLOWS (safe z-index) -->
+    <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/20 blur-3xl rounded-full animate-pulse"></div>
+    <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-emerald-700/20 blur-3xl rounded-full animate-pulse"></div>
+
+    <div class="relative z-10 container mx-auto px-4">
+
+        <div class="grid lg:grid-cols-2 gap-12 items-center">
+
+            <!-- TEXT -->
+            <div class="space-y-8">
+
+                <!-- badge -->
+                <div class="inline-flex items-center space-x-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-emerald-200 text-xs font-bold uppercase tracking-widest">
+                        Authorized Distributor
+                    </span>
                 </div>
 
-                <div class="eclipse-slide" style="background: linear-gradient(135deg, #f4f4f7 0%, #e2e2e9 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content dark-text">
-                            <span class="eclipse-badge dark">FRESH MILLING ARRIVALS</span>
-                            <h1 class="eclipse-title dark">BREAKFAST & <br><span class="eclipse-dark-accent">GRAINS.</span></h1>
-                            <p class="eclipse-subtitle dark">Premium long grain rice, high-extraction baking flours, and maize formulations packed and ready for distribution lines.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'categories' %}" class="eclipse-btn-dark">Explore Items</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/eight.png' %}" alt="Premium Grains Allocations" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- headline -->
+                <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+                    Premium FMCG <br>
+                    <span class="text-emerald-300">
+                        Wholesale Allocations.
+                    </span>
+                </h1>
 
-            </div>
-            
-            <div class="eclipse-slider-arrows">
-                <button class="eclipse-arrow prev" onclick="window.shiftEclipseSlider(-1)" aria-label="Previous Slide">&#10229;</button>
-                <button class="eclipse-arrow next" onclick="window.shiftEclipseSlider(1)" aria-label="Next Slide">&#10230;</button>
-            </div>
-            <div class="eclipse-slider-indicators">
-                <span class="eclipse-dot active-dot" onclick="window.jumpToEclipseSlide(0)"></span>
-                <span class="eclipse-dot" onclick="window.jumpToEclipseSlide(1)"></span>
-            </div>
-        </section>
+                <!-- paragraph -->
+                <p class="text-lg md:text-xl text-emerald-100 max-w-lg leading-relaxed">
+                    Direct manufacturer pricing for verified retailers. Secure your stock, manage your margins,
+                    and access our wholesale distribution network in one click.
+                </p>
 
-        <section class="category-promo-wrapper container mt-40">
-            <div class="row">
-                <div class="col-lg-8">
-                    <div class="main-promo-slider">
-                        <div class="promo-item active" style="background-image: linear-gradient(to right, rgb(30 65 36 / 90%), transparent);">
-                            <div class="promo-content">
-                                <span class="badge eclipse-badge" style="background-color: #2bb032; padding:10px;">Exclusive Offers</span>
-                                <h2>Stock Up & Save</h2>
-                                <p>Special wholesale prices on all Amaize products this week.</p>
-                                <a href="{% url 'offers' %}" class="shop-btn" style="background-color: #2bb032;">View Deals</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <!-- CTA -->
+                <div class="flex flex-col sm:flex-row gap-4">
 
-                <div class="col-lg-4">
-                    <div class="category-sidebar-grid">
-                        <div class="cat-card">
-                            <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Soaps">
-                            <div class="cat-overlay"><span>Soaps</span></div>
-                        </div>
-                        <div class="cat-card">
-                            <img src="{% static 'assets/categories/oils.png' %}" alt="Oils">
-                            <div class="cat-overlay"><span>Oils</span></div>
-                        </div>
-                        <div class="cat-card">
-                            <img src="{% static 'assets/categories/flour.jpg' %}" alt="Flour">
-                            <div class="cat-overlay"><span>Flour</span></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>  
+                    <a href="{% url 'offers' %}"
+                       class="bg-emerald-600 hover:bg-emerald-700 px-8 py-4 rounded-xl font-bold
+                              transition-all hover:-translate-y-1 shadow-lg">
+                        See Product Offers
+                    </a>
 
-        <section id="heading-i" class="section-heading container">
-            <span>Featured Catalogue</span>
-            <h2>Popular products ready for order</h2>
-            <p>Browse fast-moving essentials selected for retailers, households and organizations.</p>         
-        </section>
+                    <a href="{% url 'products' %}"
+                       class="border border-white/20 hover:bg-white/10 px-8 py-4 rounded-xl font-bold
+                              transition-all hover:-translate-y-1">
+                        Browse Full Catalog
+                    </a>
 
-        <section class="product-area pt-60 pb-50">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="li-product-tab">
-                            <ul class="nav li-product-menu">
-                                <li><a class="active" data-toggle="tab" href="#li-new-product"><span>New Arrivals</span></a></li>
-                                <li><a data-toggle="tab" href="#li-top-offer"><span>Top Offers</span></a></li>
-                            </ul>               
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="tab-content">
-                    <div id="li-new-product" class="tab-pane active show" role="tabpanel">
-                        <div class="row">
-                            <div class="product-active owl-carousel">
-                                {% for product in new_products %}
-                                <div class="col-lg-12">
-                                    <div class="product-card-ap">
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">NEW</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' product.id %}">
-                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
-                                            <h4 class="product-main-title">{{ product.name }}</h4>
-                                            <div class="pricing-alignment-row">
-                                                <div class="price-stack">
-                                                    <span class="currency-symbol">ksh</span>
-                                                    <span class="price-val">{{ product.retail_price }}</span>
-                                                </div>
-                                                <div class="rating-info">
-                                                    <div class="stars-row">
-                                                        {% for i in "12345" %}
-                                                            {% if product.average_rating >= forloop.counter %}
-                                                                <i class="fa fa-star"></i>
-                                                            {% else %}
-                                                                <i class="fa fa-star-o"></i>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </div>
-                                                    <div class="discount-line">
-                                                        <hr>
-                                                        <span class="discount-text">
-                                                            {% if product.amount_saved > 0 %} 
-                                                                Save ksh {{ product.amount_saved }}
-                                                            {% else %}
-                                                                &nbsp; 
-                                                            {% endif %}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="li-top-offer" class="tab-pane" role="tabpanel">
-                        <div class="row">
-                            <div class="product-active owl-carousel">
-                                {% for product in top_offers %}
-                                <div class="col-lg-12">
-                                    <div class="product-card-ap">
-                                        <div class="product-bookmark-ap">
-                                            <span class="bookmark-text">OFFER</span>
-                                            <div class="bookmark-notch"></div>
-                                        </div>
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' product.id %}">
-                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
-                                            <h4 class="product-main-title">{{ product.name }}</h4>
-                                            <div class="pricing-alignment-row">
-                                                <div class="price-stack">
-                                                    <span class="currency-symbol">ksh</span>
-                                                    <span class="price-val">{{ product.retail_price }}</span>
-                                                </div>
-                                                <div class="rating-info">
-                                                    <div class="stars-row">
-                                                        {% for i in "12345" %}
-                                                            {% if product.average_rating >= forloop.counter %}
-                                                                <i class="fa fa-star"></i>
-                                                            {% else %}
-                                                                <i class="fa fa-star-o"></i>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </div>
-                                                    <div class="discount-line">
-                                                        <hr>
-                                                        <span class="discount-text">
-                                                            {% if product.amount_saved > 0 %} 
-                                                                Save ksh {{ product.amount_saved }}
-                                                            {% else %}
-                                                                &nbsp; 
-                                                            {% endif %}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
             </div>
-        </section>  
+
+            <!-- IMAGE -->
+            <div class="relative lg:block hidden">
+
+                <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl
+                            transition-all hover:bg-emerald-950">
+
+                    <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">
+                        Volume Price
+                    </span>
+
+                    <h3 class="text-3xl font-extrabold text-white mb-4">
+                        FMCG Distribution Network
+                    </h3>
+
+                    <p class="text-emerald-100 mb-8 max-w-sm">
+                        Fast-moving consumer goods distributed efficiently across Kenya through our verified retail network.
+                    </p>
+
+                    <a href="/categories/"
+                       class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
+                        Check Availability
+                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
+                             viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                        </svg>
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
         
         
+        <!-- ====================== 2ND GROUP (MOTION UPGRADE) ====================== -->
+        <section class="relative w-full overflow-hidden bg-[#0b1220] py-20 lg:py-32">
 
-        <section class="eclipse-hero-slider-wrap" id="eclipseLogisticsSlider">
-            <div class="eclipse-slider-stage">
-                <div class="eclipse-slide active-slide slide-grains">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content">
-                            <span class="eclipse-badge">GRAINS & CEREALS</span>
-                            <h1 class="eclipse-title">FLOUR, GRAINS & <br><span class="eclipse-gradient-text">CEREALS.</span></h1>
-                            <p class="eclipse-subtitle">Structured high-volume allocations for flour, grains and cereals.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Flour, Grain and Cereals" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- BASE DARK LAYER -->
+            <div class="absolute inset-0 bg-[#0b1220]"></div>
 
-                <div class="eclipse-slide slide-hygiene">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content">
-                            <span class="eclipse-badge">HYGIENE DEALS</span>
-                            <h1 class="eclipse-title">DIAPERS, SOAPS & <br><span class="eclipse-accent-text">CLEANERS.</span></h1>
-                            <p class="eclipse-subtitle">Structured high-volume allocations for commercial disinfectants and maintenance lines.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Bulk Protective Allocations" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="eclipse-slider-arrows">
-                <button class="eclipse-arrow prev" onclick="window.shiftLogisticsSlider(-1)" aria-label="Previous Slide">&#10229;</button>
-                <button class="eclipse-arrow next" onclick="window.shiftLogisticsSlider(1)" aria-label="Next Slide">&#10230;</button>
-            </div>
-        </section>
-
-        <section class="eclipse-curated-grid">
-            <div class="eclipse-grid-header">
-                <div class="eclipse-header-left">
-                    <span class="eclipse-meta-tag">WHOLESALE EXCELLENCE</span>
-                    <h2>Curated Commercial Categories</h2>
-                </div>
-                <a href="/shop/" class="eclipse-global-link">Browse Full Index &#8594;</a>
+            <!-- SUBTLE GRID (no gradient, just depth) -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="w-full h-full bg-[url('/static/assets/patterns/grid.png')] bg-repeat"></div>
             </div>
 
-            <div class="eclipse-asymmetric-layout">
-                <div class="eclipse-card-massive card-fmcg">
-                    <div class="eclipse-massive-inner">
-                        <span class="eclipse-card-label-hot">HIGH DEMAND</span>
-                        <h3>Fast-Moving Consumer Goods</h3>
-                        <p>Streamline inventory pipelines with high-turnover staples optimized for retail margins.</p>
-                        <div class="eclipse-btn-group">
-                            <a href="/category/fmcg/" class="eclipse-btn-white">Open Order Sheet</a>
-                        </div>
-                    </div>
-                </div>
+            <!-- SOFT STATIC GLOWS (solid tone, no gradient blending) -->
+            <div class="absolute -top-40 left-1/4 w-[420px] h-[420px] bg-[#1c3f2a]/20 blur-3xl rounded-full animate-pulse"></div>
+            <div class="absolute bottom-0 right-1/4 w-[380px] h-[380px] bg-[#1e40af]/20 blur-3xl rounded-full animate-pulse"></div>
 
-                <div class="eclipse-vertical-stack">
-                    <div class="eclipse-split-card card-foodstuffs">
-                        <div class="eclipse-split-inner">
-                            <span class="eclipse-split-tag">RETAILER PREFERENCE</span>
-                            <h3>Premium Foodstuffs</h3>
-                            <p>Allocations from certified millers across East Africa.</p>
-                            <a href="/category/grains/" class="eclipse-split-action">View Price Tiers &#8594;</a>
-                        </div>
-                        <div class="eclipse-split-visual">
-                            <img src="{% static 'assets/categories/flour.jpg' %}" alt="Foodstuffs" class="eclipse-absolute-product">
-                        </div>
+            <div class="container mx-auto px-4 relative z-10">
+
+                <div class="max-w-4xl mx-auto text-center text-white space-y-8">
+
+                    <!-- BADGE -->
+                    <div class="opacity-0 translate-y-6 transition-all duration-700 ease-out reveal">
+                        <span class="inline-block py-1 px-4 rounded-full bg-[#1c3f2a]/20 text-[#7dd3fc] text-xs font-bold tracking-widest uppercase border border-[#1e40af]/30">
+                            Strategic Logistics
+                        </span>
                     </div>
 
-                    <div class="eclipse-split-card card-hygiene">
-                        <div class="eclipse-split-inner">
-                            <span class="eclipse-split-tag">VOLUME PRICE</span>
-                            <h3>Hygiene & Cleaners</h3>
-                            <p>Sanitizers, domestic soaps, and household protective lines.</p>
-                            <a href="/category/hygiene/" class="eclipse-split-action">Check Availability &#8594;</a>
-                        </div>
-                        <div class="eclipse-split-visual">
-                            <img src="{% static 'assets/categories/hygiene_home.jpg' %}" alt="Hygiene" class="eclipse-absolute-product">
-                        </div>
+                    <!-- TITLE -->
+                    <h1 class="opacity-0 translate-y-10 transition-all duration-1000 delay-150 reveal
+                            text-4xl md:text-6xl font-extrabold leading-tight text-white">
+                        Supply Chain <span class="text-[#7dd3fc]">Excellence</span><br>
+                        Delivered.
+                    </h1>
+
+                    <!-- DESCRIPTION -->
+                    <p class="opacity-0 translate-y-10 transition-all duration-1000 delay-300 reveal
+                            text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
+                        We bridge the gap between manufacturers and retail outlets with optimized distribution,
+                        stock visibility, and bulk-break efficiency.
+                    </p>
+
+                    <!-- CTA -->
+                    <div class="opacity-0 translate-y-10 transition-all duration-1000 delay-500 reveal
+                                flex flex-col sm:flex-row justify-center gap-4">
+
+                        <a href="{% url 'categories' %}"
+                        class="group relative px-8 py-4 bg-[#1c3f2a] hover:bg-[#163325] text-white font-bold rounded-full
+                                transition-all duration-300 shadow-lg shadow-black/40 hover:-translate-y-1">
+
+                            Browse Categories
+                        </a>
+
+                        <a href="https://wa.me/254750530130"
+                        class="px-8 py-4 bg-[#111827] hover:bg-[#0f172a] text-white font-bold rounded-full
+                                border border-[#1e40af]/30 transition-all duration-300 hover:-translate-y-1">
+                            Speak to Sales
+                        </a>
+
                     </div>
+
                 </div>
             </div>
         </section>
 
-        <section id="heading-i" class="section-heading container">
-            <span>Trending Now</span>
-            <h2>The Current Favorites</h2>
-            <p>Shop the high-demand essentials currently leading the market for retailers and households.</p>      
-        </section>
-        
-        <section class="product-area pt-60 pb-45 li-trending-product">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="li-product-tab li-trending-product-tab">
-                            <h2><span>Trending Products</span></h2>
-                            <ul class="nav li-product-menu li-trending-product-menu">
-                                {% for item in trending_data %}
-                                <li class="{% if forloop.first %}active{% endif %}">
-                                    <a class="{% if forloop.first %}active{% endif %}" data-toggle="tab" href="#trending-{{ item.category.id }}">
-                                        {{ item.category.name }}
-                                    </a>
-                                </li>
-                                {% endfor %}
-                            </ul>
+        <section class="py-16 bg-slate-50">
+            <div class="container mx-auto px-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    
+                    <div class="group relative overflow-hidden rounded-3xl bg-white p-8 md:p-12 border border-slate-100 shadow-sm transition-all hover:shadow-2xl">
+                        <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500">
+                            <svg class="w-32 h-32 text-emerald-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
                         </div>
+                        
+                        <span class="text-emerald-800 font-bold tracking-widest text-xs uppercase block mb-4">Retailer Preference</span>
+                        <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Premium Foodstuffs</h3>
+                        <p class="text-slate-600 mb-8 max-w-sm">Allocations from certified millers across East Africa. Reliable, high-margin, and in-demand.</p>
+                        
+                        <a href="{% url 'categories' %}" class="inline-flex items-center text-emerald-700 font-bold hover:gap-2 transition-all">
+                            View Price Tiers 
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
 
-                        <div class="tab-content li-tab-content li-trending-product-content">
-                            {% for item in trending_data %}
-                            <div id="trending-{{ item.category.id }}" class="tab-pane fade {% if forloop.first %}show active in{% endif %}" role="tabpanel">
-                                <div class="row">
-                                    <div class="product-active owl-carousel">
-                                        {% for product in item.products %}
-                                        <div class="col-lg-12">
-                                            <div class="product-card-ap">
-                                                <div class="product-bookmark-ap" style="background: #ffb100;">
-                                                    <span class="bookmark-text">HOT</span>
-                                                    <div class="bookmark-notch" style="border-right-color: #ffb100;"></div>
-                                                </div>
-                                                <div class="product-image-container">
-                                                    <div class="image-inner-frame">
-                                                        <a href="{% url 'product_detail' product.id %}">
-                                                            <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                <div class="product-text-content">
-                                                    <h5 class="brand-subtext">{{ product.brand.name }}</h5>
-                                                    <h4 class="product-main-title">{{ product.name }}</h4>
-                                                    <div class="pricing-alignment-row">
-                                                        <div class="price-stack">
-                                                            <span class="currency-symbol">ksh</span>
-                                                            <span class="price-val">{{ product.retail_price }}</span>
-                                                        </div>
-                                                        <div class="rating-info">
-                                                            <div class="stars-row">
-                                                                {% for i in "12345" %}
-                                                                    {% if product.average_rating >= forloop.counter %}
-                                                                        <i class="fa fa-star"></i>
-                                                                    {% else %}
-                                                                        <i class="fa fa-star-o"></i>
-                                                                    {% endif %}
-                                                                {% endfor %}
-                                                            </div>
-                                                            <div class="discount-line">
-                                                                <hr>
-                                                                <span class="discount-text">
-                                                                    {% if product.amount_saved > 0 %} 
-                                                                        Save ksh {{ product.amount_saved }}
-                                                                    {% else %}
-                                                                        &nbsp; 
-                                                                    {% endif %}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
-                                            </div>
+                    <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl transition-all hover:bg-emerald-950">
+                        <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">Volume Price</span>
+                        <h3 class="text-3xl font-extrabold text-white mb-4">Hygiene & Cleaners</h3>
+                        <p class="text-emerald-100 mb-8 max-w-sm">Sanitizers, domestic soaps, and household protective lines available for bulk distribution.</p>
+                        
+                        <a href="{% url 'categories' %}" class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
+                            Check Availability 
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        <!-- ====================== 2ND GROUP ENDS HERE ====================== -->
+
+
+
+        <!-- ====================== 3RD GROUP - TRENDING + CURATED ====================== -->
+
+        <!-- Trending Products -->
+        <section class="py-20 bg-white overflow-hidden">
+            <div class="max-w-7xl mx-auto px-6">
+
+                <!-- Header -->
+                <div class="text-center mb-12">
+                    <span class="inline-block px-6 py-2.5 bg-amber-100 text-amber-700 rounded-3xl text-sm font-semibold tracking-[1px] uppercase">
+                        HOT RIGHT NOW
+                    </span>
+
+                    <h2 class="text-5xl font-bold text-slate-900 mt-4 tracking-tight">
+                        Trending Products
+                    </h2>
+
+                    <p class="text-slate-600 mt-4 max-w-2xl mx-auto text-lg">
+                        High-demand essentials currently leading the market for retailers and households.
+                    </p>
+                </div>
+
+                <!-- Slider Wrapper -->
+                <div class="flex gap-7 w-max animate-trending py-4">
+
+                    <!-- Left Fade -->
+                    <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+
+                    <!-- Right Fade -->
+                    <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+
+                    <!-- Track -->
+                    <div id="trending-track"
+                        class="flex gap-6 w-max animate-trending">
+
+                        {% for item in trending_data %}
+                            {% for product in item.products %}
+
+                            <!-- PRODUCT CARD (REFINED) -->
+                            <div class="w-[240px] sm:w-[260px] flex-shrink-0">
+
+                                <div class="group relative flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden
+                                            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+
+                                    <!-- IMAGE -->
+                                    <div class="relative aspect-square bg-slate-50 flex items-center justify-center p-4">
+
+                                        <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
+
+                                            <img src="{{ product.image_url }}"
+                                                alt="{{ product.name }}"
+                                                class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105">
+                                        </a>
+
+                                        <!-- BADGE -->
+                                        {% if product.amount_saved > 0 %}
+                                        <div class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
+                                            SAVE KSh {{ product.amount_saved }}
                                         </div>
-                                        {% endfor %}
+                                        {% endif %}
+
                                     </div>
+
+                                    <!-- CONTENT -->
+                                    <div class="flex flex-col flex-1 p-4">
+
+                                        <!-- BRAND -->
+                                        <p class="text-[10px] tracking-widest uppercase font-semibold text-emerald-600">
+                                            {{ product.brand.name }}
+                                        </p>
+
+                                        <!-- TITLE -->
+                                        <a href="{% url 'product_detail' product.id %}"
+                                        class="mt-1 text-sm font-semibold text-slate-900 leading-snug hover:text-emerald-700 transition-colors line-clamp-2 min-h-[40px]">
+                                            {{ product.name }}
+                                        </a>
+
+                                        <!-- DESCRIPTION -->
+                                        <p class="mt-2 text-xs text-slate-500 line-clamp-2 min-h-[32px]">
+                                            Premium wholesale quality product available at competitive pricing.
+                                        </p>
+
+                                        <!-- PUSH BOTTOM -->
+                                        <div class="flex-1"></div>
+
+                                        <!-- PRICE + CTA -->
+                                        <div class="mt-4 flex items-end justify-between gap-3">
+
+                                            <!-- PRICE -->
+                                            <div class="flex flex-col">
+                                                <span class="text-[10px] uppercase text-slate-400">Price</span>
+
+                                                <div class="flex items-end gap-1">
+                                                    <span class="text-xs text-slate-500 font-medium">KSh</span>
+                                                    <span class="text-lg sm:text-xl font-bold text-slate-900 leading-none">
+                                                        {{ product.retail_price }}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <!-- BUTTON -->
+                                            <button type="button"
+                                                    value="{{ product.id }}"
+                                                    class="add-to-cart-btn
+                                                        flex items-center justify-center gap-1
+                                                        px-4 h-10 min-w-[100px]
+                                                        bg-emerald-600 hover:bg-emerald-700
+                                                        text-white text-xs font-semibold
+                                                        rounded-xl transition-all duration-200
+                                                        active:scale-95">
+
+                                                <i class="fas fa-cart-plus text-xs"></i>
+                                                Add
+                                            </button>
+
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
+
                             {% endfor %}
+                        {% endfor %}
+
+                       
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Curated Commercial Categories -->
+        <section class="py-20 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
+                    <div>
+                        <span class="text-emerald-600 font-semibold tracking-widest text-sm uppercase">EXPLORE CATEGORIES</span>
+                        <h2 class="text-4xl font-bold text-slate-900 mt-2">Curated for Business Growth</h2>
+                    </div>
+                    <a href="{% url 'products' %}" class="mt-4 md:mt-0 text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group">
+                        Browse Full Catalog 
+                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    <!-- Big Featured Card -->
+                    <div class="lg:col-span-7 group relative bg-slate-900 rounded-3xl overflow-hidden h-[520px] flex items-end">
+                        <img src="{% static 'assets/categories/flour.jpg' %}" 
+                             alt="FMCG" 
+                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                        <div class="relative p-10 lg:p-12 text-white z-10">
+                            <span class="uppercase tracking-widest text-amber-400 text-sm font-bold">MOST POPULAR</span>
+                            <h3 class="text-4xl lg:text-5xl font-bold mt-4 leading-none">Fast-Moving Consumer Goods</h3>
+                            <p class="mt-6 text-slate-200 max-w-md text-lg">Oils, Rice, Sugar, Soaps, Detergents &amp; daily essentials — always in stock at best prices.</p>
+                            <a href="{% url 'products' %}" class="mt-8 inline-flex items-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-2xl font-semibold hover:bg-amber-400 hover:text-slate-900 transition-all">
+                                Shop FMCG Now →
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Side Cards -->
+                    <div class="lg:col-span-5 space-y-8">
+                        <div class="group relative bg-white rounded-3xl overflow-hidden h-[250px] flex items-end border border-slate-100 hover:shadow-xl transition-all">
+                            <img src="{% static 'assets/categories/oils.png' %}" 
+                                 alt="Oils" 
+                                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div class="relative p-8 text-white z-10">
+                                <h3 class="text-3xl font-bold">Cooking Oils</h3>
+                                <a href="{% url 'products' %}" class="text-sm mt-4 inline-flex items-center gap-2 hover:underline">
+                                    Explore Collection →
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="group relative bg-white rounded-3xl overflow-hidden h-[250px] flex items-end border border-slate-100 hover:shadow-xl transition-all">
+                            <img src="{% static 'assets/categories/soaps.jpg' %}" 
+                                 alt="Hygiene" 
+                                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                            <div class="relative p-8 text-white z-10">
+                                <h3 class="text-3xl font-bold">Hygiene &amp; Cleaning</h3>
+                                <a href="{% url 'products' %}" class="text-sm mt-4 inline-flex items-center gap-2 hover:underline">
+                                    Explore Collection →
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
+        <!-- ====================== 3RD GROUP ENDS HERE ====================== -->
 
 
+        <!-- ====================== LAST GROUP - WHY MAHITAJI & CLOSING ====================== -->
+        <!-- Why Mahitaji Hero Banner -->
+        <section class="bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 py-24 relative overflow-hidden">
 
-        <section class="eclipse-hero-slider-wrap" id="eclipseLogisticsSlider"> <!-- section for banner / intro part -->
-            <div class="eclipse-slider-stage">
-
-                <div class="eclipse-slide active-slide" style="background: radial-gradient(circle at 75% 50%, #113f33 0%, #061914 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content dark-text">
-                            <span class="eclipse-badge">GRAINS & CEREALS</span>
-                            <h1 class="eclipse-title">FLOUR, GRAINS & <br><span class="eclipse-gradient-text">CEREALS.</span></h1>
-                            <p class="eclipse-subtitle dark">Structured high-volume allocations for flour, grains and cereals.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Flour, Grain and Cereals" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="eclipse-slide" style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content dark-text">
-                            <span class="eclipse-badge dark" style="background-color: #4a5568; color: #fff;">HYGIENE DEALS</span>
-                            <h1 class="eclipse-title dark">DIAPERS, SOAPS & <br><span class="eclipse-dark-accent" style="color: #2b6cb0;">CLEANERS.</span></h1>
-                            <p class="eclipse-subtitle dark">Structured high-volume allocations for commercial disinfectants, domestic maintenance lines, and bulk institutional soap reserves.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Bulk Protective Allocations" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <div class="eclipse-slider-arrows">
-                <button class="eclipse-arrow prev" onclick="window.shiftLogisticsSlider(-1)" aria-label="Previous Slide">&#10229;</button>
-                <button class="eclipse-arrow next" onclick="window.shiftLogisticsSlider(1)" aria-label="Next Slide">&#10230;</button>
-            </div>
-            <div class="eclipse-slider-indicators">
-                <span class="eclipse-dot active-dot" onclick="window.jumpToLogisticsSlide(0)"></span>
-                <span class="eclipse-dot" onclick="window.jumpToLogisticsSlide(1)"></span>
-            </div>
-        </section>
-
-        <section class="eclipse-curated-grid">
-
-            <div class="eclipse-grid-header">
-                <div class="eclipse-header-left">
-                    <span class="eclipse-meta-tag">WHOLESALE EXCELLENCE</span>
-                    <h2>Curated Commercial Categories</h2>
-                </div>
-                <a href="/shop/" class="eclipse-global-link">Browse Full Index &#8594;</a>
+            <!-- ambient glow -->
+            <div class="absolute inset-0">
+                <div class="absolute w-[500px] h-[500px] bg-emerald-500/10 blur-3xl rounded-full top-10 left-10 animate-pulse"></div>
+                <div class="absolute w-[400px] h-[400px] bg-white/5 blur-3xl rounded-full bottom-10 right-10 animate-pulse"></div>
             </div>
 
-            <div class="eclipse-asymmetric-layout">
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
 
-                <div class="eclipse-card-massive" style="background: linear-gradient(to right, rgba(14,48,39,0.95) 40%, rgba(14,48,39,0.3) 100%), url('{% static 'assets/banners/grid-bg-1.jpg' %}') center/cover;">
-                    <div class="eclipse-massive-inner">
-                        <span class="eclipse-card-label-hot">HIGH DEMAND</span>
-                        <h3>Fast-Moving Consumer Goods</h3>
-                        <p>Streamline your inventory pipelines with high-turnover household staples, oils, and provisions directly optimized for retail storefront margins.</p>
-                        <div class="eclipse-btn-group">
-                            <a href="/category/fmcg/" class="eclipse-btn-white">Open Order Sheet</a>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+
+                    <!-- TEXT BLOCK -->
+                    <div class="space-y-10">
+
+                        <div class="opacity-0 translate-y-6 transition-all duration-700 ease-out reveal">
+                            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-lg px-6 py-3 rounded-2xl border border-white/20">
+                                <span class="text-emerald-400 font-semibold tracking-widest text-sm">
+                                    OUR PROMISE
+                                </span>
+                            </div>
+                        </div>
+
+                        <h1 class="text-5xl lg:text-6xl font-bold text-white leading-none opacity-0 translate-y-8 transition-all duration-700 delay-150 reveal">
+                            Why Smart Retailers<br>
+                            Choose <span class="text-emerald-400">Mahitaji</span>
+                        </h1>
+
+                        <p class="text-xl text-slate-300 max-w-md opacity-0 translate-y-8 transition-all duration-700 delay-300 reveal">
+                            We deliver quality FMCG products at wholesale prices with reliability you can trust.
+                        </p>
+
+                        <div class="flex flex-wrap gap-4 opacity-0 translate-y-8 transition-all duration-700 delay-500 reveal">
+
+                            <a href="{% url 'about' %}"
+                            class="group bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-2xl font-semibold text-white flex items-center gap-2 transition-all duration-300 hover:scale-[1.03]">
+                                Our Story
+                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                            </a>
+
+                            <a href="{% url 'products' %}"
+                            class="border-2 border-white/70 hover:bg-white/10 px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-[1.03]">
+                                Shop Now
+                            </a>
+
                         </div>
                     </div>
-                </div>
 
-                <div class="eclipse-vertical-stack">
-                    <div class="eclipse-split-card" style="background-color: #f5f5f7;">
-                        <div class="eclipse-split-inner">
-                            <span class="eclipse-split-tag">RETAILER PREFERENCE</span>
-                            <h3>Premium Foodstuffs</h3>
-                            <p>Allocations from certified millers across East Africa.</p>
-                            <a href="/category/grains/" class="eclipse-split-action">View Price Tiers &#8594;</a>
+                    <!-- IMAGE BLOCK -->
+                    <div class="relative flex justify-center opacity-0 translate-x-10 transition-all duration-1000 delay-300 reveal">
+
+                        <div class="w-80 h-80 bg-white/10 backdrop-blur-3xl rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl
+                                    animate-[float_6s_ease-in-out_infinite]">
+
+                            <img src="{% static 'assets/logos/logo_sa.png' %}"
+                                alt="Mahitaji"
+                                class="w-52 opacity-95">
+
                         </div>
-                        <div class="eclipse-split-visual">
-                            <img src="{% static 'assets/categories/flour.jpg' %}" alt="Foodstuffs Pack Asset" class="eclipse-absolute-product">
-                        </div>
+
                     </div>
 
-                    <div class="eclipse-split-card" style="background-color: #edf3f5;">
-                        <div class="eclipse-split-inner">
-                            <span class="eclipse-split-tag">VOLUME PRICE</span>
-                            <h3>Hygiene & Cleaners</h3>
-                            <p>Sanitizers, domestic soaps, and household protective lines.</p>
-                            <a href="/category/hygiene/" class="eclipse-split-action">Check Availability &#8594;</a>
-                        </div>
-                        <div class="eclipse-split-visual">
-                            <img src="{% static 'assets/categories/hygiene_home.jpg' %}" alt="Hygiene Product Asset" class="eclipse-absolute-product">
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="heading-i" class="section-heading container">
-            <span>Gold Standard</span>
-            <h2>Our Top-Selling Essentials</h2>
-            <p>Explore the tried-and-tested products that consistently lead our charts for quality and reliability.</p>      
-        </section>
+        <!-- Order Steps -->
+        <section class="relative py-20 bg-white overflow-hidden">
 
-        <section class="product-area pb-45 li-laptop-product li-trendding-products best-sellers">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="li-section-title">
-                            <h2><span>Bestsellers</span></h2>
+            <!-- soft ambient background -->
+            <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white"></div>
+
+            <!-- floating glow -->
+            <div class="absolute -top-40 left-1/3 w-[500px] h-[500px] bg-emerald-100 blur-3xl rounded-full animate-pulse"></div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+                <!-- HEADER -->
+                <div class="text-center mb-16 space-y-3">
+
+                    <div class="reveal opacity-0 translate-y-6 transition-all duration-700">
+                        <span class="text-emerald-600 font-semibold tracking-widest text-sm">
+                            HOW IT WORKS
+                        </span>
+                    </div>
+
+                    <h2 class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
+                            text-4xl font-bold text-slate-900">
+                        Three Steps to Get Stocked
+                    </h2>
+
+                </div>
+
+                <!-- STEPS -->
+                <div class="grid md:grid-cols-3 gap-12 relative">
+
+                    <!-- connector line (desktop only) -->
+                    <div class="hidden md:block absolute top-10 left-0 right-0 h-[2px] bg-slate-100"></div>
+
+                    <!-- STEP 1 -->
+                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
+                                text-center group relative">
+
+                        <!-- number -->
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
+                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
+                                    flex items-center justify-center shadow-lg">
+                            1
                         </div>
 
-                        <div class="row">
-                            <div class="product-active owl-carousel">
-                                {% for product in bestsellers %}
-                                <div class="col-lg-12">
-                                    <div class="product-card-ap">
-                                        <div class="product-bookmark-ap" style="background: #e91e63;">
-                                            <span class="bookmark-text">BEST</span>
-                                            <div class="bookmark-notch" style="border-right-color: #e91e63;"></div>
-                                        </div>
-                                        <div class="product-image-container">
-                                            <div class="image-inner-frame">
-                                                <a href="{% url 'product_detail' product.id %}">
-                                                    <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="product-text-content">
-                                            <h5 class="brand-subtext">{{ product.brand.name }}</h5>
-                                            <h4 class="product-main-title">{{ product.name }}</h4>
-                                            <div class="pricing-alignment-row">
-                                                <div class="price-stack">
-                                                    <span class="currency-symbol">ksh</span>
-                                                    <span class="price-val">{{ product.retail_price }}</span>
-                                                </div>
-                                                <div class="rating-info">
-                                                    <div class="stars-row">
-                                                        {% for i in "12345" %}
-                                                            {% if product.average_rating >= forloop.counter %}
-                                                                <i class="fa fa-star"></i>
-                                                            {% else %}
-                                                                <i class="fa fa-star-o"></i>
-                                                            {% endif %}
-                                                        {% endfor %}
-                                                    </div>
-                                                    <div class="discount-line">
-                                                        <hr>
-                                                        <span class="discount-text">
-                                                            {% if product.amount_saved > 0 %} 
-                                                                Save ksh {{ product.amount_saved }}
-                                                            {% else %}
-                                                                &nbsp; 
-                                                            {% endif %}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <button type="button" value="{{ product.id }}" class="btn-full-width add-to-cart-btn">ADD TO CART</button>
-                                    </div>
+                        <!-- icon -->
+                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
+                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
+                                    group-hover:bg-emerald-100">
+                            🔍
+                        </div>
+
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
+                            Browse & Select
+                        </h3>
+
+                        <p class="text-slate-600 max-w-sm mx-auto">
+                            Explore thousands of quality products with real-time pricing and availability.
+                        </p>
+
+                    </div>
+
+                    <!-- STEP 2 -->
+                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-300
+                                text-center group relative">
+
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
+                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
+                                    flex items-center justify-center shadow-lg">
+                            2
+                        </div>
+
+                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
+                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
+                                    group-hover:bg-emerald-100">
+                            📋
+                        </div>
+
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
+                            Place Order
+                        </h3>
+
+                        <p class="text-slate-600 max-w-sm mx-auto">
+                            Fast checkout with M-Pesa. Get instant order confirmation.
+                        </p>
+
+                    </div>
+
+                    <!-- STEP 3 -->
+                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-500
+                                text-center group relative">
+
+                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
+                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
+                                    flex items-center justify-center shadow-lg">
+                            3
+                        </div>
+
+                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
+                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
+                                    group-hover:bg-emerald-100">
+                            🚚
+                        </div>
+
+                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
+                            Fast Delivery
+                        </h3>
+
+                        <p class="text-slate-600 max-w-sm mx-auto">
+                            Reliable delivery across Nairobi. Track your order in real-time.
+                        </p>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Bar -->
+        <section class="py-12 bg-slate-50 border-t border-b">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="text-4xl font-bold text-slate-900">5000+</div>
+                        <div class="text-slate-600 mt-1">Active Retailers</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-slate-900">98%</div>
+                        <div class="text-slate-600 mt-1">On-time Delivery</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-slate-900">200+</div>
+                        <div class="text-slate-600 mt-1">Brands Partnered</div>
+                    </div>
+                    <div>
+                        <div class="text-4xl font-bold text-slate-900">24/7</div>
+                        <div class="text-slate-600 mt-1">Support</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Summary -->
+        <section class="relative py-20 lg:py-28 bg-white overflow-hidden">
+
+            <!-- SOFT BACKGROUND DEPTH -->
+            <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white"></div>
+
+            <!-- FLOATING BLUR BLOBS (subtle premium feel) -->
+            <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-100 blur-3xl rounded-full animate-pulse"></div>
+            <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-100 blur-3xl rounded-full animate-pulse"></div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+
+                <div class="grid lg:grid-cols-2 gap-16 items-center">
+
+                    <!-- IMAGE -->
+                    <div class="reveal opacity-0 translate-x-10 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]
+                                parallax-medium">
+
+                        <div class="relative group">
+
+                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200"
+                                alt="Mahitaji Warehouse"
+                                class="rounded-3xl shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
+
+                            <!-- subtle overlay glow -->
+                            <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
+
+                        </div>
+                    </div>
+
+                    <!-- CONTENT -->
+                    <div class="space-y-8">
+
+                        <!-- badge -->
+                        <div class="reveal opacity-0 translate-y-6 transition-all duration-700">
+                            <span class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium shadow-sm">
+                                Since 2018
+                            </span>
+                        </div>
+
+                        <!-- heading -->
+                        <h2 class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
+                                text-4xl font-bold text-slate-900 leading-tight">
+                            Your Trusted Partner in Wholesale Supply
+                        </h2>
+
+                        <!-- paragraph -->
+                        <p class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-300
+                                text-lg text-slate-600 leading-relaxed max-w-xl">
+                            At Mahitaji, we believe business should be simple. We source directly from manufacturers, maintain high standards, and deliver with speed and reliability.
+                        </p>
+
+                        <!-- feature grid -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+
+                            <!-- feature 1 -->
+                            <div class="reveal opacity-0 translate-y-6 transition-all duration-700 delay-300
+                                        flex gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
+
+                                <div class="text-emerald-500 text-2xl mt-1">
+                                    <i class="fas fa-check-circle"></i>
                                 </div>
-                                {% empty %}
-                                <div class="col-12 text-center">
-                                    <p>Check back soon for our top-selling items!</p>
+
+                                <div>
+                                    <h4 class="font-semibold text-slate-900">Direct from Source</h4>
+                                    <p class="text-sm text-slate-500">Better prices, better quality</p>
                                 </div>
-                                {% endfor %}
+
                             </div>
+
+                            <!-- feature 2 -->
+                            <div class="reveal opacity-0 translate-y-6 transition-all duration-700 delay-500
+                                        flex gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
+
+                                <div class="text-emerald-500 text-2xl mt-1">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+
+                                <div>
+                                    <h4 class="font-semibold text-slate-900">Fast Delivery</h4>
+                                    <p class="text-sm text-slate-500">Nairobi &amp; environs</p>
+                                </div>
+
+                            </div>
+
                         </div>
+
+                        <!-- CTA -->
+                        <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-500">
+                            <a href="{% url 'about' %}"
+                            class="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition group">
+
+                                Learn more about us
+                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+
+                            </a>
+                        </div>
+
                     </div>
                 </div>
             </div>
         </section>
+        <!-- ====================== LAST GROUP ENDS HERE ====================== -->
 
-
-        <section class="eclipse-hero-slider-wrap" id="eclipseLogisticsSlider"> <!-- section for banner / intro part -->
-            <div class="eclipse-slider-stage">
-
-                <div class="eclipse-slide active-slide" style="background: radial-gradient(circle at 75% 50%, #113f33 0%, #061914 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content dark-text">
-                            <span class="eclipse-badge">GRAINS & CEREALS</span>
-                            <h1 class="eclipse-title">FLOUR, GRAINS & <br><span class="eclipse-gradient-text">CEREALS.</span></h1>
-                            <p class="eclipse-subtitle dark">Structured high-volume allocations for flour, grains and cereals.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Flour, Grain and Cereals" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="eclipse-slide" style="background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);">
-                    <div class="eclipse-slide-grid">
-                        <div class="eclipse-slide-content dark-text">
-                            <span class="eclipse-badge dark" style="background-color: #4a5568; color: #fff;">HYGIENE DEALS</span>
-                            <h1 class="eclipse-title dark">DIAPERS, SOAPS & <br><span class="eclipse-dark-accent" style="color: #2b6cb0;">CLEANERS.</span></h1>
-                            <p class="eclipse-subtitle dark">Structured high-volume allocations for commercial disinfectants, domestic maintenance lines, and bulk institutional soap reserves.</p>
-                            <div class="eclipse-action-row">
-                                <a href="{% url 'offers' %}" class="eclipse-btn-link">See More &#8594;</a>
-                            </div>
-                        </div>
-                        <div class="eclipse-slide-graphic">
-                            <div class="eclipse-studio-frame">
-                                <img src="{% static 'assets/images/seven.png' %}" alt="Bulk Protective Allocations" class="eclipse-floating-asset">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-            
-            <div class="eclipse-slider-arrows">
-                <button class="eclipse-arrow prev" onclick="window.shiftLogisticsSlider(-1)" aria-label="Previous Slide">&#10229;</button>
-                <button class="eclipse-arrow next" onclick="window.shiftLogisticsSlider(1)" aria-label="Next Slide">&#10230;</button>
-            </div>
-            <div class="eclipse-slider-indicators">
-                <span class="eclipse-dot active-dot" onclick="window.jumpToLogisticsSlide(0)"></span>
-                <span class="eclipse-dot" onclick="window.jumpToLogisticsSlide(1)"></span>
-            </div>
-        </section>
-
-        <section class="order-steps-section pt-60 pb-60 bg-light">
-            <div class="container">
-                <div class="section-heading text-center mb-50">
-                    <span>Seamless Procurement</span>
-                    <h2>Three Simple Steps to Order</h2>
-                    <p>We’ve simplified the supply chain so you can focus on your core business.</p>
-                </div>
-
-                <div class="row g-4">
-                    <div class="col-lg-4 col-md-6">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper">
-                                <i class="fa fa-search"></i>
-                                <span class="step-badge">01</span>
-                            </div>
-                            <div class="step-card-body">
-                                <h4>Select Products</h4>
-                                <p>Browse our digital catalogue for high-quality essentials. From grains to household items, find everything your retail shop or organization needs.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper">
-                                <i class="fa fa-shopping-basket"></i>
-                                <span class="step-badge">02</span>
-                            </div>
-                            <div class="step-card-body">
-                                <h4>Confirm Your Order</h4>
-                                <p>Review your selection and submit your order details. Our team quickly processes your request to ensure competitive pricing and stock availability.</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-4 col-md-6">
-                        <div class="step-card">
-                            <div class="step-icon-wrapper">
-                                <i class="fa fa-truck"></i>
-                                <span class="step-badge">03</span>
-                            </div>
-                            <div class="step-card-body">
-                                <h4>Swift Fulfillment</h4>
-                                <p>Experience reliable delivery directly to your premises. We handle the logistics so that your essentials arrive safely and on time.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="premium-trust-bar">
-            <div class="trust-container">
-                <div class="trust-item">
-                    <div class="trust-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="trust-text">
-                        <h3>Trusted Quality</h3>
-                        <p>100% Certified Genuine Brands</p>
-                    </div>
-                </div>
-                <div class="trust-item">
-                    <div class="trust-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                    </div>
-                    <div class="trust-text">
-                        <h3>Lightning Delivery</h3>
-                        <p>Fast, predictable supply chains</p>
-                    </div>
-                </div>
-                <div class="trust-item">
-                    <div class="trust-icon-wrapper">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                    </div>
-                    <div class="trust-text">
-                        <h3>Best Wholesale Pricing</h3>
-                        <p>Maximize your retail margins</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="about-us-summary pt-60 pb-60 bg-light" style="margin-top: 60px;">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-6">
-                        <div class="about-image">
-                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" alt="Our Distribution" class="img-fluid rounded shadow">
-                        </div>
-                    </div>
-                    <div class="col-lg-6">
-                        <div class="about-text-content pl-30">
-                            <span class="badge">About Mahitaji</span>
-                            <h2 class="mt-10">Streamlining Essential Supply Chains</h2>
-                            <p class="lead">We bridge the gap between top manufacturers and the points of need—whether it's a local retail shelf, a family kitchen, or a large-scale organization.</p>
-                            <p>By focusing on efficiency and consistency, we ensure that fast-moving consumer goods are always within reach. Our platform is designed to handle the complexities of bulk ordering so you can focus on growing your business or managing your household with ease.</p>
-                            <a href="{% url 'about' %}" class="btn shop-btn-outline mt-20">Learn More About Our Process</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
 
     </div>
 
@@ -842,6 +801,29 @@
 
 {% block extra_css %}
 <style>
+
+    .parallax-slow {
+        transform: translateY(0px);
+        animation: floatSlow 12s ease-in-out infinite;
+    }
+
+    .parallax-medium {
+        transform: translateY(0px);
+        animation: floatMedium 8s ease-in-out infinite;
+    }
+
+    @keyframes floatSlow {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+        100% { transform: translateY(0px); }
+    }
+
+    @keyframes floatMedium {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0px); }
+    }
+
     .step-card {
         background: #fff;
         padding: 40px 30px;
@@ -979,137 +961,229 @@
         .main-promo-slider { height: 350px; margin-bottom: 20px; }
         .category-sidebar-grid { height: 300px; flex-direction: row; }
     }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    @keyframes trending-scroll {
+        from {
+            transform: translateX(0);
+        }
+
+        to {
+            transform: translateX(-50%);
+        }
+    }
+
+    .animate-trending {
+        animation: trending-scroll 45s linear infinite;
+    }
+
+    .animate-trending:hover {
+        animation-play-state: paused;
+    }
+
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    @keyframes float {
+        0% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+        100% { transform: translateY(0px); }
+    }
+
+
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script id="scroll-nav">
-const header = document.querySelector('.header-bottom');
-const heroSectionElement = document.querySelector('.hero');
 
-if (header && heroSectionElement) {
-    window.addEventListener('scroll', () => {
-        const trigger = heroSectionElement.offsetHeight - 80;
-        if (window.scrollY > trigger) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
+    const reveals = document.querySelectorAll(".reveal");
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.remove("opacity-0", "translate-y-6", "translate-y-10", "translate-x-10");
+                entry.target.classList.add("opacity-100", "translate-y-0", "translate-x-0");
+            }
+        });
+    }, {
+        threshold: 0.2
+    });
+
+    reveals.forEach(el => observer.observe(el));
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const elements = document.querySelectorAll(".reveal");
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.remove("opacity-0", "translate-y-6", "translate-y-8", "translate-x-10");
+                    entry.target.classList.add("opacity-100", "translate-x-0", "translate-y-0");
+                }
+            });
+        }, {
+            threshold: 0.2
+        });
+
+        elements.forEach(el => observer.observe(el));
+    });
+
+    const slider = document.getElementById('trending-slider');
+
+    document.getElementById('trend-next').addEventListener('click', () => {
+        slider.scrollBy({
+            left: 900,
+            behavior: 'smooth'
+        });
+    });
+
+    document.getElementById('trend-prev').addEventListener('click', () => {
+        slider.scrollBy({
+            left: -900,
+            behavior: 'smooth'
+        });
+    });
+
+    const header = document.querySelector('.header-bottom');
+    const heroSectionElement = document.querySelector('.hero');
+
+    if (header && heroSectionElement) {
+        window.addEventListener('scroll', () => {
+            const trigger = heroSectionElement.offsetHeight - 80;
+            if (window.scrollY > trigger) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const slides = [
+            "{% static 'assets/banners/slide1.jpg' %}",
+            "{% static 'assets/banners/slide2.jpg' %}"
+        ];
+        let current = 0;
+        const slider = document.querySelector('.promo-item');
+
+        if (slider) {
+            setInterval(() => {
+                current = (current + 1) % slides.length;
+                slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
+            }, 5000);
         }
     });
-}
 
-document.addEventListener("DOMContentLoaded", function() {
-    const slides = [
-        "{% static 'assets/banners/slide1.jpg' %}",
-        "{% static 'assets/banners/slide2.jpg' %}"
-    ];
-    let current = 0;
-    const slider = document.querySelector('.promo-item');
+    // Master Isolated Slider Controller Engine
+    (function() {
+        let localEclipseIndex = 0;
+        let localLogisticsIndex = 0;
 
-    if (slider) {
-        setInterval(() => {
-            current = (current + 1) % slides.length;
-            slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
-        }, 5000);
-    }
-});
+        // Slide Swapping Handler for Slider Group 1 (#eclipseMainSlider)
+        function applyEclipseSlideState(targetIdx) {
+            const allSlides = document.querySelectorAll('#eclipseMainSlider .eclipse-slide');
+            const allDots = document.querySelectorAll('#eclipseMainSlider .eclipse-dot');
 
-// Master Isolated Slider Controller Engine
-(function() {
-    let localEclipseIndex = 0;
-    let localLogisticsIndex = 0;
+            if (allSlides.length === 0) return;
 
-    // Slide Swapping Handler for Slider Group 1 (#eclipseMainSlider)
-    function applyEclipseSlideState(targetIdx) {
-        const allSlides = document.querySelectorAll('#eclipseMainSlider .eclipse-slide');
-        const allDots = document.querySelectorAll('#eclipseMainSlider .eclipse-dot');
+            if (targetIdx >= allSlides.length) localEclipseIndex = 0;
+            else if (targetIdx < 0) localEclipseIndex = allSlides.length - 1;
+            else localEclipseIndex = targetIdx;
 
-        if (allSlides.length === 0) return;
+            allSlides.forEach((slide, idx) => {
+                if (idx === localEclipseIndex) {
+                    slide.classList.add('active-slide');
+                    slide.style.opacity = "1";
+                    slide.style.visibility = "visible";
+                    slide.style.zIndex = "5";
+                } else {
+                    slide.classList.remove('active-slide');
+                    slide.style.opacity = "0";
+                    slide.style.visibility = "hidden";
+                    slide.style.zIndex = "1";
+                }
+            });
 
-        if (targetIdx >= allSlides.length) localEclipseIndex = 0;
-        else if (targetIdx < 0) localEclipseIndex = allSlides.length - 1;
-        else localEclipseIndex = targetIdx;
+            allDots.forEach((dot, idx) => {
+                if (idx === localEclipseIndex) dot.classList.add('active-dot');
+                else dot.classList.remove('active-dot');
+            });
+        }
 
-        allSlides.forEach((slide, idx) => {
-            if (idx === localEclipseIndex) {
-                slide.classList.add('active-slide');
-                slide.style.opacity = "1";
-                slide.style.visibility = "visible";
-                slide.style.zIndex = "5";
-            } else {
-                slide.classList.remove('active-slide');
-                slide.style.opacity = "0";
-                slide.style.visibility = "hidden";
-                slide.style.zIndex = "1";
-            }
-        });
+        // Slide Swapping Handler for Slider Group 2 (#eclipseLogisticsSlider)
+        function applyLogisticsSlideState(targetIdx) {
+            const allSlides = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-slide');
+            const allDots = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-dot');
 
-        allDots.forEach((dot, idx) => {
-            if (idx === localEclipseIndex) dot.classList.add('active-dot');
-            else dot.classList.remove('active-dot');
-        });
-    }
+            if (allSlides.length === 0) return;
 
-    // Slide Swapping Handler for Slider Group 2 (#eclipseLogisticsSlider)
-    function applyLogisticsSlideState(targetIdx) {
-        const allSlides = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-slide');
-        const allDots = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-dot');
+            if (targetIdx >= allSlides.length) localLogisticsIndex = 0;
+            else if (targetIdx < 0) localLogisticsIndex = allSlides.length - 1;
+            else localLogisticsIndex = targetIdx;
 
-        if (allSlides.length === 0) return;
+            allSlides.forEach((slide, idx) => {
+                if (idx === localLogisticsIndex) {
+                    slide.classList.add('active-slide');
+                    slide.style.opacity = "1";
+                    slide.style.visibility = "visible";
+                    slide.style.zIndex = "5";
+                } else {
+                    slide.classList.remove('active-slide');
+                    slide.style.opacity = "0";
+                    slide.style.visibility = "hidden";
+                    slide.style.zIndex = "1";
+                }
+            });
 
-        if (targetIdx >= allSlides.length) localLogisticsIndex = 0;
-        else if (targetIdx < 0) localLogisticsIndex = allSlides.length - 1;
-        else localLogisticsIndex = targetIdx;
+            allDots.forEach((dot, idx) => {
+                if (idx === localLogisticsIndex) dot.classList.add('active-dot');
+                else dot.classList.remove('active-dot');
+            });
+        }
 
-        allSlides.forEach((slide, idx) => {
-            if (idx === localLogisticsIndex) {
-                slide.classList.add('active-slide');
-                slide.style.opacity = "1";
-                slide.style.visibility = "visible";
-                slide.style.zIndex = "5";
-            } else {
-                slide.classList.remove('active-slide');
-                slide.style.opacity = "0";
-                slide.style.visibility = "hidden";
-                slide.style.zIndex = "1";
-            }
-        });
+        // Direct Window Injection for global scope exposure
+        window.shiftEclipseSlider = function(stepValue) {
+            applyEclipseSlideState(localEclipseIndex + stepValue);
+        };
+        window.jumpToEclipseSlide = function(exactIdx) {
+            applyEclipseSlideState(exactIdx);
+        };
 
-        allDots.forEach((dot, idx) => {
-            if (idx === localLogisticsIndex) dot.classList.add('active-dot');
-            else dot.classList.remove('active-dot');
-        });
-    }
+        window.shiftLogisticsSlider = function(stepValue) {
+            applyLogisticsSlideState(localLogisticsIndex + stepValue);
+        };
+        window.jumpToLogisticsSlide = function(exactIdx) {
+            applyLogisticsSlideState(exactIdx);
+        };
 
-    // Direct Window Injection for global scope exposure
-    window.shiftEclipseSlider = function(stepValue) {
-        applyEclipseSlideState(localEclipseIndex + stepValue);
-    };
-    window.jumpToEclipseSlide = function(exactIdx) {
-        applyEclipseSlideState(exactIdx);
-    };
+        function safeInitSliders() {
+            applyEclipseSlideState(0);
+            applyLogisticsSlideState(0);
+            
+            // Balanced independent loops running smoothly at 5-second intervals
+            setInterval(function() { window.shiftEclipseSlider(1); }, 5000);
+            setInterval(function() { window.shiftLogisticsSlider(1); }, 5000);
+        }
 
-    window.shiftLogisticsSlider = function(stepValue) {
-        applyLogisticsSlideState(localLogisticsIndex + stepValue);
-    };
-    window.jumpToLogisticsSlide = function(exactIdx) {
-        applyLogisticsSlideState(exactIdx);
-    };
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", safeInitSliders);
+        } else {
+            safeInitSliders();
+        }
+    })();
 
-    function safeInitSliders() {
-        applyEclipseSlideState(0);
-        applyLogisticsSlideState(0);
-        
-        // Balanced independent loops running smoothly at 5-second intervals
-        setInterval(function() { window.shiftEclipseSlider(1); }, 5000);
-        setInterval(function() { window.shiftLogisticsSlider(1); }, 5000);
-    }
-
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", safeInitSliders);
-    } else {
-        safeInitSliders();
-    }
-})();
 </script>
 {% endblock %}
