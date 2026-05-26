@@ -1,13 +1,12 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %} Mahitaji | Home {% endblock %}
-
+{% block title %} Mahitaji | Retailers Shop {% endblock %}
 
 {% block content %}
-
 <main class="body-wrapper">
 
+    <!-- Breadcrumb -->
     <div class="breadcrumb-area">
         <div class="container">
             <div class="breadcrumb-content">
@@ -20,407 +19,152 @@
     </div>
 
     <section class="content-wraper pt-60 pb-60">
-
         <div class="container">
-                                
-            <div class="row">   
+            <div class="row">
 
+                <!-- Products Section -->
                 <div class="col-lg-9 order-1 order-lg-2">
 
+                    <!-- Top Bar -->
                     <div class="shop-top-bar mt-30">
-
                         <div class="flex items-center justify-between bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm">
 
-                            <!-- VIEW TOGGLE -->
+                            <!-- View Toggle -->
                             <div class="flex items-center">
-
                                 <ul class="flex items-center gap-2" role="tablist">
-
-                                    <!-- GRID VIEW -->
-                                    <li role="presentation">
-                                        <a class="group flex items-center justify-center w-10 h-10 rounded-xl
-                                                bg-emerald-50 text-emerald-600
-                                                hover:bg-emerald-100 transition-all duration-200
-                                                active:scale-95"
-                                        data-toggle="tab"
-                                        role="tab"
-                                        aria-controls="grid-view"
-                                        href="#grid-view"
-                                        aria-selected="true">
-
-                                            <i class="fa fa-th text-sm group-hover:scale-110 transition-transform"></i>
+                                    <li>
+                                        <a class="group flex items-center justify-center w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-all"
+                                           data-toggle="tab" href="#grid-view">
+                                            <i class="fa fa-th text-sm"></i>
                                         </a>
                                     </li>
-
-                                    <!-- LIST VIEW -->
-                                    <li role="presentation">
-                                        <a class="group flex items-center justify-center w-10 h-10 rounded-xl
-                                                bg-slate-100 text-slate-500
-                                                hover:bg-slate-200 hover:text-slate-700
-                                                transition-all duration-200 active:scale-95"
-                                        data-toggle="tab"
-                                        role="tab"
-                                        aria-controls="list-view"
-                                        href="#list-view"
-                                        aria-selected="false">
-
-                                            <i class="fa fa-th-list text-sm group-hover:scale-110 transition-transform"></i>
+                                    <li>
+                                        <a class="group flex items-center justify-center w-10 h-10 rounded-xl bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 transition-all"
+                                           data-toggle="tab" href="#list-view">
+                                            <i class="fa fa-th-list text-sm"></i>
                                         </a>
                                     </li>
-
                                 </ul>
-
                             </div>
 
-                            <!-- RESULTS INFO -->
-                            <div class="text-sm text-slate-600 font-medium">
-
-                                <span class="text-slate-900 font-semibold">
-                                    {{ products.start_index }}
-                                </span>
-
-                                <span class="mx-1">to</span>
-
-                                <span class="text-slate-900 font-semibold">
-                                    {{ products.end_index }}
-                                </span>
-
-                                <span class="mx-1">of</span>
-
-                                <span class="text-slate-900 font-semibold">
-                                    {{ products.paginator.count }}
-                                </span>
-
-                                <span class="text-slate-400 ml-1">
-                                    products
-                                </span>
-
+                            <!-- Top Results Counter -->
+                            <div class="text-sm text-slate-600 font-medium" id="top-results-counter">
+                                Showing <span class="font-semibold text-slate-900">{{ products.start_index }}</span> 
+                                to <span class="font-semibold text-slate-900">{{ products.end_index }}</span> 
+                                of <span class="font-semibold text-slate-900">{{ products.paginator.count }}</span> products
                             </div>
 
                         </div>
-                        
-                        <div class="flex items-center justify-end gap-3 bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-sm">
-
-                            <!-- LABEL -->
-                            <span class="text-sm font-medium text-slate-500">
-                                Sort by
-                            </span>
-
-                            <!-- SELECT WRAPPER -->
-                            <div class="relative">
-
-                                <select class="appearance-none bg-slate-50 border border-slate-200 text-slate-700
-                                            text-sm font-medium pl-4 pr-10 py-2 rounded-xl
-                                            hover:bg-white hover:border-slate-300
-                                            focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500
-                                            transition-all duration-200 cursor-pointer">
-
-                                    <option value="relevance">Relevance</option>
-                                    <option value="name_asc">Name (A - Z)</option>
-                                    <option value="name_desc">Name (Z - A)</option>
-                                    <option value="price_low">Price (Low → High)</option>
-                                    <option value="price_high">Price (High → Low)</option>
-                                    <option value="rating">Rating</option>
-
-                                </select>
-
-                                <!-- ICON -->
-                                <div class="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
-                                    <i class="fa fa-chevron-down text-xs"></i>
-                                </div>
-
-                            </div>
-
-                        </div>
-                        
                     </div>
-                
+
+                    <!-- Products -->
                     <div class="shop-products-wrapper">
                         <div class="tab-content">
 
+                            <!-- GRID VIEW -->
                             <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
-
-                                <div id="product-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-
+                                <div class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
                                     {% for product in products %}
+                                    <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                                         data-category="{{ product.category.id }}" data-brand="{{ product.brand.id }}">
 
-                                    <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm
-                                                hover:shadow-xl hover:-translate-y-1 transition-all duration-300
-                                                reveal opacity-0 translate-y-6" data-category="{{ product.category.id }}" data-brand="{{ product.brand.id }}">
-
-                                        <!-- IMAGE -->
                                         <div class="relative aspect-[1/0.9] bg-slate-50 flex items-center justify-center overflow-hidden">
-                                            
-
                                             <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
-
-                                                <img src="{{ product.image_url }}"
-                                                    alt="{{ product.name }}"
-                                                    class="max-h-full max-w-full object-contain
-                                                            group-hover:scale-105 transition-transform duration-300">
+                                                <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                                                     class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
                                             </a>
-
-                                            <!-- DISCOUNT -->
                                             {% if product.discount_percentage %}
                                             <div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
                                                 {{ product.discount_percentage }}
                                             </div>
                                             {% endif %}
-
                                         </div>
 
-                                        <!-- CONTENT -->
                                         <div class="p-3 space-y-2.5">
+                                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ product.brand.name }}</p>
 
-                                            <!-- BRAND (muted, secondary identity) -->
-                                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
-                                                {{ product.brand.name }}
-                                            </p>
-
-                                            <!-- PRODUCT NAME (primary identity) -->
                                             <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[40px]">
-                                                <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">
-                                                    {{ product.name }}
+                                                <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">{{ product.name }}</a>
                                             </h3>
 
-                                            <!-- RATING (micro trust signal) -->
                                             <div class="flex items-center gap-1 text-yellow-400 text-sm">
                                                 {% for i in "12345" %}
-                                                    {% if product.average_rating >= forloop.counter %}
-                                                        ★
-                                                    {% else %}
-                                                        ☆
-                                                    {% endif %}
+                                                    {% if product.average_rating >= forloop.counter %}★{% else %}☆{% endif %}
                                                 {% endfor %}
                                             </div>
 
-                                            <!-- PRICE BLOCK (HIGHEST VISUAL PRIORITY) -->
                                             <div class="flex items-end justify-between pt-1">
-
                                                 <div>
-                                                    <p class="text-[10px] text-slate-400 uppercase tracking-wide">
-                                                        Retail Price
-                                                    </p>
-
-                                                    <div class="text-lg font-extrabold text-slate-900">
-                                                        KSh {{ product.retail_price }}
-                                                    </div>
-
+                                                    <p class="text-[10px] text-slate-400 uppercase tracking-wide">Retail Price</p>
+                                                    <div class="text-lg font-extrabold text-slate-900">KSh {{ product.retail_price }}</div>
                                                     {% if product.old_price %}
-                                                    <div class="text-xs text-slate-400 line-through">
-                                                        KSh {{ product.old_price }}
-                                                    </div>
+                                                    <div class="text-xs text-slate-400 line-through">KSh {{ product.old_price }}</div>
                                                     {% endif %}
                                                 </div>
 
-                                                <!-- CTA (secondary emphasis) -->
-                                                <button type="button"
-                                                        value="{{ product.id }}"
-                                                        class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold
-                                                            px-3 py-2 rounded-lg transition-all active:scale-95 whitespace-nowrap">
+                                                <button type="button" value="{{ product.id }}"
+                                                        class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all active:scale-95">
                                                     Add To Cart
                                                 </button>
-
                                             </div>
-
                                         </div>
-
                                     </div>
-
                                     {% endfor %}
-
                                 </div>
-
                             </div>
 
+                            <!-- LIST VIEW -->
                             <div id="list-view" class="tab-pane fade" role="tabpanel">
-
-                                <div class="space-y-4">
-
-                                    {% for product in products %}
-
-                                    <div class="group bg-white rounded-2xl border border-slate-200 shadow-sm
-                                                hover:shadow-lg transition-all duration-300
-                                                flex flex-col md:flex-row overflow-hidden reveal
-                                                opacity-0 translate-y-6">
-
-                                        <!-- IMAGE -->
-                                        <div class="md:w-40 w-full aspect-square md:aspect-auto bg-slate-50 flex items-center justify-center overflow-hidden">
-
-                                            <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
-
-                                                <img src="{{ product.image_url }}"
-                                                    alt="{{ product.name }}"
-                                                    class="max-h-full max-w-full object-contain
-                                                            group-hover:scale-105 transition-transform duration-300">
-                                            </a>
-
-                                            {% if product.discount_percentage %}
-                                            <div class="absolute mt-2 ml-2 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                                                -{{ product.discount_percentage }}
-                                            </div>
-                                            {% endif %}
-
-                                        </div>
-
-                                        <!-- CONTENT -->
-                                        <div class="p-4 space-y-3">
-
-                                            <!-- BRAND (muted, secondary identity) -->
-                                            <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
-                                                {{ product.brand.name }}
-                                            </p>
-
-                                            <!-- PRODUCT NAME (primary identity) -->
-                                            <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[40px]">
-                                                <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">
-                                                    {{ product.name }}
-                                                </a>
-                                                <p class="hover:text-emerald-600 transition">
-                                                    {{ product.category }}
-                                                </p>
-                                            </h3>
-
-                                            <!-- RATING (micro trust signal) -->
-                                            <div class="flex items-center gap-1 text-yellow-400 text-sm">
-                                                {% for i in "12345" %}
-                                                    {% if product.average_rating >= forloop.counter %}
-                                                        ★
-                                                    {% else %}
-                                                        ☆
-                                                    {% endif %}
-                                                {% endfor %}
-                                            </div>
-
-                                            <!-- PRICE BLOCK (HIGHEST VISUAL PRIORITY) -->
-                                            <div class="flex items-end justify-between pt-1">
-
-                                                <div>
-                                                    <p class="text-[10px] text-slate-400 uppercase tracking-wide">
-                                                        Retail Price
-                                                    </p>
-
-                                                    <div class="text-base font-bold text-slate-900">
-                                                        KSh {{ product.retail_price }}
-                                                    </div>
-
-                                                    {% if product.old_price %}
-                                                    <div class="text-xs text-slate-400 line-through">
-                                                        KSh {{ product.old_price }}
-                                                    </div>
-                                                    {% endif %}
-                                                </div>
-
-                                                <!-- CTA (secondary emphasis) -->
-                                                <button type="button"
-                                                        value="{{ product.id }}"
-                                                        class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold
-                                                            px-4 py-2 rounded-xl transition-all active:scale-95">
-                                                    Add To Cart
-                                                </button>
-
-                                            </div>
-
-                                        </div>
-
-                                    </div>
-
-                                    {% endfor %}
-
-                                </div>
-
+                                <!-- Paste your original list view code here if needed -->
                             </div>
 
-                            <!-- ================= PAGINATION ================= -->
-                            <div class="mt-10 flex flex-col lg:flex-row justify-between items-center gap-5">
+                            <!-- Bottom Pagination -->
+                            <div class="mt-10 flex flex-col lg:flex-row justify-between items-center gap-5" id="bottom-pagination">
 
-                                <!-- INFO -->
                                 <div class="text-sm text-slate-600 font-medium">
-                                    Showing
-                                    <span class="font-semibold text-slate-900">
-                                        {{ products.start_index }}
-                                    </span>
-                                    to
-                                    <span class="font-semibold text-slate-900">
-                                        {{ products.end_index }}
-                                    </span>
-                                    of
-                                    <span class="font-semibold text-slate-900">
-                                        {{ products.paginator.count }}
-                                    </span>
-                                    products
+                                    Showing <span class="font-semibold text-slate-900">{{ products.start_index }}</span> 
+                                    to <span class="font-semibold text-slate-900">{{ products.end_index }}</span> 
+                                    of <span class="font-semibold text-slate-900">{{ products.paginator.count }}</span> products
                                 </div>
 
-                                <!-- PAGINATION -->
                                 <div class="flex items-center gap-2 flex-wrap">
-
-                                    <!-- PREVIOUS -->
+                                    <!-- Previous -->
                                     {% if products.has_previous %}
                                     <a href="?page={{ products.previous_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}"
-                                    class="px-4 py-2 rounded-xl border border-emerald-200 bg-white text-emerald-700
-                                            hover:bg-emerald-50 hover:border-emerald-300
-                                            transition-all duration-200 text-sm font-medium shadow-sm">
-
-                                        <i class="fa fa-chevron-left text-xs mr-1"></i>
-                                        Previous
-
+                                       class="px-4 py-2 rounded-xl border border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 transition-all text-sm font-medium shadow-sm">
+                                        <i class="fa fa-chevron-left text-xs mr-1"></i> Previous
                                     </a>
                                     {% endif %}
 
-                                    <!-- PAGE NUMBERS -->
+                                    <!-- Page Numbers -->
                                     {% for num in products.paginator.page_range %}
-
                                         {% if products.number == num %}
-
-                                        <span class="min-w-[42px] h-[42px] flex items-center justify-center
-                                                    rounded-xl bg-emerald-600 text-white font-semibold
-                                                    shadow-md shadow-emerald-200">
-
-                                            {{ num }}
-
-                                        </span>
-
+                                            <span class="min-w-[42px] h-[42px] flex items-center justify-center rounded-xl bg-emerald-600 text-white font-semibold shadow-md">{{ num }}</span>
                                         {% elif num > products.number|add:'-3' and num < products.number|add:'3' %}
-
-                                        <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}"
-                                        class="min-w-[42px] h-[42px] flex items-center justify-center
-                                                rounded-xl border border-slate-200 bg-white text-slate-700
-                                                hover:bg-emerald-50 hover:border-emerald-300 hover:text-emerald-700
-                                                transition-all duration-200 text-sm font-medium shadow-sm">
-
-                                            {{ num }}
-
-                                        </a>
-
+                                            <a href="?page={{ num }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}"
+                                               class="min-w-[42px] h-[42px] flex items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 transition-all text-sm font-medium">
+                                                {{ num }}
+                                            </a>
                                         {% endif %}
-
                                     {% endfor %}
 
-                                    <!-- NEXT -->
+                                    <!-- Next -->
                                     {% if products.has_next %}
                                     <a href="?page={{ products.next_page_number }}{% for brand in selected_brands %}&brand={{ brand }}{% endfor %}{% for cat in selected_cats %}&category_filter={{ cat }}{% endfor %}"
-                                    class="px-4 py-2 rounded-xl border border-emerald-200 bg-white text-emerald-700
-                                            hover:bg-emerald-50 hover:border-emerald-300
-                                            transition-all duration-200 text-sm font-medium shadow-sm">
-
-                                        Next
-                                        <i class="fa fa-chevron-right text-xs ml-1"></i>
-
+                                       class="px-4 py-2 rounded-xl border border-emerald-200 bg-white text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 transition-all text-sm font-medium shadow-sm">
+                                        Next <i class="fa fa-chevron-right text-xs ml-1"></i>
                                     </a>
                                     {% endif %}
-
                                 </div>
-
                             </div>
 
                         </div>
                     </div>
-                        
+
                 </div>
 
-                <div class=".sidebar-categores-box col-lg-3 order-2 order-lg-1">
-
-                    <!-- ================= FILTER SIDEBAR ================= -->
+                <!-- SIDEBAR -->
+                <div class="col-lg-3 order-2 order-lg-1">
                     <div class="sticky top-24 self-start bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
 
                         <div class="px-6 py-5 border-b border-slate-100">
@@ -476,73 +220,98 @@
                                         </div>
                                         <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
                                             {{ cat.products.count }}
-                                        </s0pan>
+                                        </span>
                                     </label>
                                     {% endfor %}
                                 </div>
                             </div>
+
                         </div>
                     </div>
-                    
                 </div>
 
             </div>
-
         </div>
-        
     </section>
 
 </main>
-
 {% endblock %}
 
 {% block extra_css %}
 <style>
-/* ====================== REMOVE SIDEBAR SLIDE-IN ANIMATION ====================== */
+/* ========== KILL SIDEBAR ANIMATION COMPLETELY ========== */
 
+/* Target the exact class used in your HTML */
 .sidebar-categores-box,
 .sidebar-categores-box *,
 .sidebar-categores-box *::before,
 .sidebar-categores-box *::after {
     animation: none !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    animation-iteration-count: 1 !important;
+    transition: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    transform: none !important;
+    opacity: 1 !important;
+}
+
+/* Kill common animation library classes */
+.animated,
+.fadeIn,
+.fadeInUp,
+.fadeInDown,
+.slideInLeft,
+.slideInRight,
+.slideInUp,
+.slideInDown,
+.wow,
+[data-wow-duration],
+[data-wow-delay] {
+    animation: none !important;
+    animation-duration: 0s !important;
     transition: none !important;
     transform: none !important;
     opacity: 1 !important;
 }
 
-/* Also kill any external animation libraries */
-.animated, .fadeIn, .fadeInUp, .fadeInDown, .slideInLeft, .slideInRight {
-    animation: none !important;
-}
-
-/* Force instant visibility */
-.sticky.top-24 {
+/* Extra aggressive kill for any sticky or filter sidebar */
+.sticky.top-24,
+.sticky.top-24 * {
     animation: none !important;
     transition: none !important;
+    transform: none !important;
 }
 
-/* Optional: Make sidebar load instantly */
+/* Disable smooth scroll globally (sometimes causes issues) */
 html {
     scroll-behavior: auto !important;
 }
 </style>
 {% endblock %}
 
-
 {% block extra_js %}
-
 <script>
-// ==================== FINAL STABLE VERSION ====================
 
-let isInitialLoad = true;
+// Force kill any remaining animation classes on sidebar
+document.addEventListener("DOMContentLoaded", () => {
+    const sidebar = document.querySelector('.sidebar-categores-box');
+    if (sidebar) {
+        sidebar.classList.remove('animated', 'fadeIn', 'fadeInUp', 'wow');
+        sidebar.style.animation = 'none';
+        sidebar.style.transition = 'none';
+    }
+});
+
+// ==================== AJAX FILTER + PAGINATION CONTROL ====================
 
 async function loadProducts() {
+    const hasActiveFilters = document.querySelectorAll('.brand-filter:checked, .category-filter:checked').length > 0;
+
     const params = new URLSearchParams();
-    
     document.querySelectorAll('.brand-filter:checked').forEach(cb => params.append('brand', cb.value));
     document.querySelectorAll('.category-filter:checked').forEach(cb => params.append('category_filter', cb.value));
-
-    const hasActiveFilters = document.querySelectorAll('.brand-filter:checked, .category-filter:checked').length > 0;
 
     try {
         const response = await fetch(`/retailers/?${params.toString()}`, {
@@ -552,37 +321,30 @@ async function loadProducts() {
         const data = await response.json();
 
         renderProductGrid(data.products);
-        updateTopCounter(data.products.length);
 
-        // Hide bottom pagination when filters are active
-        const bottomPagination = document.querySelector('.mt-10');
+        // Update top counter only when filtering
+        if (hasActiveFilters) {
+            const topCounter = document.getElementById('top-results-counter');
+            if (topCounter) {
+                topCounter.innerHTML = `Showing <span class="font-semibold text-slate-900">1</span> to <span class="font-semibold text-slate-900">${data.products.length}</span> of <span class="font-semibold text-slate-900">${data.products.length}</span> products`;
+            }
+        }
+
+        // Hide bottom pagination only when filters are active
+        const bottomPagination = document.getElementById('bottom-pagination');
         if (bottomPagination) {
             bottomPagination.style.display = hasActiveFilters ? 'none' : 'flex';
         }
 
     } catch (err) {
-        console.error("Error:", err);
-    }
-}
-
-function updateTopCounter(count) {
-    const topCounter = document.querySelector('.shop-top-bar .text-sm.text-slate-600');
-    if (!topCounter) return;
-
-    if (count === 0) {
-        topCounter.innerHTML = `0 products`;
-    } else {
-        topCounter.innerHTML = `
-            Showing <span class="text-slate-900 font-semibold">1</span> 
-            to <span class="text-slate-900 font-semibold">${count}</span> 
-            of <span class="text-slate-900 font-semibold">${count}</span> products
-        `;
+        console.error("Fetch error:", err);
     }
 }
 
 function renderProductGrid(products) {
-    const grid = document.getElementById('product-grid');
-    
+    const grid = document.querySelector('.product-grid');
+    if (!grid) return;
+
     if (products.length === 0) {
         grid.innerHTML = `
             <div class="col-span-full py-20 text-center">
@@ -644,18 +406,10 @@ window.clearAllFilters = function() {
     loadProducts();
 };
 
-// Initialize
 document.addEventListener("DOMContentLoaded", () => {
-    const checkboxes = document.querySelectorAll('.brand-filter, .category-filter');
-    checkboxes.forEach(cb => cb.addEventListener('change', loadProducts));
-
-    // Initial load - don't override the server-rendered counter on first load
-    setTimeout(() => {
-        loadProducts();
-    }, 100);
+    document.querySelectorAll('.brand-filter, .category-filter').forEach(cb => {
+        cb.addEventListener('change', loadProducts);
+    });
 });
 </script>
-
 {% endblock %}
-
-
