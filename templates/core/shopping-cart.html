@@ -29,134 +29,127 @@
             <p class="text-slate-600 mt-2">Review your items before proceeding to checkout</p>
         </div>
 
-        <form action="#">
+        <form>
 
             <div class="grid lg:grid-cols-3 gap-10">
 
-                <!-- CART TABLE -->
-                <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- LEFT: Cart Items (Wider) -->
+    <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        
+        <!-- TABLE HEADER -->
+        <div class="hidden md:grid grid-cols-12 bg-slate-100 text-xs font-semibold text-slate-600 uppercase tracking-widest px-6 py-4">
+            <div class="col-span-1"></div>
+            <div class="col-span-1"></div>
+            <div class="col-span-5">Product</div>
+            <div class="col-span-2 text-center">Price</div>
+            <div class="col-span-2 text-center">Qty</div>
+            <div class="col-span-1 text-right">Total</div>
+        </div>
 
-                    <!-- TABLE HEADER -->
-                    <div class="hidden md:grid grid-cols-12 bg-slate-100 text-xs font-semibold text-slate-600 uppercase tracking-widest p-4">
-                        <div class="col-span-1"></div>
-                        <div class="col-span-2">Product</div>
-                        <div class="col-span-3"></div>
-                        <div class="col-span-2">Price</div>
-                        <div class="col-span-2">Qty</div>
-                        <div class="col-span-2">Total</div>
-                    </div>
+        <!-- ITEMS -->
+        <div class="divide-y divide-slate-100">
+            {% for item in cart %}
+            {% with product=item.product %}
+            <div class="grid grid-cols-1 md:grid-cols-12 items-center px-6 py-6 gap-4 border-b border-slate-100 last:border-b-0"
+                 id="product-row-{{ product.id }}">
 
-                    <!-- ITEMS -->
-                    <div class="divide-y divide-slate-100">
-
-                        {% for item in cart %}
-                        {% with product=item.product %}
-
-                        <div class="grid grid-cols-1 md:grid-cols-12 items-center p-5 gap-4"
-                             id="product-row-{{ product.id }}">
-
-                            <!-- REMOVE -->
-                            <div class="md:col-span-1 flex justify-start md:justify-center">
-                                <button class="delete-product text-slate-400 hover:text-red-500 transition"
-                                        data-index="{{ product.id }}">
-                                    <i class="fa fa-times text-lg"></i>
-                                </button>
-                            </div>
-
-                            <!-- IMAGE -->
-                            <div class="md:col-span-2">
-                                <a href="{% url 'product_detail' product.pk %}">
-                                    <img src="{{ product.image_url }}"
-                                         class="w-16 h-16 object-cover rounded-lg border border-slate-200">
-                                </a>
-                            </div>
-
-                            <!-- NAME -->
-                            <div class="md:col-span-3">
-                                <a href="#" class="font-semibold text-slate-900 hover:text-emerald-600 transition">
-                                    {{ product.name }}
-                                </a>
-                            </div>
-
-                            <!-- PRICE -->
-                            <div class="md:col-span-2 text-slate-700 font-medium">
-                                ksh {{ item.price }}
-                            </div>
-
-                            <!-- QTY -->
-                            <div class="md:col-span-2">
-                                <input type="text"
-                                       value="{{ item.qty }}"
-                                       data-index="{{ item.product.id }}"
-                                       class="update-qty w-20 px-3 py-2 border border-slate-300 rounded-lg text-center focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            </div>
-
-                            <!-- TOTAL -->
-                            <div class="md:col-span-2 font-semibold text-slate-900"
-                                 id="subtotal-{{ product.id }}">
-                                ksh {{ item.total_price }}
-                            </div>
-
-                        </div>
-
-                        {% endwith %}
-                        {% empty %}
-                        <div class="p-10 text-center text-slate-500">
-                            Your cart is empty.
-                        </div>
-                        {% endfor %}
-
-                    </div>
-
+                <!-- Remove -->
+                <div class="md:col-span-1">
+                    <button class="delete-product text-slate-400 hover:text-red-500 transition text-2xl" data-index="{{ product.id }}">
+                        <i class="fa fa-times"></i>
+                    </button>
                 </div>
 
-                <!-- SUMMARY PANEL -->
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 h-fit">
-
-                    <h3 class="text-xl font-bold text-slate-900 mb-6">Cart Summary</h3>
-
-                    <div class="space-y-4 text-slate-700">
-
-                        <div class="flex justify-between">
-                            <span>Subtotal</span>
-                            <span id="cart-subtotal" class="font-semibold">
-                                ksh {{ cart.get_total_price }}
-                            </span>
-                        </div>
-
-                        <div class="flex justify-between border-t pt-4">
-                            <span class="font-semibold">Total</span>
-                            <span id="cart-total-final" class="font-bold text-slate-900">
-                                ksh {{ cart.get_total_price }}
-                            </span>
-                        </div>
-
-                    </div>
-
-                    <!-- CHECKOUT -->
-                    <a href="{% url 'checkout' %}"
-                       class="mt-6 w-full block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition">
-                        Proceed to Checkout
+                <!-- Image -->
+                <div class="md:col-span-1">
+                    <a href="{% url 'product_detail' product.pk %}">
+                        <img src="{{ product.image_url }}" class="w-16 h-16 object-cover rounded-xl border border-slate-200">
                     </a>
+                </div>
 
-                    <!-- COUPON -->
-                    <div class="mt-6">
-                        <label class="text-sm font-medium text-slate-700">Coupon Code</label>
+                <!-- Name -->
+                <div class="md:col-span-5">
+                    <a href="{% url 'product_detail' product.pk %}" class="font-semibold text-slate-900 hover:text-emerald-600">
+                        {{ product.name }}
+                    </a>
+                </div>
 
-                        <div class="flex mt-2 gap-2">
-                            <input id="coupon_code"
-                                   class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none"
-                                   placeholder="Enter code">
+                <!-- Price -->
+                <div class="md:col-span-2 text-slate-700 font-medium text-center product-price" data-price="{{ item.price }}">
+                    ksh {{ item.price }}
+                </div>
 
-                            <button class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition">
-                                Apply
-                            </button>
-                        </div>
-                    </div>
+                
+<!-- Quantity -->
+<div class="md:col-span-2">
+    <div class="flex items-center justify-center gap-2">
+        
+        <!-- Minus Button -->
+        <button type="button" class="qty-minus w-8 h-8 flex items-center justify-center border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-600">
+            <i class="fa fa-minus"></i>
+        </button>
 
+        <input type="number" 
+               value="{{ item.qty }}" 
+               min="1" 
+               data-product-id="{{ product.id }}"
+               class="update-qty w-16 text-center border border-slate-300 rounded-lg py-2 text-base font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500">
+
+        <!-- Plus Button -->
+        <button type="button" class="qty-plus w-8 h-8 flex items-center justify-center border border-slate-300 rounded-lg hover:bg-slate-100 text-slate-600">
+            <i class="fa fa-plus"></i>
+        </button>
+
+    </div>
+</div>
+
+                <!-- Line Total -->
+                <div class="md:col-span-1 font-semibold text-slate-900 text-right product-subtotal">
+                    ksh {{ item.total_price }}
                 </div>
 
             </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- RIGHT: Cart Summary (Narrower) -->
+    <div class="lg:col-span-1">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sticky top-6">
+
+            <h3 class="text-xl font-bold text-slate-900 mb-6">Cart Summary</h3>
+
+            <div class="space-y-4 text-slate-700">
+                <div class="flex justify-between">
+                    <span>Subtotal</span>
+                    <span id="cart-subtotal" class="font-semibold">ksh {{ cart.get_total_price }}</span>
+                </div>
+
+                <div class="flex justify-between border-t pt-4">
+                    <span class="font-semibold">Total</span>
+                    <span id="cart-total-final" class="font-bold text-slate-900">ksh {{ cart.get_total_price }}</span>
+                </div>
+            </div>
+
+            <a href="{% url 'checkout' %}"
+               class="mt-6 w-full block text-center bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl transition">
+                Proceed to Checkout
+            </a>
+
+            <!-- Coupon -->
+            <div class="mt-6">
+                <label class="text-sm font-medium text-slate-700">Coupon Code</label>
+                <div class="flex mt-2 gap-2">
+                    <input id="coupon_code" class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:outline-none" placeholder="Enter code">
+                    <button class="px-4 py-2 bg-slate-900 text-white rounded-lg hover:bg-slate-800 transition">Apply</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
 
         </form>
 
@@ -170,3 +163,66 @@
            
 
 
+
+{% block extra_css %}
+<style>
+/* Hide default number input arrows (Chrome, Safari, Edge, Opera) */
+input.update-qty::-webkit-outer-spin-button,
+input.update-qty::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Hide default number input arrows (Firefox) */
+input.update-qty[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Optional: Make the input look cleaner */
+input.update-qty {
+    appearance: textfield;
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+{% block extra_js %}
+<script>
+$(document).ready(function () {
+
+    // Delete from full cart page
+    $(document).on('click', '.delete-product', function (e) {
+        e.preventDefault();
+        
+        if (!confirm("Remove this item from cart?")) return;
+
+        var productid = $(this).data('index');
+        var row = $('#product-row-' + productid);
+
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart_delete" %}',
+            data: {
+                product_id: productid,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function (json) {
+                $('.item-text').text('ksh ' + json.total);
+
+                if (row.length) {
+                    row.remove();
+                    $('#cart-subtotal').text('ksh ' + json.total);
+                    $('#cart-total-final').text('ksh ' + json.total);
+                }
+            }
+        });
+    });
+
+});
+</script>
+{% endblock %}

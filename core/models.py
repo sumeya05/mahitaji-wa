@@ -147,9 +147,15 @@ class Product(models.Model):
 
     @property
     def discount_percentage(self):
-        if self.old_price and self.old_price > self.retail_price:
+        """Return discount only if it's 1% or higher. Never show 0% or -0%."""
+        if self.old_price and self.retail_price and self.old_price > self.retail_price:
             discount = ((self.old_price - self.retail_price) / self.old_price) * 100
-            return f"-{int(discount)}%"
+            
+            # Minimum 1% if there's any positive discount
+            if discount > 0:
+                discount = max(discount, 1)          # force minimum 1%
+                return f"{int(discount)}%"           # clean integer percentage
+            
         return None
     
     @property

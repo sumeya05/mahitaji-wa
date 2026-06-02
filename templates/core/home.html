@@ -18,6 +18,7 @@
         </div>
 
         <div class="rotary-wrapper">
+
             <div class="middle-container">
                 <a href="#"><img src="{% static 'assets/logos/1.gif' %}" alt="Logo" class="center-logo"></a>
             </div>
@@ -31,7 +32,7 @@
                 </div>
                 <div class="category-item">
                     <a href="{% url 'categories' %}" class="category-link" data-category="oils">
-                        <img src="{% static 'assets/categories/oils.png' %}" alt="Cereals Category Icon" width="100" height="100">
+                        <img src="{% static 'assets/categories/oils.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
                         <span class="category-tooltip">Oils</span>
                     </a>
                 </div>                                               
@@ -61,13 +62,14 @@
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"><span class="supplier-name">Soko</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"><span class="supplier-name">Del Monte</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"><span class="supplier-name">Kensalt</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"><span class="supplier-name">EXE</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"><span class="supplier-name">Ketepa</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"><span class="supplier-name">Jetlak</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"><span class="supplier-name">Tropical Heat</span></a>
                 <a href="{% url 'brands' %}" class="supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"><span class="supplier-name">Kapa Oil</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"><span class="supplier-name">Pembe</span></a>
+                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"><span class="supplier-name">Pembe</span></a>                
+                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"><span class="supplier-name">EXE</span></a>
             </div>
+
         </div>
 
         <div id="ourSuppliers" class="mobile-only-bar">
@@ -93,97 +95,97 @@
 
     <div class="section-wrapper">
 
-        <section class="relative w-full bg-emerald-900 text-white py-16 lg:py-24 overflow-hidden">
+    <section class="relative w-full bg-emerald-900 text-white py-16 lg:py-24 overflow-hidden">
 
-    <!-- BACKGROUND GLOWS (safe z-index) -->
-    <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/20 blur-3xl rounded-full animate-pulse"></div>
-    <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-emerald-700/20 blur-3xl rounded-full animate-pulse"></div>
+        <!-- BACKGROUND GLOWS (safe z-index) -->
+        <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/20 blur-3xl rounded-full animate-pulse"></div>
+        <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-emerald-700/20 blur-3xl rounded-full animate-pulse"></div>
 
-    <div class="relative z-10 container mx-auto px-4">
+        <div class="relative z-10 container mx-auto px-4">
 
-        <div class="grid lg:grid-cols-2 gap-12 items-center">
+            <div class="grid lg:grid-cols-2 gap-12 items-center">
 
-            <!-- TEXT -->
-            <div class="space-y-8">
+                <!-- TEXT -->
+                <div class="space-y-8">
 
-                <!-- badge -->
-                <div class="inline-flex items-center space-x-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span class="text-emerald-200 text-xs font-bold uppercase tracking-widest">
-                        Authorized Distributor
-                    </span>
-                </div>
+                    <!-- badge -->
+                    <div class="inline-flex items-center space-x-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <span class="text-emerald-200 text-xs font-bold uppercase tracking-widest">
+                            Authorized Distributor
+                        </span>
+                    </div>
 
-                <!-- headline -->
-                <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
-                    Premium FMCG <br>
-                    <span class="text-emerald-300">
-                        Wholesale Allocations.
-                    </span>
-                </h1>
+                    <!-- headline -->
+                    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
+                        Premium FMCG <br>
+                        <span class="text-emerald-300">
+                            Wholesale Allocations.
+                        </span>
+                    </h1>
 
-                <!-- paragraph -->
-                <p class="text-lg md:text-xl text-emerald-100 max-w-lg leading-relaxed">
-                    Direct manufacturer pricing for verified retailers. Secure your stock, manage your margins,
-                    and access our wholesale distribution network in one click.
-                </p>
-
-                <!-- CTA -->
-                <div class="flex flex-col sm:flex-row gap-4">
-
-                    <a href="{% url 'offers' %}"
-                       class="bg-emerald-600 hover:bg-emerald-700 px-8 py-4 rounded-xl font-bold
-                              transition-all hover:-translate-y-1 shadow-lg">
-                        See Product Offers
-                    </a>
-
-                    <a href="{% url 'products' %}"
-                       class="border border-white/20 hover:bg-white/10 px-8 py-4 rounded-xl font-bold
-                              transition-all hover:-translate-y-1">
-                        Browse Full Catalog
-                    </a>
-
-                </div>
-
-            </div>
-
-            <!-- IMAGE -->
-            <div class="relative lg:block hidden">
-
-                <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl
-                            transition-all hover:bg-emerald-950">
-
-                    <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">
-                        Volume Price
-                    </span>
-
-                    <h3 class="text-3xl font-extrabold text-white mb-4">
-                        FMCG Distribution Network
-                    </h3>
-
-                    <p class="text-emerald-100 mb-8 max-w-sm">
-                        Fast-moving consumer goods distributed efficiently across Kenya through our verified retail network.
+                    <!-- paragraph -->
+                    <p class="text-lg md:text-xl text-emerald-100 max-w-lg leading-relaxed">
+                        Direct manufacturer pricing for verified retailers. Secure your stock, manage your margins,
+                        and access our wholesale distribution network in one click.
                     </p>
 
-                    <a href="/categories/"
-                       class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
-                        Check Availability
-                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
-                             viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                    </a>
+                    <!-- CTA -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+
+                        <a href="{% url 'offers' %}"
+                        class="bg-emerald-600 hover:bg-emerald-700 px-8 py-4 rounded-xl font-bold
+                                transition-all hover:-translate-y-1 shadow-lg">
+                            See Product Offers
+                        </a>
+
+                        <a href="{% url 'products' %}"
+                        class="border border-white/20 hover:bg-white/10 px-8 py-4 rounded-xl font-bold
+                                transition-all hover:-translate-y-1">
+                            Browse Full Catalog
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <!-- IMAGE -->
+                <div class="relative lg:block hidden">
+
+                    <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl
+                                transition-all hover:bg-emerald-950">
+
+                        <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">
+                            Volume Price
+                        </span>
+
+                        <h3 class="text-3xl font-extrabold text-white mb-4">
+                            FMCG Distribution Network
+                        </h3>
+
+                        <p class="text-emerald-100 mb-8 max-w-sm">
+                            Fast-moving consumer goods distributed efficiently across Kenya through our verified retail network.
+                        </p>
+
+                        <a href="/categories/"
+                        class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
+                            Check Availability
+                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                        </a>
+
+                    </div>
 
                 </div>
 
             </div>
-
         </div>
-    </div>
-</section>
-        
-        
+    </section>
+            
+            
         <!-- ====================== 2ND GROUP (MOTION UPGRADE) ====================== -->
         <section class="relative w-full overflow-hidden bg-[#0b1220] py-20 lg:py-32">
 
@@ -290,127 +292,86 @@
         <section class="py-20 bg-white overflow-hidden">
             <div class="max-w-7xl mx-auto px-6">
 
-                <!-- Header -->
                 <div class="text-center mb-12">
-                    <span class="inline-block px-6 py-2.5 bg-amber-100 text-amber-700 rounded-3xl text-sm font-semibold tracking-[1px] uppercase">
-                        HOT RIGHT NOW
-                    </span>
-
-                    <h2 class="text-5xl font-bold text-slate-900 mt-4 tracking-tight">
-                        Trending Products
-                    </h2>
-
-                    <p class="text-slate-600 mt-4 max-w-2xl mx-auto text-lg">
-                        High-demand essentials currently leading the market for retailers and households.
-                    </p>
+                    <span class="inline-block px-6 py-2.5 bg-amber-100 text-amber-700 rounded-3xl text-sm font-semibold tracking-widest uppercase">HOT RIGHT NOW</span>
+                    <h2 class="text-5xl font-bold text-slate-900 mt-4 tracking-tight">Trending Products</h2>
+                    <p class="text-slate-600 mt-4 max-w-2xl mx-auto text-lg">High-demand essentials currently leading the market for retailers and households.</p>
                 </div>
 
-                <!-- Slider Wrapper -->
-                <div class="flex gap-7 w-max animate-trending py-4">
+                <div id="trending-track" class="flex gap-6 w-max animate-trending px-4">
 
-                    <!-- Left Fade -->
-                    <div class="hidden lg:block absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none"></div>
+                    {% for item in trending_data %}
+                        {% for product in item.products %}
 
-                    <!-- Right Fade -->
-                    <div class="hidden lg:block absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"></div>
+                        <div class="w-[280px] flex-shrink-0">
+                            <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
+                                data-category="{{ product.category.id|default:'' }}" data-brand="{{ product.brand.id|default:'' }}">
 
-                    <!-- Track -->
-                    <div id="trending-track"
-                        class="flex gap-6 w-max animate-trending">
+                                <!-- Image -->
+                                <div class="relative aspect-[1/0.9] bg-slate-50 flex items-center justify-center overflow-hidden">
+                                    <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
+                                        <img src="{{ product.image_url }}" alt="{{ product.name }}"
+                                            class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                    </a>
 
-                        {% for item in trending_data %}
-                            {% for product in item.products %}
+                                    {% if product.discount_percentage and product.discount_percentage != '0%' and product.discount_percentage != '-0%' and product.discount_percentage != '0' %}
+                                    <div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                                        - {{ product.discount_percentage }}
+                                    </div>
+                                    {% endif %}
+                                </div>
 
-                            <!-- PRODUCT CARD (REFINED) -->
-                            <div class="w-[240px] sm:w-[260px] flex-shrink-0">
+                                <!-- Content -->
+                                <div class="p-4 flex-1 flex flex-col">
+                                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ product.brand.name|default:"MAHITAJI" }}</p>
 
-                                <div class="group relative flex flex-col h-full bg-white border border-slate-200 rounded-2xl overflow-hidden
-                                            transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                                    <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[42px] mt-1">
+                                        <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">{{ product.name }}</a>
+                                    </h3>
 
-                                    <!-- IMAGE -->
-                                    <div class="relative aspect-square bg-slate-50 flex items-center justify-center p-4">
+                                    <!-- UOM -->
+                                    {% if product.unit_of_measure %}
+                                    <p class="text-sm font-medium text-slate-600 mt-1 mb-2">
+                                        {{ product.unit_of_measure.short_name|default:product.unit_of_measure.name }}
+                                    </p>
+                                    {% endif %}
 
-                                        <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
-
-                                            <img src="{{ product.image_url }}"
-                                                alt="{{ product.name }}"
-                                                class="max-h-full max-w-full object-contain transition-transform duration-300 group-hover:scale-105">
-                                        </a>
-
-                                        <!-- BADGE -->
-                                        {% if product.amount_saved > 0 %}
-                                        <div class="absolute top-3 right-3 bg-rose-500 text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow">
-                                            SAVE KSh {{ product.amount_saved }}
-                                        </div>
-                                        {% endif %}
-
+                                    <!-- Rating -->
+                                    <div class="flex items-center gap-1 text-yellow-400 text-sm">
+                                        {% for i in "12345" %}
+                                            {% if product.average_rating >= forloop.counter %}★{% else %}☆{% endif %}
+                                        {% endfor %}
                                     </div>
 
-                                    <!-- CONTENT -->
-                                    <div class="flex flex-col flex-1 p-4">
+                                    <!-- Description -->
+                                    <p class="text-sm text-slate-600 line-clamp-3 mt-3 mb-4 flex-1">
+                                        {{ product.description|default:"Premium quality product suitable for retail and wholesale distribution."|truncatechars:110 }}
+                                    </p>
 
-                                        <!-- BRAND -->
-                                        <p class="text-[10px] tracking-widest uppercase font-semibold text-emerald-600">
-                                            {{ product.brand.name }}
-                                        </p>
-
-                                        <!-- TITLE -->
-                                        <a href="{% url 'product_detail' product.id %}"
-                                        class="mt-1 text-sm font-semibold text-slate-900 leading-snug hover:text-emerald-700 transition-colors line-clamp-2 min-h-[40px]">
-                                            {{ product.name }}
-                                        </a>
-
-                                        <!-- DESCRIPTION -->
-                                        <p class="mt-2 text-xs text-slate-500 line-clamp-2 min-h-[32px]">
-                                            Premium wholesale quality product available at competitive pricing.
-                                        </p>
-
-                                        <!-- PUSH BOTTOM -->
-                                        <div class="flex-1"></div>
-
-                                        <!-- PRICE + CTA -->
-                                        <div class="mt-4 flex items-end justify-between gap-3">
-
-                                            <!-- PRICE -->
-                                            <div class="flex flex-col">
-                                                <span class="text-[10px] uppercase text-slate-400">Price</span>
-
-                                                <div class="flex items-end gap-1">
-                                                    <span class="text-xs text-slate-500 font-medium">KSh</span>
-                                                    <span class="text-lg sm:text-xl font-bold text-slate-900 leading-none">
-                                                        {{ product.retail_price }}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <!-- BUTTON -->
-                                            <button type="button"
-                                                    value="{{ product.id }}"
-                                                    class="add-to-cart-btn
-                                                        flex items-center justify-center gap-1
-                                                        px-4 h-10 min-w-[100px]
-                                                        bg-emerald-600 hover:bg-emerald-700
-                                                        text-white text-xs font-semibold
-                                                        rounded-xl transition-all duration-200
-                                                        active:scale-95">
-
-                                                <i class="fas fa-cart-plus text-xs"></i>
-                                                Add
-                                            </button>
-
+                                    <!-- Price + Button -->
+                                    <div class="flex items-end justify-between mt-auto pt-2">
+                                        <div>
+                                            <p class="text-[10px] text-slate-400 uppercase tracking-wide">Retail Price</p>
+                                            <div class="text-lg font-extrabold text-slate-900">KSh {{ product.retail_price }}</div>
+                                            {% if product.old_price %}
+                                            <div class="text-xs text-slate-400 line-through">KSh {{ product.old_price }}</div>
+                                            {% endif %}
                                         </div>
-                                    </div>
 
+                                        <button type="button" value="{{ product.id }}"
+                                                class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                                            <i class="fa fa-cart-plus"></i>
+                                            <span>Add</span>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
 
-                            {% endfor %}
                         {% endfor %}
+                    {% endfor %}
 
-                       
-                    </div>
                 </div>
-
             </div>
         </section>
 
@@ -802,212 +763,107 @@
 {% block extra_css %}
 <style>
 
-    .parallax-slow {
-        transform: translateY(0px);
-        animation: floatSlow 12s ease-in-out infinite;
+    /* ====================== HERO & ROTARY ====================== */
+    .hero { 
+        min-height: 920px; 
+        padding-top: 140px; 
+    }
+    .rotary-wrapper { 
+        margin: 0 auto; 
     }
 
-    .parallax-medium {
-        transform: translateY(0px);
-        animation: floatMedium 8s ease-in-out infinite;
+    /* ====================== SECTION SPACING ====================== */
+    .section-wrapper > section {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
     }
 
-    @keyframes floatSlow {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-        100% { transform: translateY(0px); }
+    /* ====================== TRENDING PRODUCTS ====================== */
+    #trending-track .product-card-ap {
+        min-height: 430px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    @keyframes floatMedium {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-10px); }
-        100% { transform: translateY(0px); }
-    }
-
-    .step-card {
-        background: #fff;
-        padding: 40px 30px;
-        border-radius: 12px;
-        text-align: center;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease;
-        height: 100%;
-        position: relative;
-        border: 1px solid #eee;
-    }
-    .step-card:hover {
+    #trending-track .product-card-ap:hover {
         transform: translateY(-10px);
-        border-color: #313761;
-    }
-    .step-icon-wrapper {
-        width: 80px;
-        height: 80px;
-        background: #f8f9fa;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 25px;
-        position: relative;
-        color: #313761;
-        font-size: 2rem;
-    }
-    .step-badge {
-        position: absolute;
-        top: 0;
-        right: 0;
-        background: #313761;
-        color: #fff;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        font-size: 0.8rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-    }
-    .step-card-body h4 {
-        font-size: 1.25rem;
-        margin-bottom: 15px;
-        color: #1a1a1a;
-        font-weight: 700;
-    }
-    .step-card-body p {
-        font-size: 0.95rem;
-        line-height: 1.6;
-        color: #666;
-        margin-bottom: 0;
-    }
-    .badge {
-        color: #ffffff;
-    }
-    .category-promo-wrapper {
-        margin-bottom: 60px;
-    }
-    .main-promo-slider {
-        height: 450px;
-        border-radius: 15px;
-        overflow: hidden;
-        position: relative;
-        box-shadow: 0 10px 30px rgba(49, 55, 97, 0.15);
-    }
-    .promo-item {
-        height: 100%;
-        background-size: cover;
-        background-position: center;
-        display: flex;
-        align-items: center;
-        padding: 60px;
-    }
-    .promo-content h2 {
-        color: #fff;
-        font-size: 3rem;
-        font-weight: 800;
-        margin-bottom: 15px;
-    }
-    .promo-content p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.2rem;
-        margin-bottom: 25px;
-        max-width: 400px;
-    }
-    .shop-btn {
-        background: #35a812;
-        color: #ffffff;
-        padding: 12px 30px;
-        border-radius: 5px;
-        font-weight: 700;
-        text-decoration: none;
-        transition: 0.3s;
-    }
-    .shop-btn:hover {
-        background: #fff;
-        color: #313761;
-    }
-    .category-sidebar-grid {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-        height: 450px;
-    }
-    .cat-card {
-        flex: 1;
-        position: relative;
-        border-radius: 12px;
-        overflow: hidden;
-        cursor: pointer;
-    }
-    .cat-card img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        transition: transform 0.5s ease;
-    }
-    .cat-overlay {
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        padding: 20px;
-        background: linear-gradient(transparent, rgba(49, 55, 97, 0.8));
-        color: #fff;
-        font-weight: 700;
-        font-size: 1.1rem;
-    }
-    .cat-card:hover img {
-        transform: scale(1.1);
-    }
-    @media (max-width: 991px) {
-        .main-promo-slider, .category-sidebar-grid { height: auto; }
-        .main-promo-slider { height: 350px; margin-bottom: 20px; }
-        .category-sidebar-grid { height: 300px; flex-direction: row; }
+        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
     }
 
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
+    #trending-track .image-inner-frame {
+        padding: 28px;
+        background: #f8fafc;
     }
 
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
+    #trending-track .product-main-title {
+        color: #313761 !important;
+        font-size: 16.5px;
+        font-weight: 600;
+        line-height: 1.35;
     }
 
-    @keyframes trending-scroll {
-        from {
-            transform: translateX(0);
-        }
-
-        to {
-            transform: translateX(-50%);
-        }
+    #trending-track .brand-subtext {
+        font-size: 12.5px;
+        color: #64748b;
+        letter-spacing: 0.8px;
     }
 
+    #trending-track p.line-clamp-3 {
+        font-size: 13.5px;
+        line-height: 1.45;
+        color: #64748b;
+    }
+
+    #trending-track .add-to-cart-btn {
+        border-radius: 9999px !important;
+        padding: 14px 28px !important;
+        font-size: 13.5px;
+        font-weight: 600;
+    }
+
+    /* Trending Slideshow Animation */
     .animate-trending {
         animation: trending-scroll 45s linear infinite;
     }
 
-    .animate-trending:hover {
+    @keyframes trending-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+    }
+
+    #trending-track:hover {
         animation-play-state: paused;
     }
 
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-    
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        50% { transform: translateY(-12px); }
-        100% { transform: translateY(0px); }
-    }
+    /* ====================== GENERAL ====================== */
+    .text-5xl { font-size: 2.75rem; line-height: 1.1; }
+    .text-4xl { font-size: 2.25rem; }
 
+    @media (max-width: 768px) {
+        .hero { 
+            min-height: 700px; 
+            padding-top: 100px; 
+        }
+        .rotary-wrapper { 
+            transform: scale(0.75); 
+        }
+    }
 
 </style>
 {% endblock %}
 
 {% block extra_js %}
 <script id="scroll-nav">
+
+    // Pause trending animation on hover
+    const trendingTrack = document.getElementById('trending-track');
+    if (trendingTrack) {
+        trendingTrack.addEventListener('mouseenter', () => {
+            trendingTrack.style.animationPlayState = 'paused';
+        });
+        trendingTrack.addEventListener('mouseleave', () => {
+            trendingTrack.style.animationPlayState = 'running';
+        });
+    }
 
     const reveals = document.querySelectorAll(".reveal");
 

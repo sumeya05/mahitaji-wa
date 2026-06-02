@@ -1134,3 +1134,76 @@ h3.counter
 }
 
 */
+
+
+
+
+/* ==========================================================================
+   SAFE PRODUCT CARD CLEANUP PATCH (added at the bottom)
+   This overrides only the messy repeated blocks without touching navbar
+   ========================================================================== */
+
+/* Consolidated & improved product card pricing/rating section */
+.pricing-alignment-row {
+    display: flex !important;
+    justify-content: space-between;
+    align-items: flex-end;
+    min-height: 40px;
+    width: 100%;
+    gap: 10px;
+}
+
+.price-stack { flex-shrink: 0; text-align: left; }
+.price-val { font-size: 18px; font-weight: 600; }
+
+.stars-row {
+    color: #ffb400;
+    font-size: 14px;
+    white-space: nowrap;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    min-width: 80px;
+}
+
+.rating-info {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    max-width: 50%;
+}
+
+.discount-line {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-top: 2px;
+}
+.discount-line hr {
+    border: 0;
+    border-top: 1px solid #e0e0e0;
+    margin: 4px 0 4px auto;
+    width: 80%;
+}
+.discount-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #ff2d55;
+    text-align: right;
+    display: block;
+    width: 100%;
+}
+
+/* Better button positioning */
+.btn-full-width {
+    margin-top: auto !important;
+    width: 100% !important;
+}
+
+/* Slightly better hover on cards */
+.product-card-ap:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}

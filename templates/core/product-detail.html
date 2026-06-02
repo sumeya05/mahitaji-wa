@@ -1,241 +1,251 @@
 {% extends 'base/base.html' %}
 {% load static %}
 
-{% block title %} Mahitaji | Product One {% endblock %}
+{% block title %} Mahitaji | Product Detail {% endblock %}
 
 
 {% block content %}
 
-    
 <main class="body-wrapper">
 
-    <div class="breadcrumb-area">
-        <div class="container">
-            <div class="breadcrumb-content">
-                <ul>
-                    <li><a href="{% url 'home' %}">Home</a></li>
-                    <li class="active">Product Detail</li>
-                </ul>
-            </div>
+    <!-- Breadcrumb -->
+    <div class="py-6 border-b">
+        <div class="container mx-auto px-6">
+            <ul class="flex items-center gap-2 text-sm text-slate-500">
+                <li><a href="{% url 'home' %}" class="hover:text-emerald-600">Home</a></li>
+                <li class="text-slate-400">/</li>
+                <li class="font-medium text-slate-900">Product Detail</li>
+            </ul>
         </div>
     </div>
-    
-    <section class="content-wraper">
-        <div class="container">
 
-            <div class="row single-product-area">
-                <div class="col-lg-5 col-md-6">
-                    <div class="product-details-left">
-                        <div class="product-details-images slider-navigation-1">
-                            <div class="lg-image">
-                                <img src="{{ product.image_url }}" alt="{{ product.name }}">
-                            </div>
-                        </div>
+    <section class="py-12">
+        <div class="container mx-auto px-6 max-w-7xl">
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-16">
+
+                <!-- Image -->
+                <div class="lg:col-span-6">
+                    <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+                        <img src="{{ product.image_url }}" alt="{{ product.name }}" class="w-full h-auto">
                     </div>
                 </div>
 
-                <div class="col-lg-7 col-md-6">
-                    <div class="product-details-view-content pt-60">
-                        <div class="product-info">
-                            <h2>{{ product.name }}</h2>
-                            <span class="product-details-ref">Brand: {{ product.brand.name }}</span>
-                            <div class="rating-box pt-20">
-                                <ul class="rating">
-                                    {% for i in "12345" %}
-                                        <li>
-                                            {% if product.average_rating >= forloop.counter %}
-                                                <i class="fa fa-star"></i>
-                                            {% else %}
-                                                <i class="fa fa-star-o"></i>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            <div class="price-box pt-20">
-                                <span class="new-price new-price-2">ksh {{ product.retail_price }}</span>
-                                {% if product.old_price %}
-                                    <span class="old-price"> from ksh {{ product.old_price }}</span>
-                                    {% if product.discount_percentage %}
-                                        <span class="discount-percentage">{{ product.discount_percentage }} OFF</span>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                            <div class="product-desc">
-                                <p><span>{{ product.description }}</span></p>
-                            </div>
-                            
-                            <div class="single-add-to-cart">
-                                <form action="#" class="cart-quantity">
-                                    <div class="quantity">
-                                        <label>Quantity</label>
-                                        <div class="cart-plus-minus">
-                                            <input class="cart-plus-minus-box" value="1" type="text">
-                                            <div class="dec qtybutton"><i class="fa fa-angle-down"></i></div>
-                                            <div class="inc qtybutton"><i class="fa fa-angle-up"></i></div>
-                                        </div>
-                                    </div>
-                                    <button type="button" value="{{ product.id }}" class="add-to-cart add-to-cart-btn">
-                                        ADD TO CART
-                                    </button>
-                                </form>
-                            </div>
-                            </div>
+                <!-- Info -->
+                <div class="lg:col-span-6">
+
+                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ product.brand.name }}</p>
+                    
+                    <h1 class="text-4xl font-semibold text-slate-900 leading-tight mt-2 mb-4">{{ product.name }}</h1>
+
+                    {% if product.unit_of_measure %}
+                    <p class="text-sm font-medium text-slate-600 mb-6">
+                        {{ product.unit_of_measure.short_name|default:product.unit_of_measure.name }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Rating -->
+                    <div class="flex items-center gap-1 text-yellow-400 text-3xl mb-6">
+                        {% for i in "12345" %}
+                            {% if product.average_rating >= forloop.counter %}<i class="fa fa-star"></i>{% else %}<i class="fa fa-star-o"></i>{% endif %}
+                        {% endfor %}
+                        <span class="text-slate-500 text-base ml-4">({{ product.average_rating|default:0 }})</span>
                     </div>
+
+                    <!-- Price -->
+                    <div class="mb-8">
+                        <span class="text-5xl font-semibold text-slate-900">KSh {{ product.retail_price }}</span>
+                        {% if product.old_price %}
+                        <span class="text-xl text-slate-400 line-through ml-6">KSh {{ product.old_price }}</span>
+                        {% endif %}
+                        {% if product.discount_percentage and product.discount_percentage != '0%' and product.discount_percentage != '-0%' and product.discount_percentage != '0' %}
+                        <span class="ml-6 bg-pink-500 text-white text-sm font-bold px-4 py-1.5 rounded-2xl">{{ product.discount_percentage }} OFF</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Description -->
+                    <div class="mb-10">
+                        <p class="text-slate-600 leading-relaxed text-[17px]">
+                            {{ product.description|default:"Premium quality product suitable for retail and wholesale distribution."|linebreaks }}
+                        </p>
+                    </div>
+
+                    <!-- Add to Cart -->
+                    <button type="button" value="{{ product.id }}" 
+                            class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-base font-semibold px-8 py-4 rounded-3xl transition-all active:scale-95">
+                        <i class="fa fa-cart-plus"></i>
+                        <span>Add to Cart</span>
+                    </button>
+
                 </div>
             </div>
 
         </div>
     </section>
-    
-    <section class="product-area pt-35">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-12">
-                    <div class="li-product-tab">
-                        <ul class="nav li-product-menu">
-                            <li><a class="active" data-toggle="tab" href="#description"><span>Description</span></a></li>
-                            <li><a data-toggle="tab" href="#product-details"><span>Product Details</span></a></li>
-                            <li><a data-toggle="tab" href="#reviews"><span>Reviews</span></a></li>
-                        </ul>               
-                    </div>
-                    </div>
+
+    <!-- ====================== TABS (CLEAN - NO DUPLICATES) ====================== -->
+    <section class="bg-white border-t border-slate-100 py-12">
+        <div class="container mx-auto px-6 max-w-7xl">
+
+            <!-- Tab Headers -->
+            <div class="border-b border-slate-200 mb-10">
+                <ul class="flex gap-10 text-sm font-medium" id="product-tabs">
+                    <li><a href="#" data-tab="description" class="tab-link active pb-4 text-emerald-600 font-semibold">Description</a></li>
+                    <li><a href="#" data-tab="product-details" class="tab-link pb-4 hover:text-slate-900">Product Details</a></li>
+                    <li><a href="#" data-tab="reviews" class="tab-link pb-4 hover:text-slate-900">Reviews</a></li>
+                </ul>
             </div>
+
+            <!-- Tab Content -->
             <div class="tab-content">
-                <div id="description" class="tab-pane active show" role="tabpanel">
-                    <div class="product-description">
-                        <span>{{ product.description|linebreaks }}</span>
-                    </div>
+
+                <!-- Description Tab -->
+                <div id="description" class="tab-panel">
+                    <p class="text-slate-600 leading-relaxed max-w-3xl">
+                        {{ product.description|default:"Premium quality product suitable for retail and wholesale distribution."|linebreaks }}
+                    </p>
                 </div>
-                <div id="product-details" class="tab-pane" role="tabpanel">
-                    <div class="product-details-manufacturer">
-                        <a href="#">
-                            <img src="{{ product.brand.image_url }}" alt="{{ product.brand.name }} logo" style="max-width: 150px;">
-                        </a>
-                        <p><span>Brand:</span> {{ product.brand.name }}</p>
-                        <p><span>Category:</span> {{ product.category.name }}</p>
+
+                <!-- Product Details Tab -->
+                <div id="product-details" class="tab-panel hidden">
+                    <div class="max-w-md space-y-4 text-sm">
+                        <div>
+                            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-0.5">Brand</span>
+                            <span class="font-medium text-slate-900 break-words">{{ product.brand.name }}</span>
                         </div>
-                </div>
-                <div id="reviews" class="tab-pane" role="tabpanel">
-                    <div class="product-reviews">
-                        <div class="product-details-comment-block">
-                            <div class="comment-review">
-                                <span>Average Rating:</span>
-                                <ul class="rating">
-                                    {% for i in "12345" %}
-                                        <li>
-                                            {% if product.average_rating >= forloop.counter %}
-                                                <i class="fa fa-star"></i>
-                                            {% else %}
-                                                <i class="fa fa-star-o"></i>
-                                            {% endif %}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            </div>
-                            
-                            <div class="comment-author-infos pt-25">
-                                <p>No reviews yet. Be the first to review <strong>{{ product.name }}</strong>!</p>
-                            </div>
-
-                            <div class="review-btn mt-30">
-                                <a class="review-links" href="#" data-toggle="modal" data-target="#mymodal">Write Your Review!</a>
-                            </div>
-
-                            <div class="modal fade modal-wrapper" id="mymodal">
-                                <div class="modal-dialog modal-dialog-centered" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-body">
-                                            <h3 class="review-page-title">Write Your Review</h3>
-                                            <div class="modal-inner-area row">
-                                                <div class="col-lg-12">
-                                                    <div class="li-review-content">
-                                                        <form action="#">
-                                                            <div class="feedback-area">
-                                                                <div class="feedback">
-                                                                    <label>Your Rating</label>
-                                                                    <div class="rating-box">
-                                                                        <ul class="rating">
-                                                                            <li><i class="fa fa-star-o"></i></li>
-                                                                            <li><i class="fa fa-star-o"></i></li>
-                                                                            <li><i class="fa fa-star-o"></i></li>
-                                                                            <li><i class="fa fa-star-o"></i></li>
-                                                                            <li><i class="fa fa-star-o"></i></li>
-                                                                        </ul>
-                                                                    </div>
-                                                                    <div class="feedback-input">
-                                                                        <p>
-                                                                            <label for="feedback">Your Review</label>
-                                                                            <textarea id="feedback" name="comment" cols="45" rows="8" required></textarea>
-                                                                        </p>
-                                                                        <div class="feedback-btn pb-15">
-                                                                            <a href="#" class="close" data-dismiss="modal" aria-label="Close">Close</a>
-                                                                            <button type="submit" class="btn-primary" style="padding: 10px 20px; border: none; background: #fed700; color: #242424; font-weight: 600; cursor: pointer;">Submit</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                        </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            </div>
+                        <div>
+                            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-0.5">Category</span>
+                            <span class="font-medium text-slate-900 break-words">{{ product.category.name }}</span>
+                        </div>
+                        {% if product.unit_of_measure %}
+                        <div>
+                            <span class="block text-slate-500 text-xs uppercase tracking-wider mb-0.5">Unit of Measure</span>
+                            <span class="font-medium text-slate-900">{{ product.unit_of_measure.short_name|default:product.unit_of_measure.name }}</span>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
+
+                <!-- Reviews Tab -->
+                <div id="reviews" class="tab-panel hidden">
+                    <p class="text-slate-500 py-12 text-center">
+                        No reviews yet. Be the first to review <strong>{{ product.name }}</strong>!
+                    </p>
+                </div>
+
             </div>
         </div>
     </section>
 
-    <section class="product-area li-laptop-product pt-30 pb-50">
+    <!-- ====================== YOU MAY ALSO LIKE - FIXED DISCOUNT ====================== -->
+    <section class="product-area pt-12 pb-20 bg-slate-50">
+        <div class="container mx-auto px-6 max-w-7xl">
+            <h2 class="text-3xl font-semibold text-slate-900 mb-8">You May Also Like</h2>
 
-        <div class="container">
-            <div class="row">
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-6">
 
-                <!-- Begin Li's Section Area -->
-                <div class="col-lg-12">
+                {% for related in related_products %}
+                <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
+                    data-category="{{ related.category.id|default:'' }}" data-brand="{{ related.brand.id|default:'' }}">
 
-                    <div class="li-section-title">
-                        <h2>
-                            <span>Other Products</span>
-                        </h2>
+                    <!-- Image -->
+                    <div class="relative aspect-[1/0.9] bg-slate-50 flex items-center justify-center overflow-hidden">
+                        <a href="{% url 'product_detail' related.id %}" class="w-full h-full flex items-center justify-center">
+                            <img src="{{ related.image_url }}" alt="{{ related.name }}"
+                                class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
+                        </a>
+                        {% if related.discount_percentage and related.discount_percentage != '0%' and related.discount_percentage != '-0%' and related.discount_percentage != '0' %}
+                        <div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
+                            - {{ related.discount_percentage }}
+                        </div>
+                        {% endif %}
                     </div>
 
-                    <div class="row">
+                    <!-- Content -->
+                    <div class="p-4 flex-1 flex flex-col">
+                        <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ related.brand.name|default:"MAHITAJI" }}</p>
 
-                        <div class="product-active owl-carousel">
-                            {% for related in related_products %}
-                            <div class="col-lg-12">
-                                <div class="single-product-wrap">
-                                    <div class="product-image">
-                                        <a href="{% url 'product_detail' related.id %}">
-                                            <img src="{{ related.image_url }}" alt="{{ related.name }}">
-                                        </a>
-                                    </div>
-                                    <div class="product_desc">
-                                        <div class="product_desc_info">
-                                            <h4><a class="product_name" href="{% url 'product_detail' related.id %}">{{ related.name }}</a></h4>
-                                            <div class="price-box">
-                                                <span class="new-price">ksh {{ related.retail_price }}</span>
-                                            </div>
-                                        </div>
-                                        </div>
-                                </div>
-                            </div>
+                        <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[42px] mt-1">
+                            <a href="{% url 'product_detail' related.id %}" class="hover:text-emerald-600 transition">{{ related.name }}</a>
+                        </h3>
+
+                        <!-- UOM -->
+                        {% if related.unit_of_measure %}
+                        <p class="text-sm font-medium text-slate-600 mt-1 mb-2">
+                            {{ related.unit_of_measure.short_name|default:related.unit_of_measure.name }}
+                        </p>
+                        {% endif %}
+
+                        <!-- Rating -->
+                        <div class="flex items-center gap-1 text-yellow-400 text-sm">
+                            {% for i in "12345" %}
+                                {% if related.average_rating >= forloop.counter %}★{% else %}☆{% endif %}
                             {% endfor %}
                         </div>
 
-                    </div>
+                        <!-- Description -->
+                        <p class="text-sm text-slate-600 line-clamp-3 mt-3 mb-4 flex-1">
+                            {{ related.description|default:"Premium quality product suitable for retail and wholesale distribution."|truncatechars:110 }}
+                        </p>
 
+                        <!-- Price + Button (with RETAIL PRICE label) -->
+                        <div class="flex items-end justify-between mt-auto pt-2">
+                            <div>
+                                <p class="text-[10px] text-slate-400 uppercase tracking-wide">Retail Price</p>
+                                <div class="text-lg font-extrabold text-slate-900">KSh {{ related.retail_price }}</div>
+                                {% if related.old_price %}
+                                <div class="text-xs text-slate-400 line-through">KSh {{ related.old_price }}</div>
+                                {% endif %}
+                            </div>
+
+                            <button type="button" value="{{ related.id }}"
+                                    class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                                <i class="fa fa-cart-plus"></i>
+                                <span>Add</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <!-- Li's Section Area End Here -->
+                {% endfor %}
             </div>
         </div>
     </section>
-    
+
 </main>
 
 {% endblock %}
+
+ {% block extra_js %}
+
+<script>
+    
+// Clean Tab Switching
+document.querySelectorAll('#product-tabs a').forEach(link => {
+    link.addEventListener('click', function(e) {
+        e.preventDefault();
+
+        // Deactivate all tabs
+        document.querySelectorAll('.tab-link').forEach(l => l.classList.remove('active', 'text-emerald-600', 'font-semibold'));
+
+        // Hide all panels
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+
+        // Activate clicked tab
+        this.classList.add('active', 'text-emerald-600', 'font-semibold');
+
+        // Show the right panel
+        const tabId = this.getAttribute('data-tab');
+        document.getElementById(tabId).classList.remove('hidden');
+    });
+});
+
+// Make sure only the first tab is visible on page load
+document.addEventListener("DOMContentLoaded", () => {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
+    document.getElementById('description').classList.remove('hidden');
+});
+
+</script>
+
+    
+    {% endblock %}

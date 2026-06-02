@@ -18,6 +18,38 @@
         </div>
     </div>
 
+    <!-- HERO BANNER - RETAILERS SHOP -->
+    <div class="bg-gradient-to-r from-slate-900 to-emerald-900 text-white py-12">
+        <div class="container">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-8">
+                <div class="max-w-lg">
+                    <h1 class="text-4xl md:text-5xl font-semibold leading-tight mb-3">
+                        Retailers Shop
+                    </h1>
+                    <p class="text-emerald-100 text-lg">
+                        Premium FMCG products at the best retail prices.<br>
+                        Fast delivery • Bulk discounts • Trusted suppliers
+                    </p>
+                    <div class="flex items-center gap-4 mt-8 text-sm">
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-truck text-emerald-400"></i>
+                            <span>Next-day delivery</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="fa fa-shield text-emerald-400"></i>
+                            <span>100% authentic products</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="hidden md:block w-80 h-80 bg-white/10 backdrop-blur-xl rounded-3xl border border-white/20 p-6">
+                    <img src="{% static 'assets/logos/logo_sa.png' %}" alt="Retailers" 
+                        class="w-full h-full object-contain opacity-90">
+                </div>
+            </div>
+        </div>
+    </div>
+
     <section class="content-wraper pt-60 pb-60">
         <div class="container">
             <div class="row">
@@ -64,28 +96,36 @@
                             <!-- GRID VIEW -->
                             <div id="grid-view" class="tab-pane fade active show" role="tabpanel">
                                 <div class="product-grid grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
-                                    {% for product in products %}
-                                    <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                                         data-category="{{ product.category.id }}" data-brand="{{ product.brand.id }}">
 
+                                    {% for product in products %}
+                                    <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col" data-category="{{ product.category.id }}" data-brand="{{ product.brand.id }}">
+
+                                        <!-- Image -->
                                         <div class="relative aspect-[1/0.9] bg-slate-50 flex items-center justify-center overflow-hidden">
                                             <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
                                                 <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                                                     class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
+                                                    class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
                                             </a>
-                                            {% if product.discount_percentage %}
+                                            {% if product.discount_percentage and product.discount_percentage != '0%' and product.discount_percentage != '-0%' and product.discount_percentage != '0' %}
                                             <div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                                                {{ product.discount_percentage }}
+                                                - {{ product.discount_percentage }}
                                             </div>
                                             {% endif %}
                                         </div>
 
-                                        <div class="p-3 space-y-2.5">
+                                        <!-- Content -->
+                                        <div class="p-4 flex-1 flex flex-col">
                                             <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ product.brand.name }}</p>
 
-                                            <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[40px]">
+                                            <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[42px] mt-1">
                                                 <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">{{ product.name }}</a>
                                             </h3>
+
+                                            {% if product.unit_of_measure %}
+                                            <p class="text-sm font-medium text-slate-600 mt-1 mb-2">
+                                                {{ product.unit_of_measure.short_name|default:product.unit_of_measure.name }}
+                                            </p>
+                                            {% endif %}
 
                                             <div class="flex items-center gap-1 text-yellow-400 text-sm">
                                                 {% for i in "12345" %}
@@ -93,7 +133,12 @@
                                                 {% endfor %}
                                             </div>
 
-                                            <div class="flex items-end justify-between pt-1">
+                                            <p class="text-sm text-slate-600 line-clamp-3 mt-3 mb-4 flex-1">
+                                                {{ product.description|default:"Premium quality product suitable for retail and wholesale distribution."|truncatechars:110 }}
+                                            </p>
+
+                                            <!-- PREMIUM ADD BUTTON -->
+                                            <div class="flex items-end justify-between mt-auto pt-2">
                                                 <div>
                                                     <p class="text-[10px] text-slate-400 uppercase tracking-wide">Retail Price</p>
                                                     <div class="text-lg font-extrabold text-slate-900">KSh {{ product.retail_price }}</div>
@@ -103,13 +148,15 @@
                                                 </div>
 
                                                 <button type="button" value="{{ product.id }}"
-                                                        class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all active:scale-95">
-                                                    Add To Cart
+                                                        class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                                                    <i class="fa fa-cart-plus"></i>
+                                                    <span>Add</span>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                     {% endfor %}
+
                                 </div>
                             </div>
 
@@ -163,63 +210,64 @@
 
                 </div>
 
-                <!-- SIDEBAR -->
+                <!-- SIDEBAR - PREMIUM FILTERS (Categories first) -->
                 <div class="col-lg-3 order-2 order-lg-1">
-                    <div class="sticky top-24 self-start bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
+                    <div class="sticky top-24 bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
 
-                        <div class="px-6 py-5 border-b border-slate-100">
-                            <div class="flex items-center justify-between">
-                                <div>
-                                    <h2 class="text-base font-bold text-slate-900">Filters</h2>
-                                    <p class="text-sm text-slate-500 mt-1">Refine products instantly</p>
-                                </div>
-                            </div>
+                        <!-- Header -->
+                        <div class="px-6 py-6 border-b border-slate-100 flex items-center justify-between">
+                            <h2 class="text-lg font-semibold text-slate-900">Filters</h2>
+                            <button onclick="clearAllFilters()" 
+                                    class="flex items-center gap-1.5 text-emerald-600 hover:text-emerald-700 text-sm font-medium transition-colors">
+                                <i class="fa fa-times"></i>
+                                <span>Clear all</span>
+                            </button>
                         </div>
 
-                        <div class="p-6 space-y-8">
+                        <div class="p-6 space-y-10">
 
-                            <!-- Clear Filters -->
-                            <button onclick="clearAllFilters()" 
-                                    class="flex items-center justify-center w-full rounded-2xl border border-emerald-200 bg-emerald-50 text-emerald-700 font-semibold text-sm py-3 hover:bg-emerald-100 transition-all">
-                                Clear all filters
-                            </button>
-
-                            <!-- Brands -->
+                            <!-- CATEGORIES (First) -->
                             <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <h5 class="text-sm font-semibold text-slate-900">Brands</h5>
-                                    <span class="text-xs text-slate-400">{{ brands|length }}</span>
+                                <div class="flex justify-between items-baseline mb-5">
+                                    <h5 class="uppercase text-xs font-semibold tracking-widest text-slate-500">Categories</h5>
+                                    <span class="text-xs text-slate-400">{{ categories|length }} total</span>
                                 </div>
-                                <div class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                                    {% for brand in brands %}
-                                    <label class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50 cursor-pointer group">
+                                
+                                <div class="max-h-72 overflow-y-auto pr-2 custom-scrollbar space-y-1">
+                                    {% for cat in categories %}
+                                    <label class="group flex items-center justify-between px-4 py-3.5 rounded-2xl hover:bg-slate-50 cursor-pointer transition-all">
                                         <div class="flex items-center gap-3">
-                                            <input type="checkbox" class="brand-filter accent-emerald-600 w-4 h-4 rounded" value="{{ brand.id }}">
-                                            <span class="text-sm text-slate-700">{{ brand.name }}</span>
+                                            <input type="checkbox" 
+                                                class="category-filter w-4 h-4 accent-emerald-600 border-slate-300 rounded"
+                                                value="{{ cat.id }}">
+                                            <span class="text-sm text-slate-700 group-hover:text-slate-900">{{ cat.name }}</span>
                                         </div>
-                                        <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                                            {{ brand.products.count }}
+                                        <span class="text-xs font-medium bg-slate-100 px-3 py-1 rounded-3xl text-slate-500">
+                                            {{ cat.products.count }}
                                         </span>
                                     </label>
                                     {% endfor %}
                                 </div>
                             </div>
 
-                            <!-- Categories -->
+                            <!-- BRANDS (Second) -->
                             <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <h5 class="text-sm font-semibold text-slate-900">Categories</h5>
-                                    <span class="text-xs text-slate-400">{{ categories|length }}</span>
+                                <div class="flex justify-between items-baseline mb-5">
+                                    <h5 class="uppercase text-xs font-semibold tracking-widest text-slate-500">Brands</h5>
+                                    <span class="text-xs text-slate-400">{{ brands|length }} total</span>
                                 </div>
-                                <div class="space-y-2 max-h-72 overflow-y-auto pr-1">
-                                    {% for cat in categories %}
-                                    <label class="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5 hover:bg-slate-50 cursor-pointer group">
+                                
+                                <div class="max-h-72 overflow-y-auto pr-2 custom-scrollbar space-y-1">
+                                    {% for brand in brands %}
+                                    <label class="group flex items-center justify-between px-4 py-3.5 rounded-2xl hover:bg-slate-50 cursor-pointer transition-all">
                                         <div class="flex items-center gap-3">
-                                            <input type="checkbox" class="category-filter accent-emerald-600 w-4 h-4 rounded" value="{{ cat.id }}">
-                                            <span class="text-sm text-slate-700">{{ cat.name }}</span>
+                                            <input type="checkbox" 
+                                                class="brand-filter w-4 h-4 accent-emerald-600 border-slate-300 rounded"
+                                                value="{{ brand.id }}">
+                                            <span class="text-sm text-slate-700 group-hover:text-slate-900">{{ brand.name }}</span>
                                         </div>
-                                        <span class="text-xs font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-full">
-                                            {{ cat.products.count }}
+                                        <span class="text-xs font-medium bg-slate-100 px-3 py-1 rounded-3xl text-slate-500">
+                                            {{ brand.products.count }}
                                         </span>
                                     </label>
                                     {% endfor %}
@@ -239,57 +287,50 @@
 
 {% block extra_css %}
 <style>
-/* ========== KILL SIDEBAR ANIMATION COMPLETELY ========== */
 
-/* Target the exact class used in your HTML */
-.sidebar-categores-box,
-.sidebar-categores-box *,
-.sidebar-categores-box *::before,
-.sidebar-categores-box *::after {
-    animation: none !important;
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
-    animation-iteration-count: 1 !important;
-    transition: none !important;
-    transition-duration: 0s !important;
-    transition-delay: 0s !important;
-    transform: none !important;
-    opacity: 1 !important;
-}
+    /* ====================== ULTRA THIN SCROLLBAR - MAXIMUM FORCE ====================== */
+    .max-h-72::-webkit-scrollbar,
+    .custom-scrollbar::-webkit-scrollbar,
+    .overflow-y-auto::-webkit-scrollbar {
+        width: 4px !important;
+        height: 4px !important;
+    }
 
-/* Kill common animation library classes */
-.animated,
-.fadeIn,
-.fadeInUp,
-.fadeInDown,
-.slideInLeft,
-.slideInRight,
-.slideInUp,
-.slideInDown,
-.wow,
-[data-wow-duration],
-[data-wow-delay] {
-    animation: none !important;
-    animation-duration: 0s !important;
-    transition: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-}
+    .max-h-72::-webkit-scrollbar-thumb,
+    .custom-scrollbar::-webkit-scrollbar-thumb,
+    .overflow-y-auto::-webkit-scrollbar-thumb {
+        background: #10b981 !important;
+        border-radius: 9999px !important;
+    }
 
-/* Extra aggressive kill for any sticky or filter sidebar */
-.sticky.top-24,
-.sticky.top-24 * {
-    animation: none !important;
-    transition: none !important;
-    transform: none !important;
-}
+    .max-h-72::-webkit-scrollbar-track,
+    .custom-scrollbar::-webkit-scrollbar-track,
+    .overflow-y-auto::-webkit-scrollbar-track {
+        background: #f1f5f9 !important;
+    }
 
-/* Disable smooth scroll globally (sometimes causes issues) */
-html {
-    scroll-behavior: auto !important;
-}
+    /* Filter item hover */
+    label:hover {
+        background: #f8fafc;
+        transform: translateX(2px);
+    }
+
+    /* Disable any leftover animations */
+    .sticky.top-24,
+    .sticky.top-24 * {
+        animation: none !important;
+        transition: none !important;
+    }
+
+    /* Make cards same height + better description spacing */
+    .product-grid .group {
+        min-height: 480px; /* adjust if needed */
+    }
+
 </style>
 {% endblock %}
+
+
 
 {% block extra_js %}
 <script>
@@ -364,7 +405,7 @@ function renderProductGrid(products) {
     let html = '';
     products.forEach(p => {
         const discountHTML = p.discount_percentage ? 
-            `<div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">${p.discount_percentage}</div>` : '';
+            `<div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow"> - ${p.discount_percentage}</div>` : '';
 
         html += `
             <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300" 
@@ -391,7 +432,10 @@ function renderProductGrid(products) {
                             <div class="text-lg font-extrabold text-slate-900">KSh ${p.retail_price}</div>
                             ${p.old_price ? `<div class="text-xs text-slate-400 line-through">KSh ${p.old_price}</div>` : ''}
                         </div>
-                        <button type="button" value="${p.id}" class="add-to-cart-btn bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-all active:scale-95">Add To Cart</button>
+                        <button type="button" value="${p.id}" class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
+                            <i class="fa fa-cart-plus"></i>
+                            <span>Add</span>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -411,5 +455,6 @@ document.addEventListener("DOMContentLoaded", () => {
         cb.addEventListener('change', loadProducts);
     });
 });
+
 </script>
 {% endblock %}
