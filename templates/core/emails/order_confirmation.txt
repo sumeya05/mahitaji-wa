@@ -1,0 +1,22 @@
+Hi {{ order.full_name }},
+
+Thank you for your order with {{ site.legal_name }}.
+
+Order number: {{ order.order_number }}
+Placed on: {{ order.created_at|date:"d M Y, H:i" }}
+Payment: {{ order.get_payment_method_display }}
+Delivery to: {{ order.address }}, {{ order.city }}
+
+Items
+-----
+{% for item in order.items.all %}- {{ item.quantity }} x {{ item.product.name }} @ KSh {{ item.price_at_purchase }} = KSh {{ item.subtotal }}
+{% endfor %}
+Total: KSh {{ order.total_amount }}
+
+{% if order.payment_method == 'mpesa' %}If you have not completed the M-Pesa payment yet, open your orders page and tap "Pay now" to receive a new prompt.
+{% else %}Please have KSh {{ order.total_amount }} ready for our delivery team.
+{% endif %}
+Questions? Call {{ site.phone }} or email {{ site.email }}.
+
+{{ site.legal_name }}
+{{ site.address }}

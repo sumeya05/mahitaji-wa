@@ -1,0 +1,13 @@
+{% if products %}
+<div class="product-grid{% if grid_cols %} cols-{{ grid_cols }}{% endif %}" id="{{ grid_id|default:'productGrid' }}">
+  {% for product in products %}{% include 'partials/product_card.html' %}{% endfor %}
+</div>
+{% if page_obj %}{% include 'partials/pagination.html' %}{% endif %}
+{% else %}
+<div class="empty card">
+  <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
+  <h3>No products found</h3>
+  <p>{% if has_filters %}Try removing a filter or searching for something broader.{% else %}Nothing to show here yet. Check back soon.{% endif %}</p>
+  {% if has_filters %}<button class="btn btn-outline mt-3" id="clearFilters"><i class="fa-solid fa-rotate-left"></i> Clear filters</button>{% else %}<a class="btn btn-primary mt-3" href="{% url 'products' %}">Browse the catalogue</a>{% endif %}
+</div>
+{% endif %}

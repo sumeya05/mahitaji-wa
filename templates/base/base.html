@@ -1,641 +1,270 @@
-{% load static %}
-
-<!doctype html>
-<html class="no-js" lang="zxx">
-
+{% load static shop %}<!doctype html>
+<html lang="en">
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="x-ua-compatible" content="ie=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Mahitaji is the most trusted retail/wholesale supplier of fast moving consumer goods in Kenya. We are committed to providing our customers with the best products and services at competitive prices.">
-    
-    <title>{% block title %}  {% endblock %}</title>           
-    <link rel="shortcut icon" href="{% static 'assets/logos/favicon.ico' %}" type="image/x-icon">
-
-    <!-- Add this to your base.html <head> -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'css/material-design-iconic-font.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/font-awesome.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/fontawesome-stars.css' %}">
-    <link rel="stylesheet" href="{% static 'css/meanmenu.css' %}">
-    <link rel="stylesheet" href="{% static 'css/owl.carousel.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/slick.css' %}">
-    <link rel="stylesheet" href="{% static 'css/animate.css' %}">
-    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/venobox.css' %}">
-    <link rel="stylesheet" href="{% static 'css/nice-select.css' %}">
-    <link rel="stylesheet" href="{% static 'css/magnific-popup.css' %}">
-    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-    <link rel="stylesheet" href="{% static 'css/helper.css' %}">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'css/responsive.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style_custom.css' %}">
-
-    <link rel="stylesheet" href="{% static 'css/style_custom_ii.css' %}">
-    <link rel="stylesheet" href="{% static 'css/style_custom_iii.css' %}">
-    <link rel="stylesheet" href="{% static 'css/responsive_custom.css' %}">
-
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-
-    {% block extra_css %}
-    
-
-
-
-    {% endblock %}
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}{{ site.name }} · Wholesale &amp; Retail FMCG Distributor in Kenya{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Mahitaji Enterprises is a trusted wholesale and retail distributor of fast-moving consumer goods in Kenya. Shop cooking oil, rice, flour, soaps, beverages and more with next-day delivery in Nairobi and M-Pesa payments.{% endblock %}">
+  <meta name="theme-color" content="#0a1931">
+  <link rel="icon" href="{% static 'assets/logos/favicon.ico' %}">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="{% static 'css/mahitaji.css' %}?v=3">
+  {% block extra_css %}{% endblock %}
 </head>
+<body class="{% block body_class %}{% endblock %}{% if cart.is_empty %} cart-empty{% endif %}">
+<a class="sr-only" href="#main">Skip to content</a>
 
-<body class="{% block body_class %}{% endblock %}">
-    
-
-    <header class="main-header">
-
-        <div class="header-middle pl-sm-0 pr-sm-0 pl-xs-0 pr-xs-0">
-            <div class="container-fluid">
-
-                <div class="row align-items-center">
-                    <!-- Logo: Left Aligned -->
-                    <div class="col-lg-3 col-md-3">
-                        <a href="{% url 'home' %}" title="Home" class="logo-area">
-                            <img class="logo-img" src="{% static 'assets/logos/logo_sa.png' %}" alt="Logo"><span class="logo-name" style="font-family: 'Times New Roman', Times, serif;">MAHITAJI</span>
-                        </a>
-                    </div>
-
-                    <!-- Search: Centered and Wider -->
-                    <div class="col-lg-6 col-md-6">
-                        <form action="{% url 'search' %}" method="GET" class="hm-searchbox custom-search-wide">
-                            <select name="category" class="nice-select select-search-category">
-                                <option value="0">All Categories</option>
-                                {% for cat in categories %}
-                                    <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"i" %}selected{% endif %}>
-                                        {{ cat.name }}
-                                    </option>
-                                {% endfor %}
-                            </select>
-                            
-                            <input type="text" name="q" placeholder="Enter your search key ..." value="{{ query|default:'' }}">
-                            
-                            <button class="li-btn" type="submit">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </form>
-                    </div>
-
-                    <div class="col-lg-3 col-md-3 text-right">
-                        <div class="header-middle-right" style="justify-content: flex-end;">
-                            <ul class="hm-menu">
-
-                                <li class="hm-minicart" title="My Shopping cart">
-
-                                    <div class="hm-minicart-trigger">
-                                        <span class="item-icon"></span>
-                                        <span class="item-text">
-                                            ksh {{ cart.get_total_price }}
-                                        </span>
-                                    </div>
-
-                                    <span></span>
-
-<!-- Replace this entire block -->
-<div class="minicart" id="mini-cart-wrapper">
-    {% include 'core/mini-cart.html' %}
+<div class="topbar desktop-only">
+  <div class="container">
+    <ul>
+      <li><a href="{{ site.phone_href }}"><i class="fa-solid fa-phone"></i>{{ site.phone }}</a></li>
+      <li><a href="mailto:{{ site.email }}"><i class="fa-solid fa-envelope"></i>{{ site.email }}</a></li>
+      <li><i class="fa-solid fa-truck-fast"></i>Next-day delivery in Nairobi · Free above {{ site.free_delivery_threshold|ksh }}</li>
+    </ul>
+    <ul>
+      <li><a href="{% url 'pickups' %}">Delivery &amp; pick-up</a></li>
+      <li><a href="{% url 'faqs' %}">Help</a></li>
+      {% if user.is_authenticated %}<li><a href="{% url 'transactions' %}">Track order</a></li>{% else %}<li><a href="{% url 'register' %}">Open a business account</a></li>{% endif %}
+    </ul>
+  </div>
 </div>
 
-                                </li>
+<header class="header">
+  <div class="container header-main">
+    <button class="nav-toggle" data-open="#mobileNav" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <a href="{% url 'home' %}" class="brand" aria-label="Mahitaji home">
+      <img src="{% static 'assets/logos/logo_sa.png' %}" alt="">
+      <span style="display:block"><span>MAHITAJI</span><small>Enterprises Ltd</small></span>
+    </a>
 
-                                <!-- My Account Area -->
-                                <li class="hm-wishlist" title="My Account">
-                                    <a href="{% url 'login' %}">
-                                        <i class="fa fa-user-o"></i>
-                                    </a>
-                                </li> <!-- End of Wishlist Area -->
-
-                            </ul>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </div>
-
+    <div class="search" id="headerSearch">
+      <form action="{% url 'search' %}" method="get" class="search-form" role="search" autocomplete="off">
+        <div class="select-wrap">
+          <select name="category" aria-label="Search within category">
+            <option value="">All categories</option>
+            {% for cat in all_categories %}<option value="{{ cat.slug }}" {% if cat.slug in selected_categories %}selected{% endif %}>{{ cat.name }}</option>{% endfor %}
+          </select>
         </div>
-
-        <div class="header-bottom header-sticky d-none d-lg-block d-xl-block">
-            <div class="container">
-
-                <div class="row">
-
-                    <div class="col-lg-12">
-                        <div class="hb-menu">
-                            <nav>
-
-                                <ul class="nav-links-custom">  
-  
-
-                                    <li class="dropdown-holder">
-                                        <a href="#">Shop</a>
-                                        <ul class="hb-dropdown">
-                                            <li><a href="{% url 'retailers' %}">Retailers Shop</a></li>
-                                            <li><a href="{% url 'wholesalers' %}">Wholesalers Shop</a></li>                                                        
-                                        </ul>
-                                    </li>
-
-                                    <li class="dropdown-holder">
-                                        <a href="#">Products Catalog</a>
-                                        <ul class="hb-dropdown">                                                    
-                                            <li><a href="{% url 'brands' %}?filter=brand">By Brand</a></li>
-                                            <li><a href="{% url 'categories' %}?filter=category">By Category</a></li>                                                        
-                                        </ul>
-                                    </li>
-
-                                    <li class="dropdown-holder">
-                                        <a href="#">Mahitaji</a>
-                                        <ul class="hb-dropdown">
-                                            <li><a href="{% url 'about' %}">About Us</a></li>
-                                            <li><a href="{% url 'statement' %}">Our Statement</a></li>
-                                        </ul>
-                                    </li>
-
-                                    <li class="dropdown-holder">
-                                        <a href="#">Contact Us</a>
-                                        <ul class="hb-dropdown">
-                                            <li><a href="{% url 'contact' %}">Contact Us</a></li>
-                                            <li><a href="{% url 'location' %}">Our Location</a></li>
-                                        </ul>
-                                    </li>
-
-                                </ul>
-
-                            </nav>
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </header>
-
-    {% block content %}
-
-
-
-
-
-
-
-
-
-    {% endblock %}
-
-    
-
-    <section class="chat-widget" id="chatWidget">
-        <button class="chat-toggle" id="chatToggle" aria-label="Open Assistant">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
-        </button>
-
-        <div class="chat-window d-none" id="chatWindow">
-            <div class="chat-header">
-                <div class="d-flex align-items-center">
-                    <div class="assistant-avatar">M</div>
-                    <div>
-                        <h6 class="mb-0">Mahitaji Assistant</h6>
-                        <small>Online | AI Powered</small>
-                    </div>
-                </div>
-                <button class="close-chat" id="closeChat">&times;</button>
-            </div>
-            <div class="chat-body" id="chatBody">
-                <div class="message assistant">
-                    Hello! How can I help with you today?
-                </div>
-            </div>
-            <div class="chat-footer">
-                <input type="text" placeholder="Type a message..." id="chatInput">
-                <button id="sendMsg">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
-            </div>
-        </div>
-    </section>
-
-    
-    <br>
-
-    <footer class="footer-solid text-white pt-24 relative overflow-hidden">
-
-    <!-- BACKGROUND LAYERS (SOLID ONLY) -->
-    <div class="absolute inset-0 bg-[#0b1a14]"></div>
-
-    <!-- SUBTLE DEPTH BLOBS (still solid colors, no gradients) -->
-    <div class="absolute -top-40 left-1/4 w-[450px] h-[450px] bg-[#123525] opacity-40 blur-3xl rounded-full"></div>
-    <div class="absolute bottom-0 right-1/4 w-[380px] h-[380px] bg-[#0f2f22] opacity-40 blur-3xl rounded-full"></div>
-
-    <div class="relative z-10">
-
-        <!-- TRUST STRIP -->
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 pb-16 border-b border-white/10">
-
-                <div class="space-y-3">
-                    <i class="fa-solid fa-truck-fast text-emerald-400 text-2xl"></i>
-                    <h3 class="font-bold">Fast Delivery</h3>
-                    <p class="text-sm text-slate-400">Reliable logistics for delivery and fulfillment.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <i class="fa-solid fa-shield-halved text-sky-400 text-2xl"></i>
-                    <h3 class="font-bold">Secure Payments</h3>
-                    <p class="text-sm text-slate-400">Safe and encrypted checkout experience.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <i class="fa-solid fa-handshake-angle text-amber-400 text-2xl"></i>
-                    <h3 class="font-bold">Trusted Supply</h3>
-                    <p class="text-sm text-slate-400">Verified FMCG distribution network.</p>
-                </div>
-
-                <div class="space-y-3">
-                    <i class="fa-solid fa-headset text-purple-400 text-2xl"></i>
-                    <h3 class="font-bold">24/7 Support</h3>
-                    <p class="text-sm text-slate-400">Always available for business support.</p>
-                </div>
-
-            </div>
-        </div>
-
-        <!-- MAIN FOOTER -->
-        <div class="max-w-7xl mx-auto px-6 py-16 grid grid-cols-1 md:grid-cols-4 gap-10">
-
-            <!-- BRAND -->
-            <div>
-                <div class="flex items-center gap-3 mb-4">
-                    <img src="{% static 'assets/logos/logo_sa.png' %}" class="h-10" />
-
-                    <span class="font-bold text-lg text-white">
-                        <span class="text-emerald-400">MAHITAJI</span>
-                    </span>
-                </div>
-
-                <p class="text-sm text-slate-400">
-                    Trusted FMCG wholesale & retail distributor in Kenya.
-                </p>
-
-                <p class="text-xs text-slate-500 mt-4">
-                    Prabhaki Industrial Park - Baba Dogo Road, Ruaraka, Nairobi
-                </p>
-            </div>
-
-            <!-- LINKS -->
-            <div>
-                <h4 class="font-semibold mb-4 text-white">Company</h4>
-                <ul class="space-y-2 text-sm text-slate-400">
-                    <li><a href="#" class="hover:text-emerald-400 transition">About</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Delivery</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Contact</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Legal</a></li>
-                </ul>
-            </div>
-
-            <!-- PRODUCTS -->
-            <div>
-                <h4 class="font-semibold mb-4 text-white">Products</h4>
-                <ul class="space-y-2 text-sm text-slate-400">
-                    <li><a href="#" class="hover:text-emerald-400 transition">New Arrivals</a></li>
-                    <li><a href="#" class="hover:text-emerald-400 transition">Best Sellers</a></li>
-                    <li>
-                        <a href="{% static 'data/products.csv' %}" class="hover:text-emerald-400 transition">
-                            Download Catalog
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            <!-- NEWSLETTER -->
-            <div>
-                <h4 class="font-semibold mb-4 text-white">Stay Updated</h4>
-
-                <input type="email"
-                       placeholder="Enter email"
-                       class="w-full px-4 py-3 rounded-xl bg-[#10281d] border border-white/10 text-white mb-3 focus:border-emerald-400 outline-none transition">
-
-                <button class="w-full py-3 rounded-xl bg-[#1c3f2a] hover:bg-[#24543a] font-semibold transition shadow-lg">
-                    Subscribe
-                </button>
-
-                <!-- SOCIAL -->
-                <div class="flex gap-4 mt-5 text-lg text-slate-400">
-                    <a href="#" class="hover:text-emerald-400 transition"><i class="fa fa-whatsapp"></i></a>
-                    <a href="#" class="hover:text-sky-400 transition"><i class="fa fa-facebook"></i></a>
-                    <a href="#" class="hover:text-pink-400 transition"><i class="fa fa-instagram"></i></a>
-                    <a href="#" class="hover:text-red-400 transition"><i class="fa fa-youtube"></i></a>
-                </div>
-            </div>
-
-        </div>
-
-        <!-- BOTTOM BAR -->
-        <div class="border-t border-white/10 py-6">
-            <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center text-sm text-slate-500">
-
-                <p>© 2026 Mahitaji Enterprises Ltd.</p>
-
-                <p class="mt-2 md:mt-0">
-                    Powered by <span class="text-emerald-400 font-semibold">Fin$pr€€</span>
-                </p>
-
-            </div>
-        </div>
-
+        <input type="search" name="q" id="searchInput" placeholder="Search products, brands or categories…" value="{{ q|default:'' }}" aria-label="Search" autocomplete="off">
+        <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+      <div class="search-suggest" id="searchSuggest" role="listbox"></div>
     </div>
 
+    <div class="header-actions">
+      <button class="nav-toggle search-toggle" id="searchToggle" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      {% if user.is_authenticated %}
+      <a href="{% url 'dashboard' %}" class="h-action" title="My account"><i class="fa-regular fa-user"></i><span class="h-label">{{ user.first_name|default:'Account'|truncatechars:10 }}</span></a>
+      <a href="{% url 'wishlist' %}" class="h-action" title="Wishlist"><i class="fa-regular fa-heart"></i><span class="h-label">Saved</span><span class="count{% if not wishlist_ids %} is-zero{% endif %}" data-wishlist-count>{{ wishlist_ids|length }}</span></a>
+      {% else %}
+      <a href="{% url 'login' %}" class="h-action" title="Sign in"><i class="fa-regular fa-user"></i><span class="h-label">Sign in</span></a>
+      {% endif %}
+      <button class="h-action h-cart" data-open="#cartDrawer" aria-label="Open cart">
+        <span class="h-cart-icon">
+          <i class="fa-solid fa-cart-shopping"></i>
+          <span class="count{% if cart.is_empty %} is-zero{% endif %}" data-cart-count>{{ cart|length }}</span>
+        </span>
+        <span class="h-cart-text"><small>My cart</small><strong data-cart-total>{{ cart.get_total_price|ksh }}</strong></span>
+      </button>
+    </div>
+  </div>
+
+  <nav class="navbar" aria-label="Main">
+    <div class="container">
+      <div class="nav-cats">
+        <button class="nav-cats-btn" id="megaBtn" aria-expanded="false" aria-controls="mega"><i class="fa-solid fa-bars-staggered"></i> All categories <i class="fa-solid fa-chevron-down" style="font-size:.7rem"></i></button>
+        <div class="mega" id="mega">
+          {% for cat in all_categories %}
+          <a href="{{ cat.get_absolute_url }}">{{ cat.name }} <small>{{ cat.product_count }}</small></a>
+          {% endfor %}
+          <div class="mega-foot">
+            <a href="{% url 'categories' %}">Browse all categories <i class="fa-solid fa-arrow-right"></i></a>
+            <a href="{% url 'brands' %}">Shop by brand</a>
+          </div>
+        </div>
+      </div>
+      <div class="nav-links">
+        <a href="{% url 'products' %}" class="nav-link{% if request.resolver_match.url_name == 'products' %} is-active{% endif %}">Catalogue</a>
+        <a href="{% url 'retailers' %}" class="nav-link{% if request.resolver_match.url_name == 'retailers' %} is-active{% endif %}">Retailers</a>
+        <a href="{% url 'wholesalers' %}" class="nav-link{% if request.resolver_match.url_name == 'wholesalers' %} is-active{% endif %}">Wholesalers</a>
+        <a href="{% url 'offers' %}" class="nav-link accent{% if request.resolver_match.url_name == 'offers' %} is-active{% endif %}"><i class="fa-solid fa-bolt"></i> Offers</a>
+        <a href="{% url 'brands' %}" class="nav-link{% if request.resolver_match.url_name == 'brands' %} is-active{% endif %}">Brands</a>
+        <a href="{% url 'about' %}" class="nav-link{% if request.resolver_match.url_name in 'about,statement,location' %} is-active{% endif %}">About</a>
+        <a href="{% url 'contact' %}" class="nav-link{% if request.resolver_match.url_name == 'contact' %} is-active{% endif %}">Contact</a>
+      </div>
+      <div class="nav-cta">
+        <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-soft btn-sm"><i class="fa-brands fa-whatsapp"></i> Talk to sales</a>
+      </div>
+    </div>
+  </nav>
+</header>
+
+{% if messages %}
+<div class="messages">
+  <div class="container">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags|default:'info' }}" role="alert"><i class="fa-solid {% if message.tags == 'success' %}fa-circle-check{% elif message.tags == 'danger' %}fa-circle-exclamation{% elif message.tags == 'warning' %}fa-triangle-exclamation{% else %}fa-circle-info{% endif %}"></i><span>{{ message }}</span></div>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="{% url 'home' %}" class="brand"><img src="{% static 'assets/logos/logo_sa.png' %}" alt=""><span style="display:block"><span>MAHITAJI</span><small>Enterprises Ltd</small></span></a>
+        <p class="mt-4">Kenya's trusted wholesale and retail distributor of fast-moving consumer goods since 1997. From our Baba Dogo hub to over 3,000 retail partners.</p>
+        <ul class="footer-contact">
+          <li><i class="fa-solid fa-location-dot"></i><span>{{ site.address }}</span></li>
+          <li><i class="fa-solid fa-phone"></i><a href="{{ site.phone_href }}">{{ site.phone }}</a></li>
+          <li><i class="fa-solid fa-envelope"></i><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>
+          <li><i class="fa-regular fa-clock"></i><span>{{ site.hours }}</span></li>
+        </ul>
+        <div class="footer-social">
+          <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4>Shop</h4>
+        <ul>
+          <li><a href="{% url 'products' %}">Full catalogue</a></li>
+          <li><a href="{% url 'retailers' %}">Retailers shop</a></li>
+          <li><a href="{% url 'wholesalers' %}">Wholesalers shop</a></li>
+          <li><a href="{% url 'offers' %}">Offers &amp; deals</a></li>
+          <li><a href="{% url 'categories' %}">Categories</a></li>
+          <li><a href="{% url 'brands' %}">Brands</a></li>
+          <li><a href="{% static 'data/products.csv' %}" download>Download price list (CSV)</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Help desk</h4>
+        <ul>
+          <li><a href="{% url 'pickups' %}">Pick-ups &amp; deliveries</a></li>
+          <li><a href="{% url 'payment_info' %}">Payment options</a></li>
+          <li><a href="{% url 'returns' %}">Return policy</a></li>
+          <li><a href="{% url 'faqs' %}">FAQs</a></li>
+          <li><a href="{% url 'terms' %}">Terms &amp; conditions</a></li>
+          <li><a href="{% url 'contact' %}">Contact us</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Company</h4>
+        <ul>
+          <li><a href="{% url 'about' %}">About Mahitaji</a></li>
+          <li><a href="{% url 'statement' %}">Our statement</a></li>
+          <li><a href="{% url 'location' %}">Our location</a></li>
+          {% if user.is_authenticated %}
+          <li><a href="{% url 'dashboard' %}">My account</a></li>
+          <li><a href="{% url 'transactions' %}">My orders</a></li>
+          {% else %}
+          <li><a href="{% url 'login' %}">Sign in</a></li>
+          <li><a href="{% url 'register' %}">Create an account</a></li>
+          {% endif %}
+        </ul>
+        <h4 class="mt-5">Stay updated</h4>
+        <form action="{% url 'newsletter_subscribe' %}" method="post" data-newsletter class="flex gap-2">
+          {% csrf_token %}
+          <input type="email" name="email" class="input" placeholder="Your email" required aria-label="Email address" style="min-height:42px">
+          <button class="btn btn-amber btn-sm" type="submit" aria-label="Subscribe"><i class="fa-solid fa-paper-plane"></i></button>
+        </form>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© {% now "Y" %} {{ site.legal_name }}. All rights reserved.</span>
+      <div class="pay"><span>M-PESA</span><span>CASH ON DELIVERY</span><span>BANK TRANSFER</span></div>
+      <span>Built by Fin$pree</span>
+    </div>
+  </div>
 </footer>
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <!-- -- Modernizr js - Should Stay in Header -- -->
-    <script src="{% static 'js/vendor/modernizr-2.8.3.min.js' %}"></script>
-    <script src="{% static 'js/vendor/jquery-1.12.4.min.js' %}"></script>
-    <script src="{% static 'js/vendor/popper.min.js' %}"></script>
-    <script src="{% static 'js/bootstrap.min.js' %}"></script>
-    <script src="{% static 'js/ajax-mail.js' %}"></script>
-    <script src="{% static 'js/jquery.meanmenu.min.js' %}"></script>
-    <script src="{% static 'js/wow.min.js' %}"></script>
-    <script src="{% static 'js/slick.min.js' %}"></script>
-    <script src="{% static 'js/owl.carousel.min.js' %}"></script>
-    <script src="{% static 'js/jquery.magnific-popup.min.js' %}"></script>
-    <script src="{% static 'js/isotope.pkgd.min.js' %}"></script>
-    <script src="{% static 'js/imagesloaded.pkgd.min.js' %}"></script>
-    <script src="{% static 'js/jquery.mixitup.min.js' %}"></script>
-    <script src="{% static 'js/jquery.countdown.min.js' %}"></script>
-    <script src="{% static 'js/jquery.counterup.min.js' %}"></script>
-    <script src="{% static 'js/waypoints.min.js' %}"></script>
-    <script src="{% static 'js/jquery.barrating.min.js' %}"></script>
-    <script src="{% static 'js/jquery-ui.min.js' %}"></script>
-    <script src="{% static 'js/venobox.min.js' %}"></script>
-    <script src="{% static 'js/jquery.nice-select.min.js' %}"></script>
-    <script src="{% static 'js/scrollUp.min.js' %}"></script>
-    <!-- Custom JS -->
-    <script src="{% static 'js/main.js' %}"></script>
-    <script src="{% static 'js/main_custom.js' %}"></script>
+<div class="overlay" id="overlay"></div>
+
+<aside class="drawer drawer-left" id="mobileNav" aria-label="Menu">
+  <div class="drawer-head"><h3>Menu</h3><button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body mnav">
+    {% if user.is_authenticated %}
+    <a href="{% url 'dashboard' %}"><span><i class="fa-regular fa-user" style="margin-right:8px;color:var(--brand-600)"></i>Hi, {{ user.first_name|default:user.username }}</span><i class="fa-solid fa-chevron-right"></i></a>
+    {% else %}
+    <a href="{% url 'login' %}"><span>Sign in / Register</span><i class="fa-solid fa-chevron-right"></i></a>
+    {% endif %}
+    <div class="mnav-title">Shop</div>
+    <a href="{% url 'products' %}">Full catalogue <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'retailers' %}">Retailers shop <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'wholesalers' %}">Wholesalers shop <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'offers' %}"><span style="color:#a4433b"><i class="fa-solid fa-bolt"></i> Offers</span> <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'brands' %}">Brands <i class="fa-solid fa-chevron-right"></i></a>
+    <div class="mnav-title">Categories</div>
+    {% for cat in all_categories %}<a class="sub" href="{{ cat.get_absolute_url }}">{{ cat.name }} <small class="muted">{{ cat.product_count }}</small></a>{% endfor %}
+    <div class="mnav-title">Company &amp; help</div>
+    <a href="{% url 'about' %}">About us <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'contact' %}">Contact <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'pickups' %}">Delivery &amp; pick-up <i class="fa-solid fa-chevron-right"></i></a>
+    <a href="{% url 'faqs' %}">FAQs <i class="fa-solid fa-chevron-right"></i></a>
+    {% if user.is_authenticated %}
+    <form action="{% url 'logout' %}" method="post" class="mt-4">{% csrf_token %}<button class="btn btn-outline btn-block" type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button></form>
+    {% endif %}
+  </div>
+  <div class="drawer-foot"><a href="{{ site.whatsapp }}" class="btn btn-soft btn-block" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat with sales on WhatsApp</a></div>
+</aside>
+
+<aside class="drawer drawer-right" id="cartDrawer" aria-label="Shopping cart">
+  <div class="drawer-head"><h3><i class="fa-solid fa-cart-shopping" style="color:var(--brand-600)"></i> Your cart</h3><button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body" id="cartDrawerBody">{% include 'partials/cart_drawer_items.html' %}</div>
+  <div class="drawer-foot">
+    <div class="cd-total"><span class="muted">Subtotal ({{ cart|length }} items)</span><strong data-cart-total>{{ cart.get_total_price|ksh }}</strong></div>
+    <div class="grid grid-2" style="gap:10px">
+      <a href="{% url 'shopping-cart' %}" class="btn btn-outline">View cart</a>
+      <a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a>
+    </div>
+  </div>
+</aside>
+
+<button class="chat-fab" id="chatFab" aria-label="Chat with the Mahitaji assistant"><i class="fa-solid fa-comment-dots"></i></button>
+<section class="chat" id="chat" aria-label="Mahitaji assistant">
+  <div class="chat-head">
+    <div class="avatar" style="background:var(--amber-500);color:var(--brand-950)">M</div>
+    <div><strong>Mahitaji Assistant</strong><small>Products · prices · delivery · payments</small></div>
+    <button class="chat-close" id="chatClear" title="Clear chat" aria-label="Clear chat"><i class="fa-regular fa-trash-can"></i></button>
+    <button class="chat-close" id="chatClose" aria-label="Close chat" style="margin-left:6px"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="chat-body" id="chatBody"></div>
+  <div class="chat-quick">
+    <button data-chat-quick="What is the price of cooking oil?">Cooking oil prices</button>
+    <button data-chat-quick="Do you deliver outside Nairobi?">Delivery areas</button>
+    <button data-chat-quick="How do I pay with M-Pesa?">Paying with M-Pesa</button>
+  </div>
+  <div class="chat-foot">
+    <input type="text" id="chatInput" class="input" placeholder="Ask about a product, price or delivery…" aria-label="Message">
+    <button class="btn btn-primary btn-icon" id="chatSend" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
+  </div>
+</section>
+
+<button class="back-top" id="backTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
 
 <script>
-
-
-
-    tailwind.config = {
-        content: ["./**/*.{html,js}"],
-        theme: {
-            extend: {
-                colors: {
-                    primary: '#0f172a',    // Deep Navy
-                    secondary: '#10b981',  // Emerald Green
-                    accent: '#f59e0b',     // Warm Amber
-                    dark: '#1e2937',
-                }
-            }
-        }
+  window.MAHITAJI = {
+    csrf: '{{ csrf_token }}',
+    tier: '{{ price_tier }}',
+    urls: {
+      cartAdd: '{% url "cart_add" %}', cartUpdate: '{% url "cart_update" %}', cartDelete: '{% url "cart_delete" %}',
+      cart: '{% url "shopping-cart" %}', checkout: '{% url "checkout" %}', wishlistToggle: '{% url "wishlist_toggle" %}',
+      login: '{% url "login" %}', search: '{% url "search" %}', suggest: '{% url "search_suggest" %}', chat: '{% url "ai_assistant_chat" %}'
     }
-
-    const items = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver(entries => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.remove("opacity-0", "translate-y-6");
-                entry.target.classList.add("opacity-100", "translate-y-0");
-            }
-        });
-    }, { threshold: 0.15 });
-
-    items.forEach(el => observer.observe(el));
-
-    document.addEventListener('DOMContentLoaded', function() {
-        // --- EXISTING CHAT LOGIC ---
-        const chatToggle = document.getElementById('chatToggle');
-        const chatWindow = document.getElementById('chatWindow');
-        const closeChat = document.getElementById('closeChat');
-        const chatInput = document.getElementById('chatInput');
-        const sendBtn = document.getElementById('sendMsg');
-        const chatBody = document.getElementById('chatBody');
-
-        function appendToUI(text, role) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `message ${role}`;
-            msgDiv.textContent = text;
-            chatBody.appendChild(msgDiv);
-            chatBody.scrollTop = chatBody.scrollHeight;
-            return msgDiv;
-        }
-
-        const savedChat = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
-        savedChat.forEach(msg => { appendToUI(msg.text, msg.role); });
-
-        if (chatToggle && chatWindow) {
-            chatToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                chatWindow.classList.toggle('d-none');
-                if (!chatWindow.classList.contains('d-none')) { chatInput.focus(); }
-            });
-        }
-
-        if (closeChat) {
-            closeChat.addEventListener('click', () => chatWindow.classList.add('d-none'));
-        }
-
-        let activeSendBtn = sendBtn;
-        if (sendBtn) {
-            activeSendBtn = sendBtn.cloneNode(true);
-            sendBtn.parentNode.replaceChild(activeSendBtn, sendBtn);
-        }
-
-        async function startAiChat() {
-            const message = chatInput.value.trim();
-            if (!message) return;
-            appendToUI(message, 'user');
-            chatInput.value = '';
-            const loadingDiv = appendToUI('Thinking...', 'assistant');
-            try {
-                const response = await fetch('/ai-assistant-chat/', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRFToken': '{{ csrf_token }}',
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({ 'message': message })
-                });
-                const data = await response.json();
-                chatBody.removeChild(loadingDiv);
-                appendToUI(data.reply, 'assistant');
-                const chatData = JSON.parse(localStorage.getItem('mahitaji_chat') || '[]');
-                chatData.push({role: 'user', text: message});
-                chatData.push({role: 'assistant', text: data.reply});
-                localStorage.setItem('mahitaji_chat', JSON.stringify(chatData));
-            } catch (error) {
-                if (chatBody.contains(loadingDiv)) chatBody.removeChild(loadingDiv);
-                appendToUI("Connection error. Please try again.", "assistant");
-            }
-        }
-
-        if (activeSendBtn) activeSendBtn.addEventListener('click', startAiChat);
-        if (chatInput) {
-            chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') startAiChat(); });
-        }
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ==========================================
-// DYNAMIC CART SYSTEM
-// ==========================================
-
-function updateHeaderTotal(total) {
-    $('.item-text').text('ksh ' + total);
-}
-
-function refreshMiniCart() {
-    $.get("{% url 'mini-cart' %}", function(data) {
-        $('#mini-cart-wrapper').html(data);
-    });
-}
-
-// 1. ADD TO CART
-$(document).on('click', '.add-to-cart-btn', function (e) {
-    e.preventDefault();
-    var productid = $(this).val();
-
-    $.ajax({
-        type: 'POST',
-        url: '{% url "cart_add" %}',
-        data: {
-            product_id: productid,
-            product_qty: 1,
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            action: 'post'
-        },
-        success: function (json) {
-            updateHeaderTotal(json.total);
-            refreshMiniCart();           // ← Added
-            alert("Added to cart!");
-        }
-    });
-});
-
-// 2. DELETE (Mini-cart + Full Cart)
-$(document).on('click', '.delete-product', function (e) {
-    e.preventDefault();
-
-    var productid = $(this).data('index');
-    var isMiniCart = $(this).closest('#mini-cart-wrapper').length > 0;
-
-    if (!isMiniCart && !confirm("Remove this item from cart?")) return;
-
-    $.ajax({
-        type: 'POST',
-        url: '{% url "cart_delete" %}',
-        data: {
-            product_id: productid,
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            action: 'post'
-        },
-        success: function (json) {
-            updateHeaderTotal(json.total);
-
-            if (isMiniCart) {
-                refreshMiniCart();
-            } else {
-                var row = $('#product-row-' + productid);
-                if (row.length) row.remove();
-                $('#cart-subtotal').text('ksh ' + json.total);
-                $('#cart-total-final').text('ksh ' + json.total);
-                refreshMiniCart();        // ← Added
-            }
-        }
-    });
-});
-
-// 3. UPDATE QUANTITY
-$(document).on('change', '.update-qty', function () {
-    var productId = $(this).data('product-id');
-    var qty = parseInt($(this).val());
-    var row = $('#product-row-' + productId);
-
-    if (qty < 1 || isNaN(qty)) {
-        qty = 1;
-        $(this).val(1);
-    }
-
-    $.ajax({
-        type: 'POST',
-        url: '{% url "cart_update" %}',
-        data: {
-            product_id: productId,
-            product_qty: qty,
-            csrfmiddlewaretoken: '{{ csrf_token }}',
-            action: 'post'
-        },
-        success: function (json) {
-            updateHeaderTotal(json.total);
-            refreshMiniCart();           // ← Added
-
-            if (row.length) {
-                var price = parseFloat(row.find('.product-price').data('price'));
-                row.find('.product-subtotal').text('ksh ' + (price * qty).toFixed(2));
-                $('#cart-subtotal').text('ksh ' + json.total);
-                $('#cart-total-final').text('ksh ' + json.total);
-            }
-        }
-    });
-});
-
-// +/- Buttons
-$(document).on('click', '.qty-plus, .qty-minus', function () {
-    var input = $(this).siblings('.update-qty');
-    if ($(this).hasClass('qty-plus')) {
-        input.val(parseInt(input.val()) + 1);
-    } else {
-        if (parseInt(input.val()) > 1) input.val(parseInt(input.val()) - 1);
-    }
-    input.trigger('change');
-});
-
-
-
-
-
-
-
-
-    });
-    </script>
-
-
-    {% block extra_js %}
-
-
-
-    
-    {% endblock %}
-
-    
-
+  };
+</script>
+<script src="{% static 'js/mahitaji.js' %}?v=3" defer></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>

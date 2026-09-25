@@ -1,0 +1,13 @@
+{% load shop %}{# Drawn pack for a product without a photo. Pass compact=True for small thumbnails (initials only). #}
+<div class="pack pack--{{ product|pack_shape }}{% if compact %} pack--compact{% endif %}" style="--pc:{{ product|pack_color }}" role="img" aria-label="{{ product.name }}">
+  <div class="pack-body">
+    <div class="pack-label">
+      {% if compact %}<span class="pack-mono">{{ product.initials }}</span>{% else %}
+      <span class="pack-name">{{ product.name }}</span>
+      {% if product.unit_of_measure %}<span class="pack-size">{{ product.unit_of_measure.name }}</span>{% endif %}
+      {% if product.brand %}<span class="pack-maker">{{ product.brand.name }}</span>{% endif %}
+      {% endif %}
+    </div>
+  </div>
+  {% if not compact %}<span class="pack-tag">Illustration</span>{% endif %}
+</div>

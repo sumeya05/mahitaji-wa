@@ -1,0 +1,113 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Our Statement · Vision, Mission &amp; Values · Mahitaji{% endblock %}
+{% block meta_description %}The corporate philosophy of Mahitaji Enterprises Ltd: our vision, mission and core values as Kenya's FMCG distribution partner since 1997, serving 3,000+ retail clients from Baba Dogo, Nairobi.{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (min-width: 992px) { #communityGrid { grid-template-columns: 1fr 1fr; align-items: center; } }
+  @media (min-width: 768px) { #vmGrid { grid-template-columns: 1fr 1fr !important; } }
+  @media (min-width: 640px) { #valuesGrid { grid-template-columns: 1fr 1fr !important; } }
+  @media (min-width: 992px) { #valuesGrid { grid-template-columns: repeat(4, 1fr) !important; } }
+  .community-list li { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .community-list li:last-child { border-bottom: 0; }
+  .community-list strong { display: block; color: var(--ink); margin-bottom: 2px; }
+  .community-list p { margin: 0; color: var(--text-2); font-size: .92rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Our statement" subtitle="The philosophy, vision and values that guide every delivery we make." crumb="Our statement" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <span class="eyebrow">Our corporate philosophy</span>
+    <h2>The essential bridge between manufacturers and Kenyan households</h2>
+    <div class="prose">
+      <p class="lead">Established in 1997, Mahitaji Enterprises Limited serves as the essential bridge connecting world-class manufacturers with over 3,000 active retail clients.</p>
+      <p>Operating from our hub in Baba Dogo Industrial Park, we ensure the <strong>seamless movement</strong> of quality FMCG goods to every Kenyan household. Our role is simple to state and demanding to deliver: the right product, in the right condition, at the right shop, on time, every time.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="grid grid-2" style="grid-template-columns:1fr" id="vmGrid">
+      <div class="card card-body" style="border-top:4px solid var(--brand-600)">
+        <span class="feature-icon mb-3"><i class="fa-solid fa-eye"></i></span>
+        <h3>Our vision</h3>
+        <p class="text-2 mb-0">To be the most preferred and reliable FMCG distribution partner in East Africa, recognised for our efficiency, integrity and unwavering contribution to household well-being.</p>
+      </div>
+      <div class="card card-body" style="border-top:4px solid var(--amber-500)">
+        <span class="feature-icon mb-3" style="background:var(--amber-100);color:var(--amber-600)"><i class="fa-solid fa-bullseye"></i></span>
+        <h3>Our mission</h3>
+        <p class="text-2 mb-0">To bridge the gap between manufacturers and consumers by providing seamless logistics, rigorous quality assurance and competitive pricing through our extensive retail network.</p>
+      </div>
+    </div>
+
+    <div class="card card-body mt-5 text-center">
+      <span class="eyebrow" style="justify-content:center">The Mahitaji commitment</span>
+      <h3>Essential products, delivered efficiently and on time</h3>
+      <p class="text-2 mb-0" style="max-width:68ch;margin:0 auto">Operating from our strategic hub in <strong>Baba Dogo Industrial Park</strong>, we manage a dedicated fleet of 50+ specialised delivery vehicles and a 100,000 sq ft warehouse facility. Our commitment is to ensure that essential products reach our 3,000+ active clients efficiently and on time.</p>
+      <div class="flex gap-5 wrap justify-center mt-5">
+        <div><div class="stat-value">50+</div><div class="stat-label">Vehicle fleet</div></div>
+        <div><div class="stat-value">100,000</div><div class="stat-label">Sq ft warehouse</div></div>
+        <div><div class="stat-value">3,000+</div><div class="stat-label">Active clients</div></div>
+        <div><div class="stat-value">99.8%</div><div class="stat-label">Delivery accuracy</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section-lg bg-green">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Core values</span>
+        <h2>The principles behind every decision</h2>
+        <p style="color:rgba(255,255,255,.7)">The principles that guide every decision we make at Mahitaji Enterprises Limited.</p>
+      </div>
+    </div>
+    <div class="grid grid-4" style="grid-template-columns:1fr" id="valuesGrid">
+      <div class="value-card"><i class="fa-solid fa-handshake"></i><h4>Integrity</h4><p>Transparent dealings and strong moral principles with all partners.</p></div>
+      <div class="value-card"><i class="fa-solid fa-chart-line"></i><h4>Customer focus</h4><p>We grow when our clients grow, through reliable service and fair pricing.</p></div>
+      <div class="value-card"><i class="fa-solid fa-circle-check"></i><h4>Quality assurance</h4><p>KEBS-certified products ensuring safety and trust in every carton.</p></div>
+      <div class="value-card"><i class="fa-solid fa-truck"></i><h4>Reliability</h4><p>Consistent supply backed by strong logistics infrastructure.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid" id="communityGrid" style="gap:40px">
+      <div>
+        <span class="eyebrow">Community &amp; growth</span>
+        <h2>Our role extends beyond distribution</h2>
+        <p class="lead">At Mahitaji Enterprises Limited, we recognise that our role extends beyond distribution. We are committed to the economic growth of Kenya by:</p>
+      </div>
+      <div class="card card-body">
+        <ul class="community-list">
+          <li><span class="feature-icon"><i class="fa-solid fa-shop"></i></span><div><strong>Supporting local retail</strong><p>Empowering small and medium-sized shops with reliable inventory at honest prices.</p></div></li>
+          <li><span class="feature-icon"><i class="fa-solid fa-wheat-awn"></i></span><div><strong>Ensuring food security</strong><p>Maintaining a steady supply of staple goods across the region, every week of the year.</p></div></li>
+          <li><span class="feature-icon"><i class="fa-solid fa-clipboard-check"></i></span><div><strong>Professional standards</strong><p>Leading the industry with professional-grade logistics and ethical operations.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line)">
+  <div class="container">
+    <div class="cta-card dark">
+      <i class="fa-solid fa-handshake cta-icon"></i>
+      <span class="eyebrow">Partner with Mahitaji</span>
+      <h3>Ready to stock your shop with a partner you can rely on?</h3>
+      <p>Open a business account for retail or wholesale pricing, or talk to our sales desk about your route.</p>
+      <div class="flex gap-3 wrap">
+        <a href="{% url 'register' %}" class="btn btn-amber">Open a business account</a>
+        <a href="{% url 'contact' %}" class="btn btn-outline-light">Contact us</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

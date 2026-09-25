@@ -1,0 +1,116 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Our Location · Baba Dogo Distribution Hub · Mahitaji{% endblock %}
+{% block meta_description %}Find Mahitaji Enterprises Ltd at Prabhaki Industrial Park, Baba Dogo Road, Ruaraka, Nairobi. Map, self-collection hours, fleet coverage areas and visitor guidelines for our 100,000 sq ft distribution hub.{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (min-width: 992px) { #visitGrid { grid-template-columns: .9fr 1.1fr; align-items: start; } }
+  @media (min-width: 768px) { #hubGrid { grid-template-columns: repeat(3, 1fr) !important; } #guidelinesGrid { grid-template-columns: 1fr 1fr !important; } }
+  .check-list li { display: flex; gap: 10px; align-items: flex-start; padding: 6px 0; color: var(--text-2); font-size: .92rem; }
+  .check-list i { color: var(--brand-600); margin-top: 4px; }
+  .hours-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: .92rem; }
+  .hours-row:last-child { border-bottom: 0; }
+  .hours-row span:first-child { color: var(--text-2); }
+  .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; font-size: .92rem; color: var(--text-2); }
+  .area-grid li::before { content: '\2022'; color: var(--brand-600); margin-right: 8px; font-weight: 700; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Our distribution hub" subtitle="Prabhaki Industrial Park, Baba Dogo Road, Ruaraka, Nairobi." crumb="Our location" %}
+
+<section class="section">
+  <div class="container container-narrow text-center">
+    <span class="eyebrow" style="justify-content:center">Where we are</span>
+    <h2>The nerve centre of our distribution network</h2>
+    <p class="lead">Strategically located in <strong>Prabhaki Industrial Park, Baba Dogo Road, Ruaraka</strong>, our 100,000 sq ft facility serves as the central nerve centre for FMCG distribution across Nairobi and its surroundings.</p>
+    <div class="flex gap-3 wrap justify-center mt-4">
+      <a href="https://maps.google.com/?q=Mahitaji+Enterprises+Ltd+Baba+Dogo+Road" target="_blank" rel="noopener" class="btn btn-primary"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+      <a href="{{ site.phone_href }}" class="btn btn-outline"><i class="fa-solid fa-phone"></i> Call us</a>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="map-frame mb-6">
+      <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.8762760398636!2d36.8749584!3d-1.2451029999999998!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f151a90f07bfd%3A0x2a64a98d55920546!2sMahitaji%20Enterprises%20Ltd!5e0!3m2!1sen!2ske!4v1770277726004!5m2!1sen!2ske"
+        loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" title="Map showing Mahitaji Enterprises Ltd, Baba Dogo Road, Nairobi"></iframe>
+    </div>
+
+    <div class="grid grid-3" style="grid-template-columns:1fr" id="hubGrid">
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3"><span class="feature-icon"><i class="fa-solid fa-building"></i></span><h3 class="mb-0">Facility details</h3></div>
+        <p class="text-2"><strong style="color:var(--ink)">Prabhaki Industrial Park</strong><br>Baba Dogo Road, Ruaraka, Nairobi<br><span class="text-sm muted">{{ site.po_box }}</span></p>
+        <ul class="check-list">
+          <li><i class="fa-solid fa-circle-check"></i>100,000 sq ft warehouse</li>
+          <li><i class="fa-solid fa-circle-check"></i>Secure loading bays</li>
+          <li><i class="fa-solid fa-circle-check"></i>24/7 security &amp; monitoring</li>
+          <li><i class="fa-solid fa-circle-check"></i>Ample parking for collection vehicles</li>
+        </ul>
+      </div>
+
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3"><span class="feature-icon"><i class="fa-regular fa-clock"></i></span><h3 class="mb-0">Collection hours</h3></div>
+        <p class="text-2">For retailers opting for self-collection:</p>
+        <div>
+          <div class="hours-row"><span>Monday – Friday</span><strong>08:30 – 16:30</strong></div>
+          <div class="hours-row"><span>Saturday</span><strong>08:30 – 12:30</strong></div>
+          <div class="hours-row"><span>Sunday &amp; public holidays</span><span class="badge badge-danger">Closed</span></div>
+        </div>
+        <p class="text-sm muted mt-3 mb-0">Office hours: {{ site.hours }}.</p>
+      </div>
+
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3"><span class="feature-icon"><i class="fa-solid fa-truck"></i></span><h3 class="mb-0">Fleet coverage</h3></div>
+        <p class="text-2">Our 50+ vehicle fleet covers Nairobi daily, including:</p>
+        <ul class="area-grid">
+          <li>Central CBD</li>
+          <li>Eastlands</li>
+          <li>Westlands</li>
+          <li>Thika Road</li>
+          <li>Kiambu</li>
+          <li>Embakasi</li>
+        </ul>
+        <p class="text-sm muted mt-3 mb-0">Central and Rift Valley regions are served on scheduled routes. <a href="{% url 'pickups' %}">See delivery zones</a>.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="grid" id="visitGrid" style="gap:40px">
+      <div>
+        <span class="eyebrow">Visiting our facility</span>
+        <h2>Site protocols for visitors and partners</h2>
+        <p class="lead">To maintain the highest standards of safety and operational efficiency within <strong>Prabhaki Industrial Park</strong>, we kindly request all visitors, retailers and partners to observe our site protocols.</p>
+      </div>
+      <div class="grid grid-2" style="grid-template-columns:1fr" id="guidelinesGrid">
+        <div class="card card-body feature"><span class="feature-icon"><i class="fa-solid fa-id-card"></i></span><div><h4>Identification</h4><p>All visitors must present a valid national ID or passport at the main security gate for entry clearance.</p></div></div>
+        <div class="card card-body feature"><span class="feature-icon" style="background:var(--amber-100);color:var(--amber-600)"><i class="fa-solid fa-triangle-exclamation"></i></span><div><h4>Safety first</h4><p>Stick to designated pedestrian zones and follow warehouse floor markings at all times.</p></div></div>
+        <div class="card card-body feature"><span class="feature-icon"><i class="fa-solid fa-clipboard-user"></i></span><div><h4>Check-in</h4><p>Please sign in at reception before proceeding to the loading bays upon arrival.</p></div></div>
+        <div class="card card-body feature"><span class="feature-icon"><i class="fa-solid fa-truck-ramp-box"></i></span><div><h4>Loading</h4><p>Drivers must remain with their vehicles during loading unless instructed otherwise by our team.</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line)">
+  <div class="container">
+    <div class="cta-card dark">
+      <i class="fa-solid fa-location-dot cta-icon"></i>
+      <span class="eyebrow">Plan your visit</span>
+      <h3>Collecting an order or dropping in to register?</h3>
+      <p>Bring your business permit and KRA PIN for on-the-spot registration, or call ahead so we can have your order ready at the bay.</p>
+      <div class="flex gap-3 wrap">
+        <a href="https://maps.google.com/?q=Mahitaji+Enterprises+Ltd+Baba+Dogo+Road" target="_blank" rel="noopener" class="btn btn-amber"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+        <a href="{{ site.phone_href }}" class="btn btn-outline-light"><i class="fa-solid fa-phone"></i> {{ site.phone }}</a>
+        <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline-light"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

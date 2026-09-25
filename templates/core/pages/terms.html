@@ -1,0 +1,68 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Terms &amp; Conditions · Mahitaji Enterprises Ltd{% endblock %}
+{% block meta_description %}Terms and conditions for using the Mahitaji Enterprises Ltd website and services: account registration, orders and pricing, payments, delivery and returns, and limitation of liability.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Terms & conditions" subtitle="The terms that apply to every visitor, retailer and wholesaler using our website and services." crumb="Terms" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <nav class="help-nav" aria-label="Help desk">
+      <a href="{% url 'pickups' %}" class="chip"><i class="fa-solid fa-truck-fast"></i> Pick-ups &amp; deliveries</a>
+      <a href="{% url 'payment_info' %}" class="chip"><i class="fa-solid fa-mobile-screen-button"></i> Payment options</a>
+      <a href="{% url 'returns' %}" class="chip"><i class="fa-solid fa-rotate-left"></i> Return policy</a>
+      <a href="{% url 'faqs' %}" class="chip"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+      <a href="{% url 'terms' %}" class="chip is-active"><i class="fa-solid fa-file-contract"></i> Terms</a>
+    </nav>
+
+    <div class="card">
+      <div class="card-header">
+        <h3>Terms &amp; conditions</h3>
+        <span class="badge badge-muted"><i class="fa-regular fa-calendar"></i> Last updated: April 14, 2026</span>
+      </div>
+      <div class="card-body">
+        <div class="prose">
+          <h2 style="margin-top:0">1. Introduction</h2>
+          <p>Welcome to Mahitaji. By accessing our website and using our services, you agree to be bound by the following terms and conditions. These terms apply to all visitors, retailers and wholesalers who access or use the service. If you do not agree with any part of these terms, please do not use the service.</p>
+
+          <h2>2. Account registration</h2>
+          <p>To access certain features of the platform, including wholesale pricing, you must register for an account. You agree to:</p>
+          <ul>
+            <li>Provide accurate, current and complete information.</li>
+            <li>Maintain the security of your password and identification.</li>
+            <li>Promptly update account information to keep it accurate.</li>
+          </ul>
+          <p>You are responsible for all activity that occurs under your account. Wholesale pricing is extended only to verified business accounts and may be withdrawn if the account no longer meets our verification requirements.</p>
+
+          <h2>3. Orders and pricing</h2>
+          <p>All orders are subject to acceptance and availability. Prices for our products are subject to change without notice. We reserve the right to limit the sales of our products to any person, geographic region or jurisdiction on a case-by-case basis.</p>
+          <h3>3.1 Minimum orders</h3>
+          <p>Wholesale orders are subject to a minimum order value, generally starting at KSh 50,000, which may vary by product category.</p>
+          <h3>3.2 Order confirmation</h3>
+          <p>An order is confirmed only when you receive our order confirmation by SMS or email. We may cancel or refuse any order where a pricing or stock error has occurred, in which case any payment made will be refunded in full.</p>
+
+          <h2>4. Payments</h2>
+          <p>Payment must be made through our approved payment channels: M-Pesa (STK push or Till), bank transfer or business cheque. For verified retailers approved for cash on delivery, payment must be settled immediately upon receipt of goods via M-Pesa Till, cash or business cheque.</p>
+          <p>Credit terms, where granted, are governed by a separate credit agreement and are subject to review by our finance department. Overdue balances may result in the suspension of credit facilities.</p>
+
+          <h2>5. Delivery and returns</h2>
+          <p>Delivery timelines are estimates and not guarantees. Orders within Nairobi are typically delivered within 24 hours of confirmation and upcountry orders within 2–3 business days. Risk in the goods passes to you on delivery or collection.</p>
+          <p>Our return policy is governed by a 48-hour window from the time of delivery. Please refer to our <a href="{% url 'returns' %}">return policy</a> for detailed information on eligible returns, perishable goods and refunds.</p>
+
+          <h2>6. Limitation of liability</h2>
+          <p>Mahitaji shall not be liable for any indirect, incidental, special or consequential damages resulting from the use or the inability to use our services, or for the cost of procurement of substitute goods. Our total liability for any claim arising from an order shall not exceed the value of that order.</p>
+
+          <h2>7. Changes to these terms</h2>
+          <p>We may update these terms from time to time. The latest version is always published on this page with its effective date. Continued use of the service after a change constitutes acceptance of the revised terms.</p>
+        </div>
+
+        <div class="alert alert-muted mt-6 mb-0">
+          <i class="fa-solid fa-scale-balanced"></i>
+          <span>Questions about these terms of service should be sent to <a href="mailto:legal@mahitaji.co.ke"><strong>legal@mahitaji.co.ke</strong></a> or to {{ site.legal_name }}, {{ site.po_box }}.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

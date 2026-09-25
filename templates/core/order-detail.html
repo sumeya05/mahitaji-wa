@@ -1,0 +1,218 @@
+{% extends 'base/base.html' %}
+{% load shop %}
+
+{% block title %}Order {{ order.order_number }} · Mahitaji{% endblock %}
+{% block meta_description %}Track the status, payment and delivery of your Mahitaji order.{% endblock %}
+{% block body_class %}is-order-detail{% endblock %}
+
+{% block content %}
+{% url 'transactions' as orders_url %}
+{% with placed=order.created_at|date:'d M Y, H:i' %}{% with order_title="Order "|add:order.order_number subtitle_text="Placed "|add:placed|add:" · "|add:order.get_payment_method_display %}
+{% include 'partials/page_hero.html' with title=order_title crumb=order.order_number parent_url=orders_url parent_label="My orders" compact=True subtitle=subtitle_text %}
+{% endwith %}{% endwith %}
+
+<div class="container">
+  <div class="cart-layout">
+    <div>
+      <div class="card card-body">
+        <div class="flex items-center justify-between wrap gap-3 mb-3">
+          <div>
+            <div class="text-sm muted">Placed {{ order.created_at|date:'d M Y, H:i' }} · {{ order.get_payment_method_display }}</div>
+            <div class="flex items-center gap-2 mt-1">{% status_badge order %}<span class="text-sm text-2">{{ order.item_count }} unit{{ order.item_count|pluralize }} · {{ order.total_amount|ksh }}</span></div>
+          </div>
+          {% if order.is_paid %}<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Paid</span>{% elif order.payment_method == 'cod' %}<span class="badge badge-muted"><i class="fa-solid fa-truck"></i> Pay on delivery</span>{% endif %}
+        </div>
+
+        {% if order.status == 'CANCELLED' %}
+        <div class="alert alert-muted"><i class="fa-solid fa-ban"></i><span>This order was cancelled{% if order.updated_at %} on {{ order.updated_at|date:'d M Y' }}{% endif %}. Nothing will be delivered or charged. Need it after all? <a href="{% url 'products' %}">Place a new order</a>.</span></div>
+        {% elif order.status == 'FAILED' %}
+        <div class="alert alert-danger"><i class="fa-solid fa-circle-exclamation"></i><span>The M-Pesa payment for this order did not go through. Send the prompt again from the payment panel, or contact us on {{ site.phone }}.</span></div>
+        {% endif %}
+
+        <div class="timeline{% if order.status == 'CANCELLED' or order.status == 'FAILED' %} is-cancelled{% endif %}">
+          <div class="tl-step{% if order.progress_step >= 0 %} is-done{% endif %}">Placed</div>
+          <div class="tl-step{% if order.progress_step >= 1 %} is-done{% elif order.progress_step == 0 and order.status != 'CANCELLED' %} is-current{% endif %}">{% if order.payment_method == 'cod' and not order.is_paid %}Confirmed{% else %}Paid{% endif %}</div>
+          <div class="tl-step{% if order.progress_step >= 2 %} is-done{% elif order.progress_step == 1 %} is-current{% endif %}">Shipped</div>
+          <div class="tl-step{% if order.progress_step >= 3 %} is-done{% elif order.progress_step == 2 %} is-current{% endif %}">Delivered</div>
+        </div>
+        <p class="text-sm text-2 mb-0">
+          {% if order.status == 'PENDING' and order.payment_method == 'mpesa' %}We'll start packing as soon as the M-Pesa payment is confirmed.
+          {% elif order.status == 'PENDING' %}Our team is verifying stock and will dispatch your order shortly.
+          {% elif order.status == 'PAID' %}Payment confirmed. Your order is being packed at our Baba Dogo hub.
+          {% elif order.status == 'SHIPPED' %}Your order is on its way. Our driver will call {{ order.phone|default:'you' }} when nearby.
+          {% elif order.status == 'DELIVERED' %}Delivered. Thank you for shopping with Mahitaji!
+          {% elif order.status == 'FAILED' %}Payment failed — resend the prompt to complete your order.
+          {% else %}This order is closed.{% endif %}
+        </p>
+      </div>
+
+      <div class="card mt-4">
+        <div class="card-header"><h3><i class="fa-solid fa-box-open" style="color:var(--brand-600);margin-right:6px"></i>Items</h3><span class="text-sm muted">{{ order.items.all|length }} line{{ order.items.all|length|pluralize }}</span></div>
+        <div class="table-wrap" style="border:0;border-radius:0">
+          <table class="table">
+            <thead><tr><th>Product</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Subtotal</th></tr></thead>
+            <tbody>
+              {% for item in order.items.all %}
+              <tr>
+                <td><a href="{{ item.product.get_absolute_url }}" class="fw-600" style="color:var(--ink)">{{ item.product.name }}</a><div class="text-xs muted">{{ item.product.brand.name|default:'Mahitaji' }}{% if item.product.pack_size %} · {{ item.product.pack_size }}{% endif %}</div></td>
+                <td class="num">{{ item.quantity }}</td>
+                <td class="num">{{ item.price_at_purchase|ksh }}</td>
+                <td class="num fw-600">{{ item.subtotal|ksh }}</td>
+              </tr>
+              {% empty %}
+              <tr><td colspan="4" class="muted text-center">No items recorded for this order.</td></tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr><td colspan="3" class="num text-2">Delivery</td><td class="num">{% if order.total_amount >= site.free_delivery_threshold %}Free{% else %}Confirmed on dispatch{% endif %}</td></tr>
+              <tr><td colspan="3" class="num fw-700" style="color:var(--ink)">Total</td><td class="num fw-800" style="font-family:var(--font-display);font-size:1.15rem;color:var(--ink)">{{ order.total_amount|ksh }}</td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card">
+        <div class="card-header"><h4><i class="fa-solid fa-location-dot" style="color:var(--brand-600);margin-right:6px"></i>Delivery</h4></div>
+        <div class="card-body">
+          <dl class="kv">
+            <div><dt>Name</dt><dd>{{ order.full_name|default:'—' }}</dd></div>
+            <div><dt>Phone</dt><dd>{% if order.phone %}<a href="tel:{{ order.phone }}">{{ order.phone }}</a>{% else %}—{% endif %}</dd></div>
+            <div><dt>Email</dt><dd>{{ order.email|default:'—' }}</dd></div>
+            <div><dt>Address</dt><dd>{{ order.address|default:'—'|linebreaksbr }}</dd></div>
+            <div><dt>City</dt><dd>{{ order.city|default:'Nairobi' }}</dd></div>
+            {% if order.notes %}<div><dt>Notes</dt><dd>{{ order.notes|linebreaksbr }}</dd></div>{% endif %}
+          </dl>
+        </div>
+      </div>
+
+      <div class="card mt-3">
+        <div class="card-header"><h4><i class="fa-solid fa-wallet" style="color:var(--brand-600);margin-right:6px"></i>Payment</h4>{% status_badge order %}</div>
+        <div class="card-body">
+          <dl class="kv">
+            <div><dt>Method</dt><dd>{{ order.get_payment_method_display }}</dd></div>
+            <div><dt>Amount</dt><dd class="fw-700">{{ order.total_amount|ksh }}</dd></div>
+            {% if mpesa_txn %}
+            {% if mpesa_txn.receipt_number %}<div><dt>Receipt</dt><dd class="fw-700" style="color:var(--brand-700)">{{ mpesa_txn.receipt_number }}</dd></div>{% endif %}
+            <div><dt>M-Pesa no.</dt><dd>{{ mpesa_txn.phone_number }}</dd></div>
+            <div><dt>Date</dt><dd>{{ mpesa_txn.transaction_date|default:mpesa_txn.created_at|date:'d M Y, H:i' }}</dd></div>
+            {% if mpesa_txn.response_description and not mpesa_txn.is_success %}<div><dt>Note</dt><dd class="text-sm">{{ mpesa_txn.response_description }}</dd></div>{% endif %}
+            {% endif %}
+          </dl>
+
+          {% if awaiting_payment %}
+          <div class="pay-wait mt-4" id="payWait" aria-live="polite">
+            <span class="spinner" id="paySpinner"></span>
+            <div class="grow">
+              <strong style="display:block">{% if order.status == 'FAILED' %}Payment not completed{% else %}Waiting for your M-Pesa payment…{% endif %}</strong>
+              <div class="text-sm" id="payStatus">{% if order.status == 'FAILED' %}Send the prompt again to pay {{ order.total_amount|ksh }}.{% else %}Enter your PIN on the prompt sent to {{ mpesa_txn.phone_number|default:order.phone }}. This page updates automatically.{% endif %}</div>
+            </div>
+          </div>
+          <div class="alert alert-danger mt-3 hidden" id="payFailed" role="alert"><i class="fa-solid fa-circle-exclamation"></i><span id="payFailedText">The payment was not completed. You can send the prompt again.</span></div>
+          <form class="mt-3" id="resendForm" novalidate>
+            <label class="label" for="mpesaPhone">M-Pesa number</label>
+            <input class="input" type="tel" id="mpesaPhone" name="phone" value="{{ mpesa_txn.phone_number|default:order.phone|default:'' }}" placeholder="07XX XXX XXX" inputmode="tel">
+            <button type="submit" class="btn btn-primary btn-block mt-2" id="resendBtn"><i class="fa-solid fa-mobile-screen-button"></i> {% if order.status == 'FAILED' or mpesa_txn %}Pay now · resend prompt{% else %}Pay now{% endif %}</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="card card-body mt-3" style="display:grid;gap:8px">
+        {% if order.can_cancel %}
+        <form method="post" action="{% url 'order_cancel' order.order_number %}">{% csrf_token %}<button type="submit" class="btn btn-danger-soft btn-block" data-confirm="Cancel this order? This cannot be undone."><i class="fa-solid fa-ban"></i> Cancel order</button></form>
+        {% endif %}
+        <a href="{% url 'transactions' %}" class="btn btn-outline btn-block"><i class="fa-solid fa-clock-rotate-left"></i> All my orders</a>
+        <a href="{% url 'products' %}" class="btn btn-ghost btn-block"><i class="fa-solid fa-rotate-right"></i> Reorder from the catalogue</a>
+      </div>
+
+      <div class="card card-body mt-3" style="background:var(--brand-50);border-color:var(--brand-200)">
+        <strong style="display:block;margin-bottom:4px"><i class="fa-solid fa-headset" style="color:var(--brand-600)"></i> Need help with this order?</strong>
+        <p class="text-sm text-2 mb-2">Quote <strong>{{ order.order_number }}</strong> and we'll sort it out.</p>
+        <div class="grid grid-2" style="gap:8px">
+          <a href="{{ site.phone_href }}" class="btn btn-outline btn-sm"><i class="fa-solid fa-phone"></i> Call</a>
+          <a href="{{ site.whatsapp }}?text=Hello%20Mahitaji%2C%20I%20need%20help%20with%20order%20{{ order.order_number|urlencode }}" target="_blank" rel="noopener" class="btn btn-soft btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .is-order-detail .kv { display: grid; gap: 10px; }
+  .is-order-detail .kv div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: .9rem; }
+  .is-order-detail .kv dt { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
+  .is-order-detail .kv dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
+  .is-order-detail .table tfoot td { border-top: 1px solid var(--line); border-bottom: 0; background: var(--bg); }
+  .is-order-detail .table td.num, .is-order-detail .table th.num { white-space: nowrap; }
+  .is-order-detail .table td:first-child { min-width: 120px; }
+  .is-order-detail .cart-layout > * { min-width: 0; }
+  @media (max-width: 560px) { .is-order-detail .table th:nth-child(3), .is-order-detail .table td:nth-child(3) { display: none; } .is-order-detail .table th, .is-order-detail .table td { padding: 10px 8px; } .is-order-detail .table-wrap .table td:first-child { padding-left: 14px; } }
+  .is-order-detail .timeline { position: relative; z-index: 0; }
+  @media (min-width: 992px) { .is-order-detail .cart-layout { grid-template-columns: 1fr 380px; } }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+{% if awaiting_payment %}
+<script>
+(function () {
+  const STATUS_URL = "{% url 'check_payment_status' order.order_number %}";
+  const PAY_URL = "{% url 'pay' %}";
+  const ORDER_NUMBER = "{{ order.order_number|escapejs }}";
+  const spinner = document.getElementById('paySpinner');
+  const status = document.getElementById('payStatus');
+  const failed = document.getElementById('payFailed');
+  const failedText = document.getElementById('payFailedText');
+  const form = document.getElementById('resendForm');
+  const btn = document.getElementById('resendBtn');
+  const phone = document.getElementById('mpesaPhone');
+  const U = () => window.MahitajiUtils, T = () => window.MahitajiToast;
+  let timer = null, resent = false;
+  {% if order.status == 'FAILED' %}spinner.classList.add('hidden');{% endif %}
+
+  async function check() {
+    let res;
+    try { res = await U().request(STATUS_URL); } catch (err) { return; }
+    if (!res || !res.ok) return;
+    if (res.status === 'paid') {
+      clearInterval(timer);
+      spinner.classList.add('hidden');
+      failed.classList.add('hidden');
+      status.textContent = 'Payment received' + (res.receipt ? ' — receipt ' + res.receipt : '') + '. Refreshing…';
+      T().show('Payment received. Thank you!', 'success');
+      setTimeout(() => window.location.reload(), 900);
+    } else if (res.status === 'failed' && !resent) {
+      spinner.classList.add('hidden');
+      failedText.textContent = (res.description || 'The payment was not completed.') + ' You can send the prompt again.';
+      failed.classList.remove('hidden');
+    }
+  }
+  timer = setInterval(check, 3000);
+  check();
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    U().setBusy(btn, true, 'Sending…');
+    try {
+      const res = await U().request(PAY_URL, { method: 'POST', data: { order_number: ORDER_NUMBER, phone: (phone.value || '').trim() } });
+      if (res.ok) {
+        resent = true;
+        failed.classList.add('hidden');
+        spinner.classList.remove('hidden');
+        status.textContent = 'Prompt sent to ' + (phone.value || 'your phone') + '. Enter your M-Pesa PIN to complete the payment.';
+        T().show(res.message || 'Prompt sent. Check your phone.', 'success');
+      } else {
+        T().show(res.error || 'Could not send the prompt. Please try again.', 'danger');
+      }
+    } catch (err) {
+      T().show('Connection problem. Please check your internet and try again.', 'danger');
+    } finally { U().setBusy(btn, false); }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}

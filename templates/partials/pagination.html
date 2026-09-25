@@ -1,0 +1,12 @@
+{% load shop %}{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Pagination">
+  {% if page_obj.has_previous %}<a href="{% qs_replace page=page_obj.previous_page_number %}" aria-label="Previous page"><i class="fa-solid fa-chevron-left"></i></a>{% endif %}
+  {% for num in page_range %}
+    {% if num == page_obj.paginator.ELLIPSIS %}<span class="gap">…</span>
+    {% elif num == page_obj.number %}<span class="is-current" aria-current="page">{{ num }}</span>
+    {% else %}<a href="{% qs_replace page=num %}">{{ num }}</a>{% endif %}
+  {% endfor %}
+  {% if page_obj.has_next %}<a href="{% qs_replace page=page_obj.next_page_number %}" aria-label="Next page"><i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+</nav>
+<p class="text-center text-sm muted mt-3">Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} products</p>
+{% endif %}

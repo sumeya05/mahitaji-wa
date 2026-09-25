@@ -1,0 +1,182 @@
+{% extends 'base/base.html' %}
+
+{% block title %}About Mahitaji · Kenya's FMCG Distribution Partner since 1997{% endblock %}
+{% block meta_description %}Mahitaji Enterprises Ltd has distributed fast-moving consumer goods across Kenya since 1997. 100,000 sq ft warehouse at Baba Dogo, a 50+ vehicle fleet and 3,000+ retail clients served with 99.8% delivery accuracy.{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (min-width: 992px) { #aboutIntro { grid-template-columns: 1.1fr .9fr; align-items: center; } }
+  @media (min-width: 992px) { #logisticsGrid { grid-template-columns: 1fr 1fr; align-items: center; } }
+  @media (min-width: 768px) { #foundationGrid { grid-template-columns: repeat(3, 1fr) !important; } }
+  .about-quote { padding: 28px; border-radius: var(--radius-xl); background: var(--brand-50); border: 1px solid var(--brand-200); }
+  .about-quote p { font-size: 1.1rem; color: var(--brand-900); }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="About Mahitaji" subtitle="Kenya's trusted FMCG distribution partner: bridging world-class manufacturers and more than 3,000 retail outlets since 1997." crumb="About us" %}
+
+<section class="section">
+  <div class="container">
+    <div class="grid" id="aboutIntro" style="gap:40px">
+      <div>
+        <span class="eyebrow">Established 1997</span>
+        <h2>Three decades of distribution excellence</h2>
+        <p class="lead">Founded on reliability, efficiency and operational excellence, <strong>Mahitaji Enterprises Limited</strong> has grown into one of Kenya's premier FMCG distribution powerhouses.</p>
+        <p class="text-2">From our hub at Prabhaki Industrial Park, Baba Dogo Road, we move cooking oil, rice, flour, soaps, beverages and every fast-moving essential from the manufacturer's gate to shop shelves across Nairobi and beyond.</p>
+
+        <div class="grid grid-2 mt-5">
+          <div class="stat"><div class="stat-icon"><i class="fa-solid fa-warehouse"></i></div><div class="stat-value">100,000</div><div class="stat-label">Sq ft warehouse</div></div>
+          <div class="stat"><div class="stat-icon amber"><i class="fa-solid fa-truck"></i></div><div class="stat-value">50+</div><div class="stat-label">Delivery vehicles</div></div>
+          <div class="stat"><div class="stat-icon blue"><i class="fa-solid fa-store"></i></div><div class="stat-value">3,000+</div><div class="stat-label">Retail clients</div></div>
+          <div class="stat"><div class="stat-icon"><i class="fa-solid fa-calendar-check"></i></div><div class="stat-value">25+</div><div class="stat-label">Years in distribution</div></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="about-quote">
+          <span class="eyebrow">Executive insight</span>
+          <p>“We are more than distributors. We are growth partners powering Kenya's retail economy through structured logistics and trusted supply chains.”</p>
+          <div class="flex items-center gap-3 mt-4">
+            <div class="avatar">ME</div>
+            <div><strong class="fw-600" style="display:block;color:var(--ink)">Executive Board</strong><span class="muted text-sm">Mahitaji Enterprises Limited</span></div>
+          </div>
+        </div>
+        <div class="grid grid-2 mt-4" style="gap:14px">
+          <div class="stat"><div class="stat-value" style="color:var(--brand-700)">99.8%</div><div class="stat-label">Delivery accuracy</div></div>
+          <div class="stat"><div class="stat-value" style="color:var(--brand-700)">24h</div><div class="stat-label">Nairobi delivery window</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">What we do</span><h2>Built for high-volume, dependable supply</h2></div></div>
+    <div class="grid grid-3">
+      <div class="feature"><span class="feature-icon"><i class="fa-solid fa-warehouse"></i></span><div><h4>Modern warehousing</h4><p>Advanced logistics infrastructure enabling fast, reliable order fulfilment from a single 100,000 sq ft facility.</p></div></div>
+      <div class="feature"><span class="feature-icon"><i class="fa-solid fa-truck-fast"></i></span><div><h4>Fast distribution</h4><p>A scalable logistics network covering Nairobi and regional markets, with next-day delivery inside the city.</p></div></div>
+      <div class="feature"><span class="feature-icon"><i class="fa-solid fa-shield-heart"></i></span><div><h4>Quality &amp; compliance</h4><p>Strict adherence to KEBS standards, so every product we distribute is genuine, compliant and safe to sell.</p></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section-lg bg-green">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Our foundation</span>
+        <h2>Built on reliability, driven by excellence</h2>
+        <p style="color:rgba(255,255,255,.7)">Every operation at Mahitaji is guided by strong principles, disciplined execution and a commitment to delivering value across the FMCG supply chain.</p>
+      </div>
+    </div>
+    <div class="grid grid-3" style="grid-template-columns:1fr" id="foundationGrid">
+      <div class="value-card">
+        <i class="fa-solid fa-eye"></i>
+        <h3>Our vision</h3>
+        <p>To become East Africa's most trusted FMCG distribution partner, recognised for operational efficiency, integrity and meaningful contribution to household well-being.</p>
+      </div>
+      <div class="value-card">
+        <i class="fa-solid fa-bullseye"></i>
+        <h3>Our mission</h3>
+        <p>To bridge manufacturers and consumers through efficient logistics, dependable supply chain management and competitive distribution systems.</p>
+      </div>
+      <div class="value-card">
+        <i class="fa-solid fa-heart"></i>
+        <h3>Core values</h3>
+        <ul class="mt-3" style="display:grid;gap:12px">
+          <li class="flex gap-3"><i class="fa-solid fa-check" style="font-size:.9rem;margin:3px 0 0"></i><div><strong style="color:#fff;display:block">Reliability</strong><p>Consistent delivery performance and dependable service execution.</p></div></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check" style="font-size:.9rem;margin:3px 0 0"></i><div><strong style="color:#fff;display:block">Quality</strong><p>KEBS-certified products and trusted brand partnerships.</p></div></li>
+          <li class="flex gap-3"><i class="fa-solid fa-check" style="font-size:.9rem;margin:3px 0 0"></i><div><strong style="color:#fff;display:block">Integrity</strong><p>Transparent operations and accountable business practices.</p></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Operational impact</span>
+        <h2>Built to deliver at national scale</h2>
+        <p>Our logistics network, operational infrastructure and distribution ecosystem power thousands of retail businesses across Kenya every single day.</p>
+      </div>
+    </div>
+    <div class="grid grid-4">
+      <div class="stat text-center"><div class="stat-icon" style="margin:0 auto 12px"><i class="fa-solid fa-users"></i></div><div class="stat-value">3,000+</div><div class="stat-label">Active customers</div></div>
+      <div class="stat text-center"><div class="stat-icon amber" style="margin:0 auto 12px"><i class="fa-solid fa-award"></i></div><div class="stat-value">1997</div><div class="stat-label">Year established</div></div>
+      <div class="stat text-center"><div class="stat-icon blue" style="margin:0 auto 12px"><i class="fa-solid fa-truck-fast"></i></div><div class="stat-value">50+</div><div class="stat-label">Delivery fleet</div></div>
+      <div class="stat text-center"><div class="stat-icon" style="margin:0 auto 12px"><i class="fa-solid fa-warehouse"></i></div><div class="stat-value">100K <small style="font-size:.9rem;color:var(--brand-600)">sq ft</small></div><div class="stat-label">Warehouse capacity</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="grid" id="logisticsGrid" style="gap:40px">
+      <div>
+        <span class="eyebrow">Logistics excellence</span>
+        <h2>Designed for high-volume throughput</h2>
+        <p class="lead">Our operational headquarters at <strong>Baba Dogo Industrial Park</strong> is designed for high-volume throughput: secure loading bays, 24/7 monitoring and dedicated route planning for every delivery day.</p>
+        <div class="flex gap-3 wrap mt-4">
+          <a href="{% url 'location' %}" class="btn btn-primary"><i class="fa-solid fa-location-dot"></i> Visit our hub</a>
+          <a href="{% url 'pickups' %}" class="btn btn-outline">Delivery &amp; pick-up info</a>
+        </div>
+      </div>
+      <div class="grid grid-2" style="grid-template-columns:1fr">
+        <div class="card card-body">
+          <span class="feature-icon mb-3"><i class="fa-solid fa-map-location-dot"></i></span>
+          <h4>Wide coverage</h4>
+          <p class="text-2 mb-0">Serving Nairobi, Central and Rift Valley regions with dedicated routes, plus upcountry deliveries in 2–3 business days.</p>
+        </div>
+        <div class="card card-body">
+          <span class="feature-icon mb-3"><i class="fa-solid fa-truck"></i></span>
+          <h4>Fleet strength</h4>
+          <p class="text-2 mb-0">Over 50 specialised vehicles maintained for safety and speed, achieving 99.8% delivery accuracy across all routes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span class="eyebrow">Leadership</span>
+        <h2>Our leadership team</h2>
+        <p>Experienced leaders driving strategy, innovation and operational excellence.</p>
+      </div>
+    </div>
+    <div class="grid grid-4">
+      <div class="team-card"><div class="avatar">EC</div><h4>Executive Chairman</h4><p>Board leadership &amp; strategy</p></div>
+      <div class="team-card"><div class="avatar">MD</div><h4>Managing Director</h4><p>Commercial &amp; partnerships</p></div>
+      <div class="team-card"><div class="avatar">CEO</div><h4>Chief Executive Officer</h4><p>Operations &amp; growth</p></div>
+      <div class="team-card"><div class="avatar">CFO</div><h4>Chief Financial Officer</h4><p>Finance &amp; credit</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section bg-surface" style="border-top:1px solid var(--line)">
+  <div class="container">
+    <div class="split-cta">
+      <div class="cta-card light">
+        <i class="fa-solid fa-store cta-icon"></i>
+        <span class="eyebrow">For shops &amp; kiosks</span>
+        <h3>Retailers shop</h3>
+        <p>Shop-ready pack sizes at retail prices with next-day delivery across Nairobi.</p>
+        <div><a href="{% url 'retailers' %}" class="btn btn-primary">Shop retail prices</a></div>
+      </div>
+      <div class="cta-card dark">
+        <i class="fa-solid fa-warehouse cta-icon"></i>
+        <span class="eyebrow">For distributors &amp; supermarkets</span>
+        <h3>Wholesalers shop</h3>
+        <p>Bale and carton pricing straight from the manufacturer, with credit terms for established partners.</p>
+        <div class="flex gap-3 wrap"><a href="{% url 'wholesalers' %}" class="btn btn-amber">See wholesale prices</a><a href="{% url 'register' %}" class="btn btn-outline-light">Open an account</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

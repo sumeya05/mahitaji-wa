@@ -1,0 +1,76 @@
+{% extends 'base/base.html' %}
+{% load shop %}
+
+{% block title %}{{ title }} · Mahitaji{% endblock %}
+{% block meta_description %}{{ subtitle|default:title }} Shop FMCG products from Mahitaji with delivery across Kenya.{% endblock %}
+
+{% block content %}
+{% if show_hero %}
+<section class="page-hero">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      {% if is_offers %}<li class="current">Offers</li>{% else %}<li class="current">{{ title }}</li>{% endif %}
+    </ul>
+    <h1>{{ title }}</h1>
+    {% if subtitle %}<p>{{ subtitle }}</p>{% endif %}
+    <div class="hero-stats">
+      <span><i class="fa-solid fa-box"></i><strong data-result-count>{{ total_count }}</strong> products</span>
+      <span><i class="fa-solid fa-truck-fast"></i>Next-day delivery in Nairobi</span>
+      <span><i class="fa-solid fa-shield-halved"></i>KEBS-certified stock</span>
+      {% if tier == 'wholesale' %}<span><i class="fa-solid fa-boxes-stacked"></i>Bale &amp; carton pricing</span>{% endif %}
+    </div>
+  </div>
+</section>
+{% else %}
+<section class="section-sm bg-surface" style="border-bottom:1px solid var(--line)">
+  <div class="container">
+    <ul class="breadcrumb mb-3"><li><a href="{% url 'home' %}">Home</a></li><li class="current">Search</li></ul>
+    <h1 style="font-size:1.6rem">{{ title }}</h1>
+    {% if subtitle %}<p class="muted">{{ subtitle }}</p>{% endif %}
+    <form action="{% url 'search' %}" method="get" class="search-form mt-3" style="max-width:640px" role="search">
+      <input type="search" name="q" value="{{ q }}" placeholder="Search products, brands or categories…" aria-label="Search">
+      <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+    </form>
+  </div>
+</section>
+{% endif %}
+
+<div class="container">
+  <div class="catalog" id="catalog" data-url="{{ request.path }}" data-q="{{ q }}">
+    <aside class="filters">
+      {% include 'partials/filters.html' %}
+    </aside>
+
+    <div>
+      {% if tier_notice == 'wholesale' and price_tier != 'wholesale' %}
+      <div class="tier-note"><i class="fa-solid fa-circle-info"></i><span>You are viewing <strong>wholesale prices</strong>. They apply to verified wholesale accounts. {% if user.is_authenticated %}<a href="{% url 'contact' %}">Ask us to upgrade your account</a>{% else %}<a href="{% url 'register' %}">Register a business account</a>{% endif %} to order at these prices. Your cart is charged at retail until then.</span></div>
+      {% elif tier_notice == 'retail' and price_tier == 'wholesale' %}
+      <div class="tier-note"><i class="fa-solid fa-circle-info"></i><span>Your account is on the <strong>wholesale tier</strong>. These are retail prices for reference; your cart is charged at wholesale.</span></div>
+      {% endif %}
+
+      <div class="toolbar">
+        <div class="count"><strong data-result-count>{{ total_count }}</strong> products{% if q %} for “{{ q }}”{% endif %}</div>
+        <div class="flex items-center gap-2">
+          <button class="btn btn-outline btn-sm mobile-only" data-open="#filtersDrawer"><i class="fa-solid fa-sliders"></i> Filters</button>
+          <label class="sr-only" for="sortSelect">Sort by</label>
+          <select id="sortSelect" class="select">
+            {% for value, label in sort_options %}<option value="{{ value }}" {% if value == sort %}selected{% endif %}>{{ label }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <div class="active-filters{% if not selected_categories and not selected_brands %} hidden{% endif %}" id="activeFilters"></div>
+
+      <div id="catalogResults">
+        {% include 'partials/product_grid.html' %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<aside class="drawer drawer-left filters-drawer" id="filtersDrawer" aria-label="Filters">
+  <div class="drawer-head"><h3>Filters</h3><button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+  <div class="drawer-body"><div class="filters">{% include 'partials/filters.html' %}</div></div>
+  <div class="drawer-foot"><button class="btn btn-primary btn-block" data-close>Show <span data-result-count>{{ total_count }}</span> products</button></div>
+</aside>
+{% endblock %}

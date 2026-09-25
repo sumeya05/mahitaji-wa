@@ -1,1098 +1,1067 @@
-from urllib import request
-from django.shortcuts import render, redirect, get_object_or_404
-from rest_framework import viewsets, permissions
-from django.contrib.auth import logout, login, authenticate
-from django.contrib import messages
-from django.http import HttpResponse, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django_daraja.mpesa.core import MpesaClient
+"""
+Storefront, account, checkout, payment and API views for Mahitaji.
+
+Conventions
+-----------
+* AJAX endpoints answer JSON shaped as ``{"ok": true, ...}`` or
+  ``{"ok": false, "error": "summary", "errors": {"field": ["msg"]}}``.
+* Any view that changes state is POST-only.
+* Prices shown/charged depend on the customer's tier (retail/wholesale), see cart.py.
+"""
 import json
-from datetime import datetime
-from django.urls import reverse
-from django.db.models import F, Q, Count
-from django.core.paginator import Paginator
+import logging
 
-from django.contrib.auth.models import User
-from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
-from django.contrib.auth.tokens import default_token_generator
-from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
-from django.utils.encoding import force_bytes
-
-import google.generativeai as genai
 from django.conf import settings
-from django_daraja.mpesa.core import MpesaClient
-
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
+from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
+from django.core.paginator import Paginator
+from django.db import transaction
+from django.db.models import Sum, Count, F, Q
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme, urlsafe_base64_decode
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
+from rest_framework import permissions, viewsets
+
+from .cart import Cart, price_tier_for
+from .context_processors import catalogue_nav
+from .forms import (
+    AccountForm, AddressForm, CheckoutForm, ContactForm, NewsletterForm,
+    PasswordChangeForm, RegisterForm, normalize_phone,
+)
 from .models import (
-    Product, Category, Brand, Order, CustomerProfile, 
-    MpesaTransaction, Address, OrderItem
+    PRICE_TIER_RETAIL, PRICE_TIER_WHOLESALE, Address, Brand, Category, CustomerProfile, MpesaTransaction,
+    NewsletterSubscriber, Order, OrderItem, Product, WishlistItem,
 )
-from .serializers import (
-    ProductSerializer, CategorySerializer, OrderSerializer
-)
-from .forms import RegisterForm  
-from .cart import Cart
+from .serializers import BrandSerializer, CategorySerializer, OrderSerializer, ProductSerializer
+from .services import MpesaError, initiate_stk_push as mpesa_stk_push, process_stk_callback
+
+logger = logging.getLogger(__name__)
+
+PAGE_SIZE = 24
+SORT_OPTIONS = [
+    ('featured', 'Featured'),
+    ('name', 'Name A–Z'),
+    ('price_asc', 'Price: low to high'),
+    ('price_desc', 'Price: high to low'),
+    ('discount', 'Biggest discount'),
+    ('newest', 'Newest'),
+]
 
 
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+def is_ajax(request):
+    return request.headers.get('x-requested-with') == 'XMLHttpRequest' or \
+        'application/json' in request.headers.get('accept', '')
 
 
-# 1. Template & Auth Views
-def home(request):
-    # 1. New Products: Ordered by newest first
-    new_products = Product.objects.filter(is_active=True).order_by('-created_at')[:8]
-    
-    # 2. Top Offers: Products where old_price is greater than retail_price
-    top_offers = Product.objects.filter(
-        is_active=True, 
-        old_price__gt=F('retail_price')
-    ).order_by('-id')[:8]
-    
-    # 3. Trending Section (Dynamic Categories)
-    # We find the top 2 categories that have the most active products
-    top_categories = Category.objects.annotate(
-        product_count=Count('products')
-    ).filter(product_count__gt=0).order_by('-product_count')[:2]
+def json_ok(**payload):
+    payload.setdefault('ok', True)
+    return JsonResponse(payload)
 
-    # We build a list containing the category and its products for the tabs
-    trending_data = []
-    for cat in top_categories:
-        trending_data.append({
-            'category': cat,
-            'products': Product.objects.filter(category=cat, is_active=True)[:8]
-        })
-    
-    # 4. Bestsellers: Products specifically marked as best sellers
-    # (Ensure you have 'is_best_seller' field in your Product model)
-    bestsellers = Product.objects.filter(is_active=True, is_best_seller=True)[:8]
+
+def json_error(message, status=400, errors=None):
+    return JsonResponse({'ok': False, 'error': message, 'errors': errors or {}}, status=status)
+
+
+def form_errors(form):
+    return {field: [str(e) for e in errs] for field, errs in form.errors.items()}
+
+
+def request_data(request):
+    """Accept JSON bodies as well as regular form posts."""
+    if request.content_type and 'application/json' in request.content_type:
+        try:
+            return json.loads(request.body or b'{}')
+        except ValueError:
+            return {}
+    return request.POST
+
+
+def get_profile(user):
+    profile, _ = CustomerProfile.objects.get_or_create(
+        user=user, defaults={'phone_number': '', 'contact_person': user.get_full_name()}
+    )
+    # Populate both sides of the one-to-one so later ``user.customerprofile`` /
+    # ``profile.user`` accesses (tier lookup, templates) do not re-query.
+    user.customerprofile = profile
+    return profile
+
+
+def safe_next_url(request, fallback='dashboard'):
+    candidate = request.POST.get('next') or request.GET.get('next')
+    if candidate and url_has_allowed_host_and_scheme(candidate, allowed_hosts={request.get_host()}):
+        return candidate
+    return reverse(fallback)
+
+
+def _apply_sort(queryset, sort, tier):
+    price_field = 'wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'retail_price'
+    if sort == 'name':
+        return queryset.order_by('name')
+    if sort == 'price_asc':
+        return queryset.order_by(F(price_field).asc(nulls_last=True), 'name')
+    if sort == 'price_desc':
+        return queryset.order_by(F(price_field).desc(nulls_last=True), 'name')
+    if sort == 'newest':
+        return queryset.order_by('-created_at', 'name')
+    if sort == 'discount':
+        old_field = 'old_wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'old_price'
+        return queryset.annotate(discount_amount=F(old_field) - F(price_field)) \
+            .order_by(F('discount_amount').desc(nulls_last=True), 'name')
+    return queryset.order_by('-is_best_seller', '-is_trending', 'name')
+
+
+def catalog(request, base_qs, *, title, subtitle='', tier=None, template='core/catalog.html',
+            default_sort='featured', extra=None, show_hero=True):
+    """Shared listing logic for every product grid page (filters, sort, search, pagination, AJAX)."""
+    tier = tier or price_tier_for(request.user)
+    q = (request.GET.get('q') or '').strip()
+    selected_categories = [s for s in request.GET.getlist('category') if s]
+    selected_brands = [s for s in request.GET.getlist('brand') if s]
+    sort = request.GET.get('sort') or default_sort
+    if sort not in dict(SORT_OPTIONS):
+        sort = default_sort
+
+    qs = base_qs.active().with_relations()
+    if q:
+        qs = qs.filter(
+            Q(name__icontains=q) | Q(description__icontains=q) | Q(item_code__icontains=q)
+            | Q(brand__name__icontains=q) | Q(category__name__icontains=q)
+        )
+    if selected_categories:
+        qs = qs.filter(category__slug__in=selected_categories)
+    if selected_brands:
+        qs = qs.filter(brand__slug__in=selected_brands)
+    # Every filter above joins single-valued foreign keys, so rows cannot duplicate
+    # and DISTINCT is not needed.
+    qs = _apply_sort(qs, sort, tier)
+
+    paginator = Paginator(qs, PAGE_SIZE)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    page_range = paginator.get_elided_page_range(page_obj.number, on_each_side=1, on_ends=1)
 
     context = {
-        'new_products': new_products,
-        'top_offers': top_offers,
-        'trending_data': trending_data, # Use this for your dynamic tabs
-        'bestsellers': bestsellers,
+        'title': title,
+        'subtitle': subtitle,
+        'tier': tier,
+        'page_obj': page_obj,
+        'products': page_obj.object_list,
+        'page_range': list(page_range),
+        'total_count': paginator.count,
+        'q': q,
+        'sort': sort,
+        'sort_options': SORT_OPTIONS,
+        'selected_categories': selected_categories,
+        'selected_brands': selected_brands,
+        'has_filters': bool(q or selected_categories or selected_brands),
+        'show_hero': show_hero,
+    }
+    if extra:
+        context.update(extra)
+
+    if is_ajax(request):
+        html = render_to_string('partials/product_grid.html', context, request=request)
+        return json_ok(html=html, count=paginator.count, page=page_obj.number, num_pages=paginator.num_pages)
+    return render(request, template, context)
+
+
+# ---------------------------------------------------------------------------
+# Storefront
+# ---------------------------------------------------------------------------
+def home(request):
+    active = Product.objects.active().with_relations()
+    tier = price_tier_for(request.user)
+    nav = catalogue_nav()  # cached categories/brands with product counts
+    context = {
+        'new_products': active.order_by('-created_at')[:8],
+        'top_offers': _apply_sort(active.on_offer(tier), 'discount', tier)[:8],
+        'bestsellers': active.filter(is_best_seller=True).order_by('name')[:8],
+        'trending': active.filter(is_trending=True).order_by('-created_at')[:8],
+        'top_categories': nav['categories'][:8],
+        'stats': {
+            'products': nav['product_count'],
+            'brands': len(nav['brands']),
+            'categories': len(nav['categories']),
+        },
     }
     return render(request, 'core/home.html', context)
 
 
-
+def products(request):
+    return catalog(
+        request, Product.objects.all(),
+        title="Product Catalogue",
+        subtitle="Every SKU we distribute, priced for your account.",
+    )
 
 
 def retailers(request):
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
-
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    if selected_brands:
-        all_products = all_products.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        all_products = all_products.filter(category_id__in=selected_cats)
-
-    # Check if any filter is active
-    has_filters = bool(selected_brands) or bool(selected_cats)
-
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        # AJAX/Fetch request
-        if has_filters:
-            # Return ALL filtered products (no pagination)
-            products_list = all_products.distinct()
-        else:
-            # Normal pagination for initial load / no filters
-            paginator = Paginator(all_products.distinct(), 12)
-            page_number = request.GET.get('page', 1)
-            products_list = paginator.get_page(page_number)
-
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'brand': p.brand.name if p.brand else '',
-            'brand_id': p.brand.id if p.brand else None,
-            'category_id': p.category.id if p.category else None,
-            'image_url': p.image_url,
-            'retail_price': float(p.retail_price),
-            'old_price': float(p.old_price) if p.old_price else None,
-            'discount_percentage': p.discount_percentage,
-            'average_rating': p.average_rating,
-        } for p in products_list]
-
-        return JsonResponse({'products': products_data, 'has_filters': has_filters})
-
-    # Normal page load (with pagination)
-    paginator = Paginator(all_products.distinct(), 12)
-    page_number = request.GET.get('page', 1)
-    products_page = paginator.get_page(page_number)
-
-    context = {
-        'products': products_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'categories': Category.objects.all(),
-        'brands': Brand.objects.all(),
-    }
-    return render(request, 'core/retailers.html', context)
-
-
-
-
-
-
+    return catalog(
+        request, Product.objects.all(),
+        title="Retailers Shop",
+        subtitle="Shop-ready FMCG lines at retail prices with next-day delivery across Nairobi.",
+        tier='retail',
+        extra={'tier_notice': 'retail'},
+    )
 
 
 def wholesalers(request):
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
-
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    if selected_brands:
-        all_products = all_products.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        all_products = all_products.filter(category_id__in=selected_cats)
-
-    has_filters = bool(selected_brands) or bool(selected_cats)
-
-    # AJAX / Fetch request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if has_filters:
-            # Return ALL filtered products (no pagination when filters are active)
-            products_list = all_products.distinct()
-        else:
-            # Normal pagination when no filters
-            paginator = Paginator(all_products.distinct(), 12)
-            page_number = request.GET.get('page', 1)
-            products_list = paginator.get_page(page_number)
-
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'brand': p.brand.name if p.brand else '',
-            'brand_id': p.brand.id if p.brand else None,
-            'category_id': p.category.id if p.category else None,
-            'image_url': p.image_url,
-            'wholesale_price': float(p.wholesale_price),
-            'old_price': float(p.old_price) if p.old_price else None,
-            'discount_percentage': p.discount_percentage,
-            'average_rating': p.average_rating,
-        } for p in products_list]
-
-        return JsonResponse({'products': products_data, 'has_filters': has_filters})
-
-    # Normal page load (always paginated)
-    paginator = Paginator(all_products.distinct(), 12)
-    page_number = request.GET.get('page', 1)
-    products_page = paginator.get_page(page_number)
-
-    context = {
-        'products': products_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'categories': Category.objects.all(),
-        'brands': Brand.objects.all(),
-    }
-    return render(request, 'core/wholesalers.html', context)
-
-
-
-
-def products(request):
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
-
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    if selected_brands:
-        all_products = all_products.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        all_products = all_products.filter(category_id__in=selected_cats)
-
-    has_filters = bool(selected_brands) or bool(selected_cats)
-
-    # AJAX request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if has_filters:
-            products_list = all_products.distinct()
-        else:
-            paginator = Paginator(all_products.distinct(), 12)
-            page_number = request.GET.get('page', 1)
-            products_list = paginator.get_page(page_number)
-
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'brand': p.brand.name if p.brand else '',
-            'brand_id': p.brand.id if p.brand else None,
-            'category_id': p.category.id if p.category else None,
-            'image_url': p.image_url,
-            'wholesale_price': float(p.wholesale_price),
-            'retail_price': float(p.retail_price),
-            'old_price': float(p.old_price) if p.old_price else None,
-            'discount_percentage': p.discount_percentage,
-            'average_rating': p.average_rating,
-        } for p in products_list]
-
-        return JsonResponse({'products': products_data, 'has_filters': has_filters})
-
-    # Normal page load
-    paginator = Paginator(all_products.distinct(), 12)
-    page_number = request.GET.get('page', 1)
-    products_page = paginator.get_page(page_number)
-
-    context = {
-        'products': products_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'categories': Category.objects.all(),
-        'brands': Brand.objects.all(),
-    }
-    return render(request, 'core/products.html', context)
-
-
-    
-
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    # Fetch related products from the same category, excluding the current one
-    related_products = Product.objects.filter(
-        category=product.category, 
-        is_active=True
-    ).exclude(pk=pk)[:10]
-    
-    return render(request, 'core/product-detail.html', {
-        'product': product,
-        'related_products': related_products
-    })
-
-
-
-
-
-
-
-
-
-
-
-def brands(request):
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
-
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    if selected_brands:
-        all_products = all_products.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        all_products = all_products.filter(category_id__in=selected_cats)
-
-    has_filters = bool(selected_brands) or bool(selected_cats)
-
-    # AJAX request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if has_filters:
-            products_list = all_products.distinct()
-        else:
-            paginator = Paginator(all_products.distinct(), 15)
-            page_number = request.GET.get('page', 1)
-            products_list = paginator.get_page(page_number)
-
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'brand': p.brand.name if p.brand else '',
-            'brand_id': p.brand.id if p.brand else None,
-            'category_id': p.category.id if p.category else None,
-            'image_url': p.image_url,
-            'retail_price': float(p.retail_price),
-            'old_price': float(p.old_price) if p.old_price else None,
-            'discount_percentage': p.discount_percentage,
-            'average_rating': p.average_rating,
-        } for p in products_list]
-
-        return JsonResponse({'products': products_data, 'has_filters': has_filters})
-
-    # Normal page load
-    paginator = Paginator(all_products.distinct(), 15)
-    page_number = request.GET.get('page', 1)
-    products_page = paginator.get_page(page_number)
-
-    context = {
-        'products': products_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'categories': Category.objects.all(),
-        'brands': Brand.objects.all(),
-    }
-    return render(request, 'core/brands.html', context)
-
-
-def categories(request):
-    all_products = Product.objects.filter(is_active=True).select_related('brand', 'category')
-
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    if selected_brands:
-        all_products = all_products.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        all_products = all_products.filter(category_id__in=selected_cats)
-
-    has_filters = bool(selected_brands) or bool(selected_cats)
-
-    # AJAX request
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        if has_filters:
-            products_list = all_products.distinct()
-        else:
-            paginator = Paginator(all_products.distinct(), 15)
-            page_number = request.GET.get('page', 1)
-            products_list = paginator.get_page(page_number)
-
-        products_data = [{
-            'id': p.id,
-            'name': p.name,
-            'brand': p.brand.name if p.brand else '',
-            'brand_id': p.brand.id if p.brand else None,
-            'category_id': p.category.id if p.category else None,
-            'image_url': p.image_url,
-            'retail_price': float(p.retail_price),
-            'old_price': float(p.old_price) if p.old_price else None,
-            'discount_percentage': p.discount_percentage,
-            'average_rating': p.average_rating,
-        } for p in products_list]
-
-        return JsonResponse({'products': products_data, 'has_filters': has_filters})
-
-    # Normal page load
-    paginator = Paginator(all_products.distinct(), 15)
-    page_number = request.GET.get('page', 1)
-    products_page = paginator.get_page(page_number)
-
-    context = {
-        'products': products_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'categories': Category.objects.all(),
-        'brands': Brand.objects.all(),
-    }
-    return render(request, 'core/categories.html', context)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    # Only products that actually carry a wholesale price belong on this page.
+    return catalog(
+        request, Product.objects.with_wholesale_price(),
+        title="Wholesalers Shop",
+        subtitle="Bale and carton pricing straight from the manufacturer for verified wholesale accounts.",
+        tier='wholesale',
+        extra={'tier_notice': 'wholesale'},
+    )
 
 
 def offers(request):
-    """Offers page with proper filtering and pagination"""
-    
-    # Base queryset: Only products with discounts
-    offers_queryset = Product.objects.filter(
-        is_active=True
-    ).filter(
-        Q(old_price__gt=F('wholesale_price')) | 
-        Q(old_price__gt=F('retail_price'))
+    return catalog(
+        request, Product.objects.on_offer(price_tier_for(request.user)),
+        title="Offers & Deals",
+        subtitle="Every product with a reduced price. Prices update daily.",
+        default_sort='discount',
+        extra={'is_offers': True},
     )
-
-    # Get filter values
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-
-    # Apply filters to main queryset
-    if selected_brands:
-        offers_queryset = offers_queryset.filter(brand_id__in=selected_brands)
-    if selected_cats:
-        offers_queryset = offers_queryset.filter(category_id__in=selected_cats)
-
-    # Pagination
-    paginator = Paginator(offers_queryset.select_related('brand', 'category').order_by('-created_at'), 12)
-    page_number = request.GET.get('page')
-    offers_page = paginator.get_page(page_number)
-
-    # === COUNTS FOR FILTERS - ONLY COUNT OFFERS ===
-    brands_with_count = Brand.objects.annotate(
-        offers_count=Count('products', filter=Q(products__is_active=True) & 
-                          (Q(products__old_price__gt=F('products__wholesale_price')) | 
-                           Q(products__old_price__gt=F('products__retail_price'))))
-    ).filter(offers_count__gt=0)
-
-    categories_with_count = Category.objects.annotate(
-        offers_count=Count('products', filter=Q(products__is_active=True) & 
-                          (Q(products__old_price__gt=F('products__wholesale_price')) | 
-                           Q(products__old_price__gt=F('products__retail_price'))))
-    ).filter(offers_count__gt=0)
-
-    context = {
-        'offers': offers_page,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'brands': brands_with_count,
-        'categories': categories_with_count,
-    }
-    return render(request, 'core/offers.html', context)
 
 
 def search(request):
-    query = request.GET.get('q')
-    
-    # Get lists of selected IDs from the checkboxes
-    selected_brands = request.GET.getlist('brand')
-    selected_cats = request.GET.getlist('category_filter')
-    
-    products = Product.objects.filter(is_active=True)
-    
-    # 1. Text Search
-    if query:
-        products = products.filter(
-            Q(name__icontains=query) | 
-            Q(description__icontains=query) |
-            Q(brand__name__icontains=query)
-        )
-
-    # 2. Filter by Brand (Multiple)
-    if selected_brands:
-        products = products.filter(brand_id__in=selected_brands)
-
-    # 3. Filter by Category (Multiple)
-    if selected_cats:
-        products = products.filter(category_id__in=selected_cats)
-
-    return render(request, 'core/search.html', {
-        'products': products.distinct(),
-        'query': query,
-        'selected_brands': selected_brands,
-        'selected_cats': selected_cats,
-        'brands': Brand.objects.annotate(p_count=Count('products')).filter(p_count__gt=0),
-    })
+    q = (request.GET.get('q') or '').strip()
+    return catalog(
+        request, Product.objects.all(),
+        title=f'Results for “{q}”' if q else "Search",
+        subtitle="" if q else "Type a product, brand or category name to search the catalogue.",
+        show_hero=False,
+        extra={'is_search': True},
+    )
 
 
+@require_GET
+def search_suggest(request):
+    q = (request.GET.get('q') or '').strip()
+    if len(q) < 2:
+        return json_ok(products=[], categories=[], brands=[])
+    tier = price_tier_for(request.user)
+    products_qs = Product.objects.active().with_relations().filter(
+        Q(name__icontains=q) | Q(brand__name__icontains=q) | Q(item_code__icontains=q)
+    ).order_by('-is_best_seller', 'name')[:6]
+    return json_ok(
+        products=[{
+            'id': p.id, 'name': p.name, 'brand': p.brand.name if p.brand else '',
+            'price': float(p.price_for(tier)), 'url': p.get_absolute_url(), 'image': p.image_url,
+            'has_image': p.has_image, 'initials': p.initials, 'hue': p.placeholder_hue,
+        } for p in products_qs],
+        categories=[{'name': c.name, 'url': c.get_absolute_url()} for c in Category.objects.filter(name__icontains=q)[:4]],
+        brands=[{'name': b.name, 'url': b.get_absolute_url()} for b in Brand.objects.filter(name__icontains=q)[:4]],
+    )
 
 
-def mini_cart(request):
-    """Returns only the mini-cart HTML fragment"""
+def categories(request):
+    cats = (
+        Category.objects.annotate(product_count=Count('products', filter=Q(products__is_active=True)))
+        .filter(product_count__gt=0).order_by('name')
+    )
+    return render(request, 'core/categories.html', {'categories': cats})
+
+
+def brands(request):
+    brand_list = (
+        Brand.objects.annotate(product_count=Count('products', filter=Q(products__is_active=True)))
+        .filter(product_count__gt=0).order_by('name')
+    )
+    return render(request, 'core/brands.html', {'brands': brand_list})
+
+
+def product_detail(request, pk):
+    product = get_object_or_404(Product.objects.with_relations(), pk=pk, is_active=True)
+    related = Product.objects.active().with_relations().exclude(pk=pk)
+    same_category = related.filter(category=product.category)[:8] if product.category else related[:8]
+    same_brand = related.filter(brand=product.brand).exclude(pk__in=[p.pk for p in same_category])[:4] if product.brand else []
+    variants = Product.objects.active().with_relations().filter(name=product.name).exclude(pk=pk)
     cart = Cart(request)
-    return render(request, 'core/mini-cart.html', {'cart': cart})
+    context = {
+        'product': product,
+        'related_products': same_category,
+        'brand_products': same_brand,
+        'variants': variants,
+        'in_cart_qty': cart.quantity_of(product.id),
+        'in_stock': product.in_stock,  # evaluated once; the template uses it three times
+    }
+    # Coming from the retailers/wholesalers pages: keep showing that tier's price
+    # (the cart is still charged at the account's tier, and the page says so).
+    requested_tier = request.GET.get('tier')
+    if requested_tier in (PRICE_TIER_RETAIL, PRICE_TIER_WHOLESALE) and requested_tier != cart.tier:
+        context['tier'] = requested_tier
+        context['tier_notice'] = requested_tier
+    return render(request, 'core/product-detail.html', context)
 
 
+# ---------------------------------------------------------------------------
+# Cart
+# ---------------------------------------------------------------------------
+def _cart_response(request, cart, message='', product=None):
+    payload = {'cart': cart.summary(), 'message': message}
+    if is_ajax(request):
+        payload['drawer_html'] = render_to_string('partials/cart_drawer_items.html', {'cart': cart}, request=request)
+        if product is not None:
+            payload['product'] = {'id': product.id, 'name': product.name, 'qty': cart.quantity_of(product.id)}
+        return json_ok(**payload)
+    if message:
+        messages.success(request, message)
+    return redirect(request.META.get('HTTP_REFERER') or 'shopping-cart')
 
 
 def shopping_cart(request):
-    """Renders the main cart page"""
-    cart = Cart(request)
-    return render(request, 'core/shopping-cart.html', {'cart': cart})
+    return render(request, 'core/shopping-cart.html', {'cart': Cart(request)})
 
+
+def mini_cart(request):
+    return render(request, 'partials/cart_drawer_items.html', {'cart': Cart(request)})
+
+
+@require_POST
 def cart_add(request):
-    """Handles adding products to the cart via AJAX"""
+    data = request_data(request)
+    try:
+        product_id = int(data.get('product_id'))
+        qty = int(data.get('product_qty') or data.get('qty') or 1)
+    except (TypeError, ValueError):
+        return json_error("Invalid product.")
+    product = get_object_or_404(Product, id=product_id, is_active=True)
     cart = Cart(request)
-    if request.POST.get('action') == 'post':
-        product_id = int(request.POST.get('product_id'))
-        product_qty = int(request.POST.get('product_qty'))
-        product = get_object_or_404(Product, id=product_id)
-        
-        cart.add(product=product, quantity=product_qty)
-        
-        cart_quantity = cart.__len__()
-        cart_total = cart.get_total_price()                    # ← ADD THIS
-        
-        response = JsonResponse({
-            'qty': cart_quantity,
-            'total': float(cart_total)                         # ← ADD THIS
-        })
-        return response
-    
+    cart.add(product, qty)
+    return _cart_response(request, cart, f"{product.name} added to your cart.", product)
 
-def cart_delete(request):
-    """Removes an item from the cart via AJAX"""
-    cart = Cart(request)
-    if request.POST.get('action') == 'post':
-        product_id = int(request.POST.get('product_id'))
-        cart.delete(product_id=product_id)
-        
-        cart_quantity = cart.__len__()
-        cart_total = cart.get_total_price()
-        response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
-        return response
 
+@require_POST
 def cart_update(request):
-    """Updates the quantity of an item already in the cart"""
+    data = request_data(request)
+    try:
+        product_id = int(data.get('product_id'))
+        qty = int(data.get('product_qty') or data.get('qty') or 1)
+    except (TypeError, ValueError):
+        return json_error("Invalid quantity.")
     cart = Cart(request)
-    if request.POST.get('action') == 'post':
-        product_id = int(request.POST.get('product_id'))
-        product_qty = int(request.POST.get('product_qty'))
-        
-        cart.update(product_id=product_id, qty=product_qty)
-        
-        cart_quantity = cart.__len__()
-        cart_total = cart.get_total_price()
-        response = JsonResponse({'qty': cart_quantity, 'total': cart_total})
-        return response
+    cart.update(product_id, qty)
+    line_total = 0
+    for item in cart:
+        if item['product'].id == product_id:
+            line_total = float(item['total_price'])
+    if is_ajax(request):
+        payload = {'cart': cart.summary(), 'line_total': line_total, 'product_id': product_id,
+                   'drawer_html': render_to_string('partials/cart_drawer_items.html', {'cart': cart}, request=request)}
+        return json_ok(**payload)
+    return redirect('shopping-cart')
 
 
+@require_POST
+def cart_delete(request):
+    data = request_data(request)
+    try:
+        product_id = int(data.get('product_id'))
+    except (TypeError, ValueError):
+        return json_error("Invalid product.")
+    cart = Cart(request)
+    cart.delete(product_id)
+    return _cart_response(request, cart, "Item removed from your cart.")
+
+
+# ---------------------------------------------------------------------------
+# Checkout & orders
+# ---------------------------------------------------------------------------
 @login_required
 def checkout(request):
     cart = Cart(request)
-    profile = get_object_or_404(CustomerProfile, user=request.user)
-    
-    # Use the SAME logic as dashboard (this is what actually works)
-    primary_address = profile.addresses.filter(is_primary=True).first()
-
-    context = {
+    if cart.is_empty:
+        messages.info(request, "Your cart is empty. Add a few products before checking out.")
+        return redirect('products')
+    profile = get_profile(request.user)
+    primary = profile.primary_address
+    return render(request, 'core/checkout.html', {
         'cart': cart,
         'profile': profile,
-        'primary_address': primary_address,
-    }
-    return render(request, 'core/checkout.html', context)
+        'addresses': profile.addresses.all(),
+        'primary_address': primary,
+        'mpesa_enabled': bool(settings.MPESA_CALLBACK_URL and settings.MPESA_CONSUMER_KEY),
+    })
 
 
-import uuid
+def _send_order_confirmation(order):
+    if not order.email:
+        return
+    try:
+        body = render_to_string('core/emails/order_confirmation.txt', {'order': order, 'site': settings.SITE_INFO})
+        recipients = [order.email]
+        if settings.ORDER_NOTIFICATION_EMAIL:
+            recipients.append(settings.ORDER_NOTIFICATION_EMAIL)
+        send_mail(f"Order {order.order_number} confirmed", body, settings.DEFAULT_FROM_EMAIL, recipients, fail_silently=True)
+    except Exception:  # never let email problems break checkout
+        logger.exception("Could not send confirmation for %s", order.order_number)
+
+
 @login_required
+@require_POST
 def place_order(request):
-    if request.method == 'POST':
-        try:
-            cart = Cart(request)
-            data = json.loads(request.body)
-            order_number = str(uuid.uuid4()).split('-')[0].upper() 
-            # 1. Create the Order (The Anchor)s
-            order = Order.objects.create(
-                order_number=f"MAH-{order_number}", # Generates a short unique ID
-                customer=request.user.customerprofile,
-                full_name=f"{data.get('first_name')} {data.get('last_name')}",
-                email=data.get('email'),
-                phone=data.get('phone'),
-                address=data.get('address'),
-                city=data.get('city', 'Nairobi'),
-                total_amount=cart.get_total_price(), # Corrected field name
-                status='PENDING' # Consistent with STATUS_CHOICES
+    cart = Cart(request)
+    if cart.is_empty:
+        return json_error("Your cart is empty.", status=400)
+
+    form = CheckoutForm(request_data(request))
+    if not form.is_valid():
+        return json_error("Please check the highlighted fields.", errors=form_errors(form))
+    data = form.cleaned_data
+    profile = get_profile(request.user)
+
+    with transaction.atomic():
+        order = Order.objects.create(
+            order_number=Order.generate_order_number(),
+            customer=profile,
+            full_name=f"{data['first_name'].strip()} {data['last_name'].strip()}",
+            email=data['email'],
+            phone=data['phone'],
+            address=data['address'].strip(),
+            city=data['city'],
+            notes=data.get('notes', '').strip(),
+            payment_method=data['payment_method'],
+            total_amount=cart.get_total_price(),
+            status=Order.STATUS_PENDING,
+        )
+        OrderItem.objects.bulk_create([
+            OrderItem(order=order, product=item['product'], quantity=item['qty'], price_at_purchase=item['price'])
+            for item in cart
+        ])
+        if not profile.phone_number:
+            profile.phone_number = data['phone']
+            profile.save(update_fields=['phone_number'])
+        if data.get('save_address') or not profile.addresses.exists():
+            Address.objects.update_or_create(
+                customer=profile, is_primary=True,
+                defaults={'label': 'Delivery Address', 'physical_address': order.address, 'city': order.city},
             )
-    
 
-            # 2. Save Order Items
-            for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item['product'],
-                    price_at_purchase=item['price'], # Corrected field name
-                    quantity=item['qty']
-                )
+    cart.clear()
+    _send_order_confirmation(order)
 
-            payment_method = data.get('payment_method')
-            
-            # 3. Return response for Step 2
-            return JsonResponse({
-                'status': 'success',
-                'order_id': order.id,
-                'payment_method': payment_method,
-                'order_number': order.order_number
-            })
+    payment = {'sent': False, 'message': ''}
+    if order.payment_method == Order.PAYMENT_MPESA:
+        try:
+            mpesa_stk_push(order, data['mpesa_phone'])
+            payment = {'sent': True, 'message': 'Check your phone and enter your M-Pesa PIN to complete payment.'}
+        except MpesaError as exc:
+            payment = {'sent': False, 'message': str(exc)}
 
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return json_ok(
+        order_number=order.order_number,
+        order_id=order.id,
+        payment_method=order.payment_method,
+        payment=payment,
+        redirect_url=reverse('order-success', args=[order.order_number]),
+        status_url=reverse('check_payment_status', args=[order.order_number]),
+    )
 
+
+def _owned_order(request, order_number):
+    return get_object_or_404(
+        Order.objects.select_related('customer').prefetch_related('items__product'),
+        order_number=order_number, customer__user=request.user,
+    )
 
 
 @login_required
 def order_success(request, order_number):
-    order = get_object_or_404(Order, order_number=order_number)
-    
-    # Initialize and clear the cart
-    cart = Cart(request)
-    cart.clear()
-    
-    # EXTRA SAFETY: Manually pop the key using the string 'cart' 
-    # and 'session_cart' just in case there's a naming mismatch
-    request.session.pop('cart', None)
-    request.session.pop('session_cart', None)
-    
-    # Mark as modified to ensure the deletions above are committed
-    request.session.modified = True
-    
-    return render(request, 'core/order-success.html', {'order': order})
+    order = _owned_order(request, order_number)
+    return render(request, 'core/order-success.html', {
+        'order': order,
+        'mpesa_txn': getattr(order, 'mpesa_payment', None),
+        'awaiting_payment': order.can_pay,
+    })
 
 
+@login_required
+def order_detail(request, order_number):
+    order = _owned_order(request, order_number)
+    return render(request, 'core/order-detail.html', {
+        'order': order,
+        'mpesa_txn': MpesaTransaction.objects.filter(order=order).first(),
+        'awaiting_payment': order.can_pay,
+    })
 
 
-# Auth Views
+@login_required
+@require_POST
+def order_cancel(request, order_number):
+    order = _owned_order(request, order_number)
+    if not order.can_cancel:
+        messages.error(request, "This order can no longer be cancelled. Please contact support.")
+    else:
+        order.status = Order.STATUS_CANCELLED
+        order.save()
+        messages.success(request, f"Order {order.order_number} has been cancelled.")
+    return redirect('order_detail', order_number=order.order_number)
+
+
+@login_required
+def get_order_details(request, order_id):
+    order = get_object_or_404(Order.objects.prefetch_related('items__product'), id=order_id, customer__user=request.user)
+    return render(request, 'core/account/order_items_fragment.html', {'order': order})
+
+
+# ---------------------------------------------------------------------------
+# Payments (M-Pesa)
+# ---------------------------------------------------------------------------
+@login_required
+@require_POST
+def initiate_stk_push(request):
+    data = request_data(request)
+    order_number = data.get('order_number')
+    if order_number:
+        order = _owned_order(request, order_number)
+    else:
+        order = get_object_or_404(Order, id=data.get('order_id'), customer__user=request.user)
+    if order.is_paid:
+        return json_error("This order is already paid.")
+    if not order.can_pay:
+        return json_error(f"This order is {order.get_status_display().lower()} and can no longer be paid.")
+    try:
+        txn = mpesa_stk_push(order, data.get('phone') or order.phone)
+    except MpesaError as exc:
+        return json_error(str(exc), status=502)
+    return json_ok(checkout_id=txn.checkout_request_id, message="Check your phone and enter your M-Pesa PIN.")
+
+
+@login_required
+@require_GET
+def check_payment_status(request, order_number):
+    order = _owned_order(request, order_number)
+    txn = MpesaTransaction.objects.filter(order=order).first()
+    if order.is_paid:
+        status = 'paid'
+    elif order.status == Order.STATUS_FAILED:
+        status = 'failed'
+    else:
+        status = 'pending'
+    return json_ok(
+        status=status,
+        order_status=order.status,
+        receipt=txn.receipt_number if txn else None,
+        description=txn.response_description if txn else '',
+    )
+
+
+@csrf_exempt
+@require_POST
+def mpesa_callback(request):
+    try:
+        payload = json.loads(request.body or b'{}')
+        txn, success = process_stk_callback(payload)
+        logger.info("M-Pesa callback for %s: %s", txn.order.order_number, 'success' if success else 'failed')
+    except MpesaTransaction.DoesNotExist:
+        logger.warning("M-Pesa callback for unknown CheckoutRequestID: %s", request.body[:200])
+    except (KeyError, ValueError, TypeError) as exc:
+        logger.warning("Malformed M-Pesa callback: %s", exc)
+        return JsonResponse({"ResultCode": 1, "ResultDesc": "Malformed payload"}, status=400)
+    return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
+
+
+# ---------------------------------------------------------------------------
+# Auth
+# ---------------------------------------------------------------------------
+@require_http_methods(["GET", "POST"])
 def login_view(request):
-    """Hybrid Login: Handles both AJAX and standard POST for Username/Email"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
-        login_input = request.POST.get('username')
-        password = request.POST.get('password')
-        
-        # 1. Try to find the user by email first
+        login_input = (request.POST.get('username') or '').strip()
+        password = request.POST.get('password') or ''
+        username = login_input
         if '@' in login_input:
-            try:
-                user_obj = User.objects.get(email=login_input)
-                username = user_obj.username
-            except User.DoesNotExist:
-                username = login_input  # Fallback to the input string
-        else:
-            username = login_input
-
-        # 2. Use the resolved username to authenticate
+            matched = User.objects.filter(email__iexact=login_input).order_by('id').first()
+            if matched:
+                username = matched.username
         user = authenticate(request, username=username, password=password)
-
-        if user is not None:
+        if user is not None and user.is_active:
             login(request, user)
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                # reverse('dashboard') looks up the actual URL path automatically
-                return JsonResponse({
-                    "success": True, 
-                    "redirect_url": reverse('dashboard') 
-                })
-        
-        # 3. Handle Invalid Credentials
-        error_msg = "Invalid username/email or password."
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({"success": False, "error": error_msg}, status=400)
-        
-        messages.error(request, error_msg)
-    
-    return render(request, 'core/login.html', {'form': AuthenticationForm()})
+            if not request.POST.get('remember_me'):
+                request.session.set_expiry(0)
+            next_url = safe_next_url(request)
+            if is_ajax(request):
+                return json_ok(redirect_url=next_url)
+            return redirect(next_url)
 
+        error_msg = "We couldn't sign you in with those details. Check your email/username and password."
+        if is_ajax(request):
+            return json_error(error_msg, status=400)
+        messages.error(request, error_msg)
+
+    return render(request, 'core/auth/login.html', {'next': request.GET.get('next', '')})
+
+
+@require_http_methods(["GET", "POST"])
 def register_view(request):
-    """Hybrid Register: Creates User + CustomerProfile + Initial Address"""
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            # 1. Save the User
             user = form.save()
-            
-            # 2. Get extra fields from POST
-            tax_id = request.POST.get('tax_id', '').strip()
-            billing_addr_text = request.POST.get('billing_address', '').strip()
-            phone = request.POST.get('phone_number', '') # Assuming you have a phone field
-
-            # 3. Update the Profile (In case a signal already created it)
-            profile, created = CustomerProfile.objects.update_or_create(
-                user=user,
-                defaults={
-                    'tax_id': tax_id,
-                    'phone_number': phone,
-                }
-            )
-
-            # 4. Save Billing Address if provided
-            if billing_addr_text:
-                Address.objects.create(
-                    customer=profile,
-                    label="Billing Address",
-                    physical_address=billing_addr_text,
-                    is_primary=True
-                )
-
-            # 5. Log the user in
             login(request, user)
-            
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({
-                    "success": True, 
-                    "redirect_url": "/dashboard/"
-                })
-            return redirect('dashboard')
-        
-        # AJAX Validation Errors
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            return JsonResponse({
-                "success": False, 
-                "errors": form.errors.get_json_data()
-            }, status=400)
-    
+            messages.success(request, f"Welcome to Mahitaji, {user.first_name}! Your account is ready.")
+            if is_ajax(request):
+                return json_ok(redirect_url=safe_next_url(request))
+            return redirect(safe_next_url(request))
+        if is_ajax(request):
+            return json_error("Please fix the highlighted fields.", errors=form_errors(form))
     else:
         form = RegisterForm()
-    
-    return render(request, 'core/register.html', {'form': form})
+    return render(request, 'core/auth/register.html', {'form': form})
 
+
+@require_http_methods(["GET", "POST"])
 def logout_view(request):
     logout(request)
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        return JsonResponse({"success": True, "redirect_url": "/"})
+    if is_ajax(request):
+        return json_ok(redirect_url=reverse('home'))
+    messages.info(request, "You have been signed out.")
     return redirect('home')
 
-# User views
-def wishlist(request):
-    return render(request, 'core/wishlist.html')
 
-@login_required
-def dashboard(request):
-    user = request.user
-    profile = user.customerprofile
-    
-    # Fetch real orders for this customer
-    user_orders = profile.orders.all().order_by('-created_at')
-    
-    # Optional: Get the 5 most recent for a "Recent Orders" summary
-    recent_orders = user_orders[:5]
-    
-    # Get primary address for the Address tab
-    primary_address = profile.addresses.filter(is_primary=True).first()
-    
-    context = {
-        'user': user,
-        'profile': profile,
-        'user_orders': user_orders,
-        'recent_orders': recent_orders,
-        'primary_address': primary_address,
-    }
-    return render(request, 'core/dashboard.html', context)
-
-@login_required
-def transactions(request):
-    return render(request, 'core/transactions.html')
-
-@login_required
-def addresses(request):
-    return render(request, 'core/addresses.html')
-
-@login_required
-def payment_methods(request):
-    return render(request, 'core/payment-methods.html')
-
-
-# Helpdesk & Informational Views
-def pickups(request):
-    return render(request, 'core/pickups-deliveries.html')
-
-def payment_info(request):
-    return render(request, 'core/payment-info.html')
-
-def returns(request):
-    return render(request, 'core/return-policy.html')
-
-def faqs(request):
-    return render(request, 'core/faqs.html')
-
-def terms(request):
-    return render(request, 'core/terms.html')   
-
-def contact(request):
-    return render(request, 'core/contact-us.html') 
-
-def about(request):
-    return render(request, 'core/about-us.html')
-
-def statement(request):
-    return render(request, 'core/our-statement.html')
-
-def location(request):
-    return render(request, 'core/our-location.html')
-
-
-# 2. API Endpoints
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.filter(is_active=True)
-    serializer_class = ProductSerializer
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        category_slug = self.request.query_params.get('category')
-        if category_slug:
-            queryset = queryset.filter(category__slug=category_slug)
-        return queryset
-
-class OrderViewSet(viewsets.ModelViewSet):
-    permission_classes = [permissions.IsAuthenticated]
-    serializer_class = OrderSerializer
-
-    def get_queryset(self):
-        return Order.objects.filter(customer__user=self.request.user)
-
-    def perform_create(self, serializer):
-        customer = CustomerProfile.objects.get(user=self.request.user)
-        serializer.save(customer=customer)
-
-
-# 3. MPESA
-
-
-@login_required
-def initiate_stk_push(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            order_id = data.get('order_id')
-            order = get_object_or_404(Order, id=order_id)
-            
-            # Safeguard: Normalizing phone number
-            raw_phone = data.get('phone')
-            if raw_phone.startswith('0'):
-                phone_number = '254' + raw_phone[1:]
-            elif raw_phone.startswith('7') or raw_phone.startswith('1'): # Supports newer 01... prefixes
-                phone_number = '254' + raw_phone
-            else:
-                phone_number = raw_phone
-
-            # M-Pesa Configuration
-            cl = MpesaClient()
-            amount = int(order.total_amount)
-            account_ref = f"Order_{order.id}"
-            callback_url = 'https://your-ngrok-url.ngrok-free.app/mpesa/callback/'
-            
-            response = cl.stk_push(phone_number, amount, account_ref, 'Mahitaji Payment', callback_url)
-
-            # Log Transaction with Order link
-            MpesaTransaction.objects.update_or_create(
-                order=order,
-                defaults={
-                    'checkout_request_id': response.checkout_request_id,
-                    'merchant_request_id': response.merchant_request_id,
-                    'amount': amount,
-                    'phone_number': phone_number,
-                    'is_success': False
-                }
-            )
-            
-            return JsonResponse({"status": "success", "checkout_id": response.checkout_request_id})
-        except Exception as e:
-            return JsonResponse({"status": "error", "message": str(e)}, status=500)
-        
-@login_required
-def check_payment_status(request, order_number):
-    order = get_object_or_404(Order, order_number=order_number)
-    # Check if a successful transaction exists for this order
-    transaction = MpesaTransaction.objects.filter(order=order, is_success=True).exists()
-    
-    if transaction:
-        return JsonResponse({'status': 'paid'})
-    return JsonResponse({'status': 'pending'})
-
-
-@csrf_exempt
-def mpesa_callback(request):
-    try:
-        data = json.loads(request.body)
-        stk_callback = data['Body']['stkCallback']
-        result_code = stk_callback['ResultCode']
-        checkout_request_id = stk_callback['CheckoutRequestID']
-
-        # Find the specific transaction
-        transaction = MpesaTransaction.objects.get(checkout_request_id=checkout_request_id)
-
-        if result_code == 0:
-            # Successful Payment - Parse Metadata items
-            metadata = stk_callback['CallbackMetadata']['Item']
-            receipt_no = ""
-            for item in metadata:
-                if item['Name'] == 'MpesaReceiptNumber':
-                    receipt_no = item['Value']
-            
-            # Update Transaction
-            transaction.is_success = True
-            transaction.mpesa_receipt_number = receipt_no # Ensure this field exists in your model
-            transaction.save()
-
-            # Update Order
-            order = transaction.order
-            order.payment_status = 'Paid'
-            order.save()
-            
-            return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})
-        else:
-            # Failed Payment
-            transaction.is_success = False
-            transaction.save()
-            return JsonResponse({"ResultCode": result_code, "ResultDesc": "Payment Failed"})
-            
-    except Exception as e:
-        return JsonResponse({"ResultCode": 1, "ResultDesc": f"Internal Error: {str(e)}"})
-
-
-
-
+@require_http_methods(["GET", "POST"])
 def custom_password_reset(request):
     if request.method == "POST":
         form = PasswordResetForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data['email']
-            users = User.objects.filter(email=email)
-            if users.exists():
-                form.save(
-                    request=request,
-                    use_https=request.is_secure(),
-                    email_template_name='core/password_reset_email.html',
-                    subject_template_name='core/password_reset_subject.txt',
-                )
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"success": True, "redirect_url": "/password-reset/done/"})
-                return redirect('password_reset_done')
-            else:
-                error_msg = "No account found with that email."
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"success": False, "error": error_msg}, status=400)
-                messages.error(request, error_msg)
-        else:
-            if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                return JsonResponse({"success": False, "errors": form.errors}, status=400)
-    
-    return render(request, 'core/password_reset.html', {'form': PasswordResetForm()})
+            form.save(
+                request=request,
+                use_https=request.is_secure(),
+                email_template_name='core/auth/password_reset_email.html',
+                subject_template_name='core/auth/password_reset_subject.txt',
+            )
+            # Always behave the same, so the form can't be used to enumerate accounts.
+            if is_ajax(request):
+                return json_ok(redirect_url=reverse('password_reset_done'))
+            return redirect('password_reset_done')
+        if is_ajax(request):
+            return json_error("Enter a valid email address.", errors=form_errors(form))
+    return render(request, 'core/auth/password_reset.html')
 
 
-
+@require_http_methods(["GET", "POST"])
 def custom_password_reset_confirm(request, uidb64, token):
-    user = None  # Initialize user here
     try:
         uid = urlsafe_base64_decode(uidb64).decode()
         user = User.objects.get(pk=uid)
     except (TypeError, ValueError, OverflowError, User.DoesNotExist, UnicodeDecodeError):
         user = None
 
-    # Now 'user' is guaranteed to be defined (either as a User object or None)
-    if user is not None and default_token_generator.check_token(user, token):
-        if request.method == 'POST':
-            form = SetPasswordForm(user, request.POST)
-            if form.is_valid():
-                form.save()
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"success": True, "redirect_url": "/reset/done/"})
-                return redirect('password_reset_complete')
-            else:
-                if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-                    return JsonResponse({"success": False, "errors": form.errors}, status=400)
-        else:
-            form = SetPasswordForm(user)
-        return render(request, 'core/password_reset_confirm.html', {'form': form})
+    if user is None or not default_token_generator.check_token(user, token):
+        return render(request, 'core/auth/password_reset_invalid.html', status=400)
+
+    if request.method == 'POST':
+        form = SetPasswordForm(user, request.POST)
+        if form.is_valid():
+            form.save()
+            if is_ajax(request):
+                return json_ok(redirect_url=reverse('password_reset_complete'))
+            return redirect('password_reset_complete')
+        if is_ajax(request):
+            return json_error("Please check the password requirements.", errors=form_errors(form))
     else:
-        # Link is invalid or expired
-        return render(request, 'core/password_reset_invalid.html')
+        form = SetPasswordForm(user)
+    return render(request, 'core/auth/password_reset_confirm.html', {'form': form})
 
 
-
-
-# Simple Template Views
 def password_reset_done(request):
-    return render(request, 'core/password_reset_done.html')
+    return render(request, 'core/auth/password_reset_done.html')
+
 
 def password_reset_complete(request):
-    return render(request, 'core/password_reset_complete.html')
+    return render(request, 'core/auth/password_reset_complete.html')
 
 
-
-
-# Setup your API Key (Get one from Google AI Studio)
-# genai.configure(api_key="AIzaSyDb8cKq0rjT8FQLWeSthBIj7pqevFIvaW8")
-# genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-genai.configure(api_key=settings.GEMINI_API_KEY)
-
-# In views.py
-def ai_assistant_chat(request):
-    if request.method == "POST":
-        user_message = request.POST.get('message')
-        
-        # Change from 'gemini-1.5-flash' to:
-        # In views.py, update this line:
-        #model = genai.GenerativeModel('models/gemini-1.5-flash')
-
-        # Safe way to get business name even if customerprofile is missing
-        # Change this line:
-        business = request.user.customerprofile.business_name
-
-        # To this (Safer):
-        business = getattr(request.user, 'customerprofile', None)
-        business_name = business.business_name if business else "their business"
-        
-        context = (
-            f"You are the Mahitaji Wholesale Assistant. "
-            f"The user is {request.user.first_name} {request.user.last_name} "
-            f"representing {business_name}."
-        )
-        # Wrap in a try-except to catch API errors (like quota or invalid key)
-        try:
-            # Use the EXACT name from your terminal output
-            model = genai.GenerativeModel('models/gemini-2.0-flash')
-            
-            context = "You are the Mahitaji Wholesale Assistant."
-            response = model.generate_content(f"{context}\n\nUser: {user_message}")
-            
-            return JsonResponse({'reply': response.text})
-            
-        except Exception as e:
-            if "429" in str(e):
-                return JsonResponse({'reply': "I'm a bit busy helping other retailers. Please wait 30 seconds and try again!"})
-            return JsonResponse({'reply': f"Error: {str(e)}"})
-        
-
-from django.contrib.auth import update_session_auth_hash
+# ---------------------------------------------------------------------------
+# Account
+# ---------------------------------------------------------------------------
+def _account_context(request, section):
+    profile = get_profile(request.user)
+    return {
+        'profile': profile,
+        'section': section,
+        'order_count': profile.orders.count(),
+        'wishlist_count': WishlistItem.objects.filter(user=request.user).count(),
+    }
 
 
 @login_required
-def update_account(request):
+def dashboard(request):
+    ctx = _account_context(request, 'dashboard')
+    orders = ctx['profile'].orders.prefetch_related('items')
+    ctx.update({
+        'recent_orders': orders[:5],
+        'pending_count': orders.filter(status__in=[Order.STATUS_PENDING, Order.STATUS_PAID, Order.STATUS_SHIPPED]).count(),
+        'total_spent': sum((o.total_amount for o in orders if o.is_paid), 0),
+        'primary_address': ctx['profile'].primary_address,
+        'recent_wishlist': WishlistItem.objects.filter(user=request.user).select_related('product__brand')[:4],
+    })
+    return render(request, 'core/account/dashboard.html', ctx)
+
+
+@login_required
+def transactions(request):
+    ctx = _account_context(request, 'orders')
+    status = request.GET.get('status', '')
+    orders = ctx['profile'].orders.prefetch_related('items__product')
+    if status:
+        orders = orders.filter(status=status)
+    paginator = Paginator(orders, 10)
+    ctx.update({
+        'page_obj': paginator.get_page(request.GET.get('page')),
+        'status_filter': status,
+        'status_choices': Order.STATUS_CHOICES,
+        'payments': MpesaTransaction.objects.filter(order__customer=ctx['profile']).select_related('order')[:10],
+    })
+    return render(request, 'core/account/orders.html', ctx)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def addresses(request):
+    ctx = _account_context(request, 'addresses')
+    profile = ctx['profile']
     if request.method == 'POST':
-        user = request.user
-        profile, created = CustomerProfile.objects.get_or_create(user=user)
+        pk = request.POST.get('address_id')
+        instance = get_object_or_404(Address, pk=pk, customer=profile) if pk else None
+        form = AddressForm(request.POST, instance=instance)
+        if form.is_valid():
+            address = form.save(commit=False)
+            address.customer = profile
+            if not profile.addresses.exclude(pk=address.pk).exists():
+                address.is_primary = True
+            address.save()
+            messages.success(request, "Address saved.")
+            return redirect('addresses')
+        messages.error(request, "Please check the address form.")
+    else:
+        form = AddressForm()
+    ctx.update({'form': form, 'address_list': profile.addresses.all()})
+    return render(request, 'core/account/addresses.html', ctx)
 
-        # 1. Update Basic User Info
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.email = request.POST.get('email', user.email)
-
-        # 2. Profile Specific Info
-        profile.business_name = request.POST.get('billing_full_name', profile.business_name)
-        profile.tax_id = request.POST.get('tax_id', profile.tax_id)
-        
-        # M-Pesa / Phone Update
-        if 'mpesa_number' in request.POST:
-            profile.phone_number = request.POST.get('mpesa_number')
-        elif 'delivery_phone' in request.POST:
-            profile.phone_number = request.POST.get('delivery_phone')
-
-        # 3. Address Logic (Fixing the AttributeError)
-        new_address_text = request.POST.get('address')
-        new_city = request.POST.get('city')
-        
-        if new_address_text:
-            # Get existing primary address or create a new one for this customer
-            address_obj, addr_created = Address.objects.get_or_create(
-                customer=profile,
-                is_primary=True,
-                defaults={'label': 'Billing Address', 'physical_address': new_address_text, 'city': new_city or 'Nairobi'}
-            )
-            
-            if not addr_created:
-                # If it already existed, update the fields
-                address_obj.physical_address = new_address_text
-                if new_city:
-                    address_obj.city = new_city
-                address_obj.save()
-
-        # 4. Password Logic (Remains the same)
-        new_pass = request.POST.get('new_password')
-        if new_pass:
-            current_pass = request.POST.get('current_password')
-            confirm_pass = request.POST.get('confirm_password')
-            if not user.check_password(current_pass):
-                return JsonResponse({'error': 'Current password incorrect'}, status=400)
-            if new_pass != confirm_pass:
-                return JsonResponse({'error': 'Passwords do not match'}, status=400)
-            user.set_password(new_pass)
-            user.save()
-            update_session_auth_hash(request, user)
-
-        user.save()
-        profile.save()
-
-        return JsonResponse({'message': 'Profile updated successfully!'})
-
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @login_required
-def get_order_details(request, order_id):
-    order = get_object_or_404(Order, id=order_id, customer=request.user.customerprofile)
-    # This should return a small HTML snippet of a table with the items
-    return render(request, 'core/order_item.html', {'order': order})
+@require_POST
+def address_delete(request, pk):
+    profile = get_profile(request.user)
+    address = get_object_or_404(Address, pk=pk, customer=profile)
+    was_primary = address.is_primary
+    address.delete()
+    if was_primary:
+        remaining = profile.addresses.first()
+        if remaining:
+            remaining.is_primary = True
+            remaining.save()
+    messages.success(request, "Address removed.")
+    return redirect('addresses')
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def payment_methods(request):
+    ctx = _account_context(request, 'payments')
+    profile = ctx['profile']
+    if request.method == 'POST':
+        phone = normalize_phone(request.POST.get('mpesa_number'))
+        if not phone:
+            messages.error(request, "Enter a valid Safaricom number, e.g. 0712 345 678.")
+        else:
+            profile.phone_number = phone
+            profile.save(update_fields=['phone_number'])
+            messages.success(request, "M-Pesa number updated.")
+            return redirect('payment_methods')
+    ctx['payments'] = MpesaTransaction.objects.filter(order__customer=profile).select_related('order')[:20]
+    return render(request, 'core/account/payments.html', ctx)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def update_account(request):
+    """Account settings page. Handles the profile form and the password form."""
+    ctx = _account_context(request, 'settings')
+    user, profile = request.user, ctx['profile']
+    account_form = AccountForm(user, initial={
+        'first_name': user.first_name, 'last_name': user.last_name, 'email': user.email,
+        'business_name': profile.business_name, 'phone_number': profile.phone_number, 'tax_id': profile.tax_id,
+    })
+    password_form = PasswordChangeForm(user)
+
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type', 'account')
+        if form_type == 'password':
+            password_form = PasswordChangeForm(user, request.POST)
+            if password_form.is_valid():
+                user.set_password(password_form.cleaned_data['new_password'])
+                user.save()
+                update_session_auth_hash(request, user)
+                if is_ajax(request):
+                    return json_ok(message="Password updated.")
+                messages.success(request, "Password updated.")
+                return redirect('update_account')
+            if is_ajax(request):
+                return json_error("Please check the password fields.", errors=form_errors(password_form))
+        else:
+            account_form = AccountForm(user, request.POST)
+            if account_form.is_valid():
+                data = account_form.cleaned_data
+                user.first_name, user.last_name, user.email = data['first_name'], data['last_name'], data['email']
+                user.save()
+                profile.business_name = data.get('business_name') or None
+                profile.phone_number = data['phone_number']
+                profile.tax_id = data.get('tax_id')
+                profile.contact_person = user.get_full_name()
+                profile.save()
+                if is_ajax(request):
+                    return json_ok(message="Profile updated.")
+                messages.success(request, "Profile updated.")
+                return redirect('update_account')
+            if is_ajax(request):
+                return json_error("Please check the highlighted fields.", errors=form_errors(account_form))
+
+    ctx.update({'account_form': account_form, 'password_form': password_form})
+    return render(request, 'core/account/settings.html', ctx)
+
+
+@login_required
+def wishlist(request):
+    ctx = _account_context(request, 'wishlist')
+    ctx['items'] = WishlistItem.objects.filter(user=request.user).select_related('product__brand', 'product__category', 'product__unit_of_measure')
+    return render(request, 'core/account/wishlist.html', ctx)
+
+
+@require_POST
+def wishlist_toggle(request):
+    if not request.user.is_authenticated:
+        return json_error("Sign in to save products to your wishlist.", status=401)
+    data = request_data(request)
+    try:
+        product_id = int(data.get('product_id'))
+    except (TypeError, ValueError):
+        return json_error("Invalid product.", status=400)
+    product = get_object_or_404(Product, id=product_id, is_active=True)
+    item, created = WishlistItem.objects.get_or_create(user=request.user, product=product)
+    if not created:
+        item.delete()
+    count = WishlistItem.objects.filter(user=request.user).count()
+    if is_ajax(request):
+        return json_ok(added=created, count=count,
+                       message=f"{product.name} {'saved to' if created else 'removed from'} your wishlist.")
+    messages.success(request, f"{product.name} {'saved to' if created else 'removed from'} your wishlist.")
+    return redirect(request.META.get('HTTP_REFERER') or 'wishlist')
+
+
+# ---------------------------------------------------------------------------
+# Help desk, company pages, contact & newsletter
+# ---------------------------------------------------------------------------
+def pickups(request):
+    return render(request, 'core/pages/pickups.html')
+
+
+def payment_info(request):
+    return render(request, 'core/pages/payment_info.html')
+
+
+def returns(request):
+    return render(request, 'core/pages/returns.html')
+
+
+def faqs(request):
+    return render(request, 'core/pages/faqs.html')
+
+
+def terms(request):
+    return render(request, 'core/pages/terms.html')
+
+
+def about(request):
+    return render(request, 'core/pages/about.html')
+
+
+def statement(request):
+    return render(request, 'core/pages/statement.html')
+
+
+def location(request):
+    return render(request, 'core/pages/location.html')
+
+
+@require_http_methods(["GET", "POST"])
+def contact(request):
+    if request.method == 'POST':
+        form = ContactForm(request.POST)
+        if form.is_valid():
+            message = form.save()
+            try:
+                send_mail(
+                    f"[Mahitaji] {message.get_inquiry_type_display()} from {message.full_name}",
+                    f"{message.message}\n\nFrom: {message.full_name} <{message.email}> {message.phone}\nBusiness: {message.business_name}",
+                    settings.DEFAULT_FROM_EMAIL, [settings.SITE_INFO['email']], fail_silently=True,
+                )
+            except Exception:
+                logger.exception("Contact email failed")
+            if is_ajax(request):
+                return json_ok(message="Thanks! Our team will get back to you within one business day.")
+            messages.success(request, "Thanks! Our team will get back to you within one business day.")
+            return redirect('contact')
+        if is_ajax(request):
+            return json_error("Please check the highlighted fields.", errors=form_errors(form))
+    else:
+        initial = {}
+        if request.user.is_authenticated:
+            profile = getattr(request.user, 'customerprofile', None)
+            initial = {'full_name': request.user.get_full_name(), 'email': request.user.email,
+                       'business_name': profile.business_name if profile else '', 'phone': profile.phone_number if profile else ''}
+        form = ContactForm(initial=initial)
+    return render(request, 'core/pages/contact.html', {'form': form})
+
+
+@require_POST
+def newsletter_subscribe(request):
+    form = NewsletterForm(request_data(request))
+    if form.is_valid():
+        NewsletterSubscriber.objects.get_or_create(email=form.cleaned_data['email'])
+        msg = "You're on the list. Expect offers and stock alerts in your inbox."
+        if is_ajax(request):
+            return json_ok(message=msg)
+        messages.success(request, msg)
+    else:
+        if is_ajax(request):
+            return json_error("Enter a valid email address.", errors=form_errors(form))
+        messages.error(request, "Enter a valid email address.")
+    return redirect(request.META.get('HTTP_REFERER') or 'home')
+
+
+# ---------------------------------------------------------------------------
+# AI assistant
+# ---------------------------------------------------------------------------
+def _assistant_product_context(message, tier):
+    words = [w.strip('?.,!').lower() for w in message.split() if len(w.strip('?.,!')) > 2][:6]
+    if not words:
+        return []
+    query = Q()
+    for word in words:
+        query |= Q(name__icontains=word) | Q(brand__name__icontains=word) | Q(category__name__icontains=word)
+    return list(Product.objects.active().with_relations().filter(query).order_by('-is_best_seller', 'name')[:6]), words
+
+
+@require_POST
+def ai_assistant_chat(request):
+    user_message = (request_data(request).get('message') or '').strip()
+    if not user_message:
+        return json_error("Say something first.")
+    tier = price_tier_for(request.user)
+    found = _assistant_product_context(user_message, tier)
+    matches = found[0] if found else []
+    product_lines = "\n".join(
+        f"- {p.name} ({p.brand.name if p.brand else 'Mahitaji'}) — KSh {p.price_for(tier):,.0f} per {p.pack_size or 'unit'}; link: /product/{p.id}/"
+        for p in matches
+    )
+
+    name = request.user.get_full_name() if request.user.is_authenticated else "a visitor"
+    site = settings.SITE_INFO
+    system_prompt = (
+        "You are the Mahitaji Assistant for Mahitaji Enterprises Ltd, an FMCG wholesaler and retailer in Nairobi, Kenya. "
+        "Answer briefly and helpfully in plain text (no markdown). Prices are in Kenyan shillings. "
+        f"Delivery: within 24 hours in Nairobi, 2-3 days upcountry; self pick-up at {site['address']}. "
+        f"Payment: M-Pesa or cash on delivery. Support: {site['phone']}, {site['email']}. "
+        f"The customer is {name} on the {tier} price tier. "
+        + (f"Relevant catalogue items:\n{product_lines}" if product_lines else "No catalogue items matched their message.")
+    )
+
+    if not settings.GEMINI_API_KEY:
+        if matches:
+            reply = "Here is what I found in our catalogue:\n" + product_lines.replace('; link: ', ' — ')
+        else:
+            reply = (f"I can help with products, orders, delivery and payments. Call us on {site['phone']} "
+                     "or browse the catalogue for live prices.")
+        return json_ok(reply=reply, products=[{'id': p.id, 'name': p.name, 'url': p.get_absolute_url()} for p in matches])
+
+    try:
+        import google.generativeai as genai  # imported lazily: optional dependency
+        genai.configure(api_key=settings.GEMINI_API_KEY)
+        model = genai.GenerativeModel(settings.GEMINI_MODEL, system_instruction=system_prompt)
+        response = model.generate_content(user_message)
+        reply = (response.text or '').strip() or "Sorry, I didn't catch that. Could you rephrase?"
+    except Exception as exc:
+        logger.warning("Gemini request failed: %s", exc)
+        if "429" in str(exc):
+            reply = "I'm helping a lot of retailers right now. Please try again in about 30 seconds."
+        else:
+            reply = ("I'm having trouble connecting right now. " +
+                     (f"Meanwhile, here is what matched in our catalogue:\n{product_lines}" if product_lines
+                      else f"Please call {site['phone']} and our team will help."))
+    return json_ok(reply=reply, products=[{'id': p.id, 'name': p.name, 'url': p.get_absolute_url()} for p in matches])
+
+
+# ---------------------------------------------------------------------------
+# Errors
+# ---------------------------------------------------------------------------
+def error_404(request, exception=None):
+    return render(request, '404.html', status=404)
+
+
+def error_500(request):
+    return render(request, '500.html', status=500)
+
+
+# ---------------------------------------------------------------------------
+# JSON API
+# ---------------------------------------------------------------------------
+class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    lookup_field = 'slug'
+
+
+class BrandViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Brand.objects.all()
+    serializer_class = BrandSerializer
+    lookup_field = 'slug'
+
+
+class ProductViewSet(viewsets.ReadOnlyModelViewSet):
+    # ``stock_total`` feeds Product.current_stock so the list endpoint does not
+    # run one ledger aggregate per product.
+    queryset = Product.objects.active().with_relations().annotate(stock_total=Sum('stock_ledger__quantity'))
+    serializer_class = ProductSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        params = self.request.query_params
+        if params.get('category'):
+            queryset = queryset.filter(category__slug=params['category'])
+        if params.get('brand'):
+            queryset = queryset.filter(brand__slug=params['brand'])
+        if params.get('q'):
+            q = params['q']
+            queryset = queryset.filter(Q(name__icontains=q) | Q(item_code__icontains=q) | Q(brand__name__icontains=q))
+        return queryset.order_by('name')
+
+
+class OrderViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = OrderSerializer
+    lookup_field = 'order_number'
+
+    def get_queryset(self):
+        return Order.objects.filter(customer__user=self.request.user).prefetch_related('items__product')

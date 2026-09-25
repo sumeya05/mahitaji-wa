@@ -1,0 +1,43 @@
+{% load shop %}
+<div class="flex items-center justify-between gap-3 wrap mb-4">
+  <div class="text-sm">
+    <div class="muted">Placed {{ order.created_at|date:"j M Y, H:i" }}</div>
+    <div class="fw-600 mt-1"><i class="fa-solid {% if order.payment_method == 'mpesa' %}fa-mobile-screen-button{% else %}fa-money-bill-wave{% endif %}" style="color:var(--brand-600)"></i> {{ order.get_payment_method_display }}</div>
+  </div>
+  {% status_badge order %}
+</div>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead><tr><th>Product</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Subtotal</th></tr></thead>
+    <tbody>
+      {% for item in order.items.all %}
+      <tr>
+        <td>
+          <a href="{{ item.product.get_absolute_url }}" class="fw-600" style="color:var(--ink)">{{ item.product.name }}</a>
+          <div class="muted text-xs">{{ item.product.brand.name|default:'Mahitaji' }}{% if item.product.pack_size %} · {{ item.product.pack_size }}{% endif %}</div>
+        </td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num">{{ item.price_at_purchase|ksh }}</td>
+        <td class="num fw-600">{{ item.subtotal|ksh }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="muted text-center">No items recorded for this order.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      <tr><th colspan="3" class="num" style="background:transparent">Order total</th><td class="num fw-700" style="font-size:1.05rem;color:var(--brand-800)">{{ order.total_amount|ksh }}</td></tr>
+    </tfoot>
+  </table>
+</div>
+
+<div class="mt-4 text-sm">
+  <span class="muted"><i class="fa-solid fa-location-dot"></i> Deliver to:</span>
+  <span class="fw-600">{{ order.full_name|default:'' }}</span>{% if order.address %} · {{ order.address }}{% endif %}{% if order.city %}, {{ order.city }}{% endif %}
+  {% if order.phone %}<span class="muted"> · {{ order.phone }}</span>{% endif %}
+</div>
+
+<div class="flex items-center justify-between gap-3 wrap mt-5">
+  <a href="{{ order.get_absolute_url }}" class="btn btn-primary btn-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Open full order</a>
+  {% if order.can_pay %}<a href="{{ order.get_absolute_url }}" class="btn btn-amber btn-sm"><i class="fa-solid fa-mobile-screen-button"></i> Pay with M-Pesa</a>{% endif %}
+</div>

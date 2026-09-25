@@ -1,0 +1,134 @@
+{% extends 'core/account/base.html' %}
+{% load shop %}
+
+{% block account_title %}Delivery addresses{% endblock %}
+{% block account_crumb %}Addresses{% endblock %}
+{% block account_heading %}Delivery addresses{% endblock %}
+{% block account_subtitle %}Save the places we deliver to so checkout takes seconds.{% endblock %}
+
+{% block extra_css %}<style>
+  .addr-split { display: grid; gap: 20px; align-items: start; }
+  @media (min-width: 992px) { .addr-split { grid-template-columns: 1.4fr 1fr; } }
+  .addr-grid { display: grid; gap: 14px; }
+  @media (min-width: 640px) { .addr-grid { grid-template-columns: 1fr 1fr; } }
+  .addr-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .addr-actions form { display: inline; }
+</style>{% endblock %}
+
+{% block account_content %}
+<div class="addr-split">
+  <div>
+    {% if address_list %}
+    <div class="addr-grid">
+      {% for address in address_list %}
+      <div class="address-card{% if address.is_primary %} is-primary{% endif %}">
+        {% if address.is_primary %}<span class="badge badge-success">Primary</span>{% endif %}
+        <h4>{{ address.label }}</h4>
+        <p style="white-space:pre-line">{{ address.physical_address }}</p>
+        <p class="muted text-sm"><i class="fa-solid fa-city"></i> {{ address.city }}</p>
+        <div class="addr-actions">
+          <button type="button" class="btn btn-outline btn-sm" data-edit-address data-id="{{ address.id }}" data-label="{{ address.label }}" data-address="{{ address.physical_address }}" data-city="{{ address.city }}" data-primary="{{ address.is_primary|yesno:'1,0' }}"><i class="fa-solid fa-pen"></i> Edit</button>
+          {% if not address.is_primary %}
+          <form method="post" action="{% url 'addresses' %}">
+            {% csrf_token %}
+            <input type="hidden" name="address_id" value="{{ address.id }}">
+            <input type="hidden" name="label" value="{{ address.label }}">
+            <input type="hidden" name="physical_address" value="{{ address.physical_address }}">
+            <input type="hidden" name="city" value="{{ address.city }}">
+            <input type="hidden" name="is_primary" value="on">
+            <button type="submit" class="btn btn-soft btn-sm"><i class="fa-solid fa-star"></i> Make primary</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'address_delete' address.id %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger-soft btn-sm" data-confirm="Remove the address “{{ address.label }}”?"><i class="fa-regular fa-trash-can"></i> Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty card">
+      <div class="empty-icon"><i class="fa-solid fa-map-location-dot"></i></div>
+      <h3>No addresses saved</h3>
+      <p>Add your shop or store location and we'll use it at checkout.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="card" id="addressForm">
+    <div class="card-header">
+      <h3 id="addressFormTitle">Add an address</h3>
+      <button type="button" class="btn btn-ghost btn-sm hidden" id="cancelEdit"><i class="fa-solid fa-xmark"></i> Cancel edit</button>
+    </div>
+    <div class="card-body">
+      <form method="post" action="{% url 'addresses' %}" id="addressFormEl">
+        {% csrf_token %}
+        <input type="hidden" name="address_id" id="id_address_id" value="{{ request.POST.address_id|default:'' }}">
+        {% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+
+        <div class="field{% if form.label.errors %} has-error{% endif %}">
+          <label class="label" for="id_label">Label</label>
+          <input class="input" type="text" id="id_label" name="label" value="{{ form.label.value|default:'' }}" placeholder="e.g. Shop, Warehouse, Home" maxlength="50">
+          <span class="field-help">Defaults to “Delivery Address” if left blank.</span>
+          {% for e in form.label.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
+
+        <div class="field{% if form.physical_address.errors %} has-error{% endif %}">
+          <label class="label" for="id_physical_address">Physical address <span class="req">*</span></label>
+          <textarea class="textarea" id="id_physical_address" name="physical_address" rows="3" placeholder="Street, building, floor or shop number, nearby landmark" required>{{ form.physical_address.value|default:'' }}</textarea>
+          {% for e in form.physical_address.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
+
+        <div class="field{% if form.city.errors %} has-error{% endif %}">
+          <label class="label" for="id_city">Town / city</label>
+          <input class="input" type="text" id="id_city" name="city" value="{{ form.city.value|default:'' }}" placeholder="Nairobi" maxlength="100">
+          {% for e in form.city.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
+
+        <div class="field">
+          <label class="check"><input type="checkbox" name="is_primary" id="id_is_primary" {% if form.is_primary.value %}checked{% endif %}><span>Use as my primary delivery address</span></label>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block" id="addressSubmit"><i class="fa-solid fa-floppy-disk"></i> Save address</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}<script>
+(function () {
+  var form = document.getElementById('addressFormEl');
+  if (!form) return;
+  var title = document.getElementById('addressFormTitle');
+  var cancel = document.getElementById('cancelEdit');
+  var submit = document.getElementById('addressSubmit');
+  var idInput = document.getElementById('id_address_id');
+
+  function reset() {
+    form.reset();
+    idInput.value = '';
+    title.textContent = 'Add an address';
+    submit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Save address';
+    cancel.classList.add('hidden');
+  }
+
+  document.querySelectorAll('[data-edit-address]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      idInput.value = btn.getAttribute('data-id');
+      document.getElementById('id_label').value = btn.getAttribute('data-label') || '';
+      document.getElementById('id_physical_address').value = btn.getAttribute('data-address') || '';
+      document.getElementById('id_city').value = btn.getAttribute('data-city') || '';
+      document.getElementById('id_is_primary').checked = btn.getAttribute('data-primary') === '1';
+      title.textContent = 'Edit address';
+      submit.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Update address';
+      cancel.classList.remove('hidden');
+      document.getElementById('addressForm').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('id_label').focus();
+    });
+  });
+  cancel.addEventListener('click', reset);
+  if (idInput.value) { title.textContent = 'Edit address'; cancel.classList.remove('hidden'); }
+})();
+</script>{% endblock %}

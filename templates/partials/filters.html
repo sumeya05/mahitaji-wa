@@ -1,0 +1,23 @@
+<div class="card">
+  <div class="filter-head"><span><i class="fa-solid fa-tags" style="color:var(--brand-600);margin-right:6px"></i>Categories</span><span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">{{ all_categories|length }}</span></div>
+  <div class="filter-search"><input type="search" class="input" placeholder="Find a category…" data-filter-search aria-label="Find a category"></div>
+  <div class="filter-list">
+    {% for cat in all_categories %}
+    <label><input type="checkbox" data-filter="category" value="{{ cat.slug }}" data-label="{{ cat.name }}" {% if cat.slug in selected_categories %}checked{% endif %}><span>{{ cat.name }}</span><span class="cnt">{{ cat.product_count }}</span></label>
+    {% endfor %}
+  </div>
+</div>
+<div class="card">
+  <div class="filter-head"><span><i class="fa-solid fa-industry" style="color:var(--brand-600);margin-right:6px"></i>Brands</span><span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">{{ all_brands|length }}</span></div>
+  <div class="filter-search"><input type="search" class="input" placeholder="Find a brand…" data-filter-search aria-label="Find a brand"></div>
+  <div class="filter-list">
+    {% for brand in all_brands %}
+    <label><input type="checkbox" data-filter="brand" value="{{ brand.slug }}" data-label="{{ brand.name }}" {% if brand.slug in selected_brands %}checked{% endif %}><span>{{ brand.name }}</span><span class="cnt">{{ brand.product_count }}</span></label>
+    {% endfor %}
+  </div>
+</div>
+<div class="card card-body mt-3" style="background:var(--brand-50);border-color:var(--brand-200)">
+  <strong style="display:block;margin-bottom:4px"><i class="fa-brands fa-whatsapp" style="color:var(--success)"></i> Need a bulk quote?</strong>
+  <p class="text-sm text-2 mb-2">Our sales team answers within the hour on business days.</p>
+  <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-soft btn-sm btn-block">Message sales</a>
+</div>

@@ -1,0 +1,101 @@
+{% extends 'base/base.html' %}
+{% load shop %}
+
+{% block title %}Pick-ups &amp; Deliveries · Nairobi Next-Day, Upcountry 2–3 Days · Mahitaji{% endblock %}
+{% block meta_description %}Mahitaji delivery information: next-day delivery across Nairobi, 2–3 business days upcountry, free delivery above {{ site.free_delivery_threshold|ksh }}, self-collection at Baba Dogo Road, order tracking and delivery zones.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Pick-ups & deliveries" subtitle="How your order gets from our Baba Dogo warehouse to your shelf, and how to collect it yourself." crumb="Pick-ups & deliveries" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <nav class="help-nav" aria-label="Help desk">
+      <a href="{% url 'pickups' %}" class="chip is-active"><i class="fa-solid fa-truck-fast"></i> Pick-ups &amp; deliveries</a>
+      <a href="{% url 'payment_info' %}" class="chip"><i class="fa-solid fa-mobile-screen-button"></i> Payment options</a>
+      <a href="{% url 'returns' %}" class="chip"><i class="fa-solid fa-rotate-left"></i> Return policy</a>
+      <a href="{% url 'faqs' %}" class="chip"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+      <a href="{% url 'terms' %}" class="chip"><i class="fa-solid fa-file-contract"></i> Terms</a>
+    </nav>
+
+    <div class="card card-body mb-5">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="feature-icon"><i class="fa-solid fa-truck-fast"></i></span>
+        <h3 class="mb-0">Standard delivery</h3>
+      </div>
+      <p class="text-2">We deliver within Nairobi and its environs within 24 hours of order confirmation. For regions outside Nairobi, delivery typically takes 2–3 business days depending on the specific location.</p>
+      <div class="grid grid-3" style="grid-template-columns:1fr" id="deliveryStats">
+        <div class="stat"><div class="stat-value">24h</div><div class="stat-label">Nairobi &amp; environs</div></div>
+        <div class="stat"><div class="stat-value">2–3 days</div><div class="stat-label">Upcountry, business days</div></div>
+        <div class="stat"><div class="stat-value" style="color:var(--brand-700)">Free</div><div class="stat-label">On orders above {{ site.free_delivery_threshold|ksh }}</div></div>
+      </div>
+      <p class="text-sm muted mt-4 mb-0"><i class="fa-solid fa-circle-info" style="color:var(--brand-600)"></i> Orders placed before 10:00 AM on a working day are prioritised for same-day or next-day delivery within Nairobi.</p>
+    </div>
+
+    <div class="grid grid-2 mb-5" style="grid-template-columns:1fr" id="pickupGrid">
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon" style="background:var(--amber-100);color:var(--amber-600)"><i class="fa-solid fa-warehouse"></i></span>
+          <h3 class="mb-0">Self-pickup point</h3>
+        </div>
+        <p class="text-2">Customers can choose to pick up their orders directly from our main warehouse to save on delivery costs. Our pickup point is located at:</p>
+        <div class="alert alert-muted">
+          <i class="fa-solid fa-location-dot"></i>
+          <div><strong>{{ site.address }}</strong><br><span class="text-sm">{{ site.po_box }}</span></div>
+        </div>
+        <p class="text-sm text-2 mb-1"><strong>Collection hours:</strong> Mon – Fri 08:30 – 16:30 · Sat 08:30 – 12:30 · Sun closed</p>
+        <p class="text-sm muted mb-3">Bring your order number and a valid ID. Drivers must remain with their vehicles during loading.</p>
+        <a href="{% url 'location' %}" class="link text-sm">Map &amp; visitor guidelines <i class="fa-solid fa-arrow-right"></i></a>
+      </div>
+
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon"><i class="fa-solid fa-location-crosshairs"></i></span>
+          <h3 class="mb-0">Tracking your order</h3>
+        </div>
+        <p class="text-2">Once your order is dispatched, you will receive a notification via SMS or email with the contact details of the delivery personnel assigned to your package.</p>
+        <p class="text-2">Signed-in customers can follow every status change, from confirmed to out for delivery to delivered, from their account dashboard.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'transactions' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-box-open"></i> View my orders</a>
+        {% else %}
+        <a href="{% url 'login' %}?next={% url 'transactions' %}" class="btn btn-primary btn-sm"><i class="fa-solid fa-right-to-bracket"></i> Sign in to track an order</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-bottom:14px"><div><span class="eyebrow">Delivery zones</span><h2>Where and how fast we deliver</h2></div></div>
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr><th>Zone</th><th>Areas covered</th><th>Delivery window</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Nairobi CBD &amp; environs</strong></td><td>Central CBD, Eastlands, Westlands, Embakasi, Ruaraka</td><td><span class="badge badge-success">Next day</span></td></tr>
+          <tr><td><strong>Kiambu / Thika Road</strong></td><td>Kiambu, Ruiru, Juja, Thika Road corridor</td><td><span class="badge badge-success">Next day</span></td></tr>
+          <tr><td><strong>Central &amp; Rift Valley</strong></td><td>Nyeri, Murang'a, Nakuru, Naivasha and major towns</td><td><span class="badge badge-info">2–3 business days</span></td></tr>
+          <tr><td><strong>Other regions</strong></td><td>Coast, Western, Nyanza, Eastern and North Eastern</td><td><span class="badge badge-muted">On request</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-sm muted mt-3">Delivery timelines are estimates. Free delivery applies to orders above {{ site.free_delivery_threshold|ksh }} within our standard zones; a delivery fee is shown at checkout for other orders.</p>
+
+    <div class="card card-body mt-8" style="background:var(--brand-50);border-color:var(--brand-200)">
+      <div class="flex items-center gap-4 wrap justify-between">
+        <div>
+          <h3 class="mb-1">Need a delivery outside these zones?</h3>
+          <p class="text-2 mb-0">Talk to our sales desk and we will quote a route for you.</p>
+        </div>
+        <div class="flex gap-2 wrap">
+          <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-primary"><i class="fa-brands fa-whatsapp"></i> WhatsApp sales</a>
+          <a href="{% url 'contact' %}" class="btn btn-outline">Contact us</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (min-width: 640px) { #deliveryStats { grid-template-columns: repeat(3, 1fr) !important; } #pickupGrid { grid-template-columns: 1fr 1fr !important; } }
+</style>
+{% endblock %}

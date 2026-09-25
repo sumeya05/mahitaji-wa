@@ -1,0 +1,62 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Return Policy · 48-Hour Returns · Mahitaji{% endblock %}
+{% block meta_description %}Mahitaji's goods return policy: report damaged, expired or incorrect items within 48 hours of delivery, keep original packaging, inspect perishables at offloading, and receive a refund or account credit within 5–7 business days.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Return policy" subtitle="Damaged, expired or incorrect item? Here is how we put it right." crumb="Return policy" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <nav class="help-nav" aria-label="Help desk">
+      <a href="{% url 'pickups' %}" class="chip"><i class="fa-solid fa-truck-fast"></i> Pick-ups &amp; deliveries</a>
+      <a href="{% url 'payment_info' %}" class="chip"><i class="fa-solid fa-mobile-screen-button"></i> Payment options</a>
+      <a href="{% url 'returns' %}" class="chip is-active"><i class="fa-solid fa-rotate-left"></i> Return policy</a>
+      <a href="{% url 'faqs' %}" class="chip"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+      <a href="{% url 'terms' %}" class="chip"><i class="fa-solid fa-file-contract"></i> Terms</a>
+    </nav>
+
+    <div class="card card-body">
+      <span class="eyebrow">Goods return policy</span>
+      <h2>Our standard return procedure</h2>
+      <p class="lead">We take pride in the quality of goods we supply to our partners. However, if you receive a damaged, expired or incorrect item, please follow our standard return procedure.</p>
+
+      <ul class="policy-list mt-4">
+        <li>
+          <i class="fa-solid fa-circle-check"></i>
+          <div><strong>48-hour window</strong><p>Returns must be initiated within 48 hours of delivery. Beyond this window, we may be unable to verify the claim with our suppliers.</p></div>
+        </li>
+        <li>
+          <i class="fa-solid fa-circle-check"></i>
+          <div><strong>Original condition</strong><p>Items must be in their original packaging, unopened and unused. Labels and seals must remain intact.</p></div>
+        </li>
+        <li>
+          <i class="fa-solid fa-circle-check"></i>
+          <div><strong>Perishables &amp; fresh goods</strong><p>Fresh or perishable goods must be inspected at the point of delivery. Returns for these specific items are only accepted at the moment of offloading.</p></div>
+        </li>
+        <li>
+          <i class="fa-solid fa-circle-check"></i>
+          <div><strong>Refunds &amp; credits</strong><p>Once a return is approved, refunds are processed to your original payment method or credited to your Mahitaji account within 5–7 business days.</p></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="mt-8">
+      <div class="section-head"><div><span class="eyebrow">How to start a return</span><h2>Three simple steps</h2></div></div>
+      <div class="steps">
+        <div class="step"><i class="fa-solid fa-camera"></i><h3>Document the issue</h3><p>Take clear photos of the item, its packaging and the delivery note within 48 hours of receiving your order.</p></div>
+        <div class="step"><i class="fa-solid fa-envelope-open-text"></i><h3>Contact claims</h3><p>Email claims@mahitaji.co.ke or call us with your order number, the affected items and your photos. We acknowledge every claim within one business day.</p></div>
+        <div class="step"><i class="fa-solid fa-truck-arrow-right"></i><h3>Collection &amp; resolution</h3><p>Our driver collects the goods on the next scheduled route. Once approved, we replace the item or issue a refund or account credit.</p></div>
+      </div>
+    </div>
+
+    <div class="alert alert-info mt-8 mb-0">
+      <i class="fa-solid fa-circle-info"></i>
+      <div>
+        <strong>Need help with a return?</strong><br>
+        Contact our claims department immediately at <a href="mailto:claims@mahitaji.co.ke"><strong>claims@mahitaji.co.ke</strong></a> or call <a href="{{ site.phone_href }}"><strong>{{ site.phone }}</strong></a>. You can also <a href="{{ site.whatsapp }}" target="_blank" rel="noopener">WhatsApp us</a> your photos directly.
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

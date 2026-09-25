@@ -1,0 +1,56 @@
+{% extends 'base/base.html' %}
+{% load shop %}
+
+{% block title %}{% block account_title %}My account{% endblock %} · {{ site.name }}{% endblock %}
+{% block meta_description %}Manage your Mahitaji account: orders, delivery addresses, payments and settings.{% endblock %}
+{% block body_class %}is-account{% endblock %}
+
+{% block content %}
+<section class="page-hero compact">
+  <div class="container">
+    <ul class="breadcrumb">
+      <li><a href="{% url 'home' %}">Home</a></li>
+      <li><a href="{% url 'dashboard' %}">My account</a></li>
+      <li class="current">{% block account_crumb %}Dashboard{% endblock %}</li>
+    </ul>
+    <h1>{% block account_heading %}My account{% endblock %}</h1>
+    <p>{% block account_subtitle %}{% endblock %}</p>
+  </div>
+</section>
+
+<div class="container">
+  <div class="account">
+    <nav class="account-nav" aria-label="Account">
+      <div class="who">
+        <div class="avatar">{{ profile.display_name|initials }}</div>
+        <div style="min-width:0">
+          <strong class="truncate">{{ profile.display_name }}</strong>
+          <small><span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span></small>
+          <small class="truncate" style="display:block">{{ user.email }}</small>
+        </div>
+      </div>
+      <a href="{% url 'dashboard' %}"{% if section == 'dashboard' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-gauge"></i> Dashboard</a>
+      <a href="{% url 'transactions' %}"{% if section == 'orders' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-box"></i> Orders</a>
+      <a href="{% url 'addresses' %}"{% if section == 'addresses' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-location-dot"></i> Addresses</a>
+      <a href="{% url 'payment_methods' %}"{% if section == 'payments' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-mobile-screen-button"></i> Payments</a>
+      <a href="{% url 'wishlist' %}"{% if section == 'wishlist' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-heart"></i> Wishlist</a>
+      <a href="{% url 'update_account' %}"{% if section == 'settings' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-gear"></i> Settings</a>
+      <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button></form>
+    </nav>
+
+    <div style="min-width:0">
+      {% block account_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="orderModal" role="dialog" aria-modal="true" aria-labelledby="orderModalTitle">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Order <span id="orderModalTitle"></span></h3>
+      <button class="icon-btn" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="modal-body" id="orderModalBody"></div>
+  </div>
+</div>
+{% endblock %}

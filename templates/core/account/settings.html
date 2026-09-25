@@ -1,0 +1,152 @@
+{% extends 'core/account/base.html' %}
+{% load shop %}
+
+{% block account_title %}Account settings{% endblock %}
+{% block account_crumb %}Settings{% endblock %}
+{% block account_heading %}Account settings{% endblock %}
+{% block account_subtitle %}Keep your contact details and password up to date.{% endblock %}
+
+{% block extra_css %}<style>
+  .settings-grid { display: grid; gap: 20px; align-items: start; }
+  @media (min-width: 992px) { .settings-grid { grid-template-columns: 1.4fr 1fr; } }
+  .tier-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); font-size: .9rem; }
+  .tier-row:last-child { border-bottom: 0; }
+  .tier-row i { width: 18px; text-align: center; color: var(--brand-600); margin-top: 3px; }
+  .tier-row strong { display: block; color: var(--ink); }
+  .tier-row p { margin: 0; color: var(--text-2); }
+</style>{% endblock %}
+
+{% block account_content %}
+<div class="settings-grid">
+  <div class="grid" style="gap:20px">
+    <div class="card">
+      <div class="card-header"><h3><i class="fa-solid fa-id-card" style="color:var(--brand-600)"></i> Profile details</h3></div>
+      <div class="card-body">
+        <form data-ajax method="post" action="{% url 'update_account' %}" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="account">
+          <div class="alert alert-danger form-alert{% if account_form.non_field_errors %} is-visible{% endif %}" data-form-alert role="alert">{{ account_form.non_field_errors|join:" " }}</div>
+
+          <div class="form-row">
+            <div class="field{% if account_form.first_name.errors %} has-error{% endif %}">
+              <label class="label" for="id_first_name">First name <span class="req">*</span></label>
+              <input class="input" type="text" id="id_first_name" name="first_name" value="{{ account_form.first_name.value|default:'' }}" autocomplete="given-name" required>
+              {% for e in account_form.first_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+            <div class="field{% if account_form.last_name.errors %} has-error{% endif %}">
+              <label class="label" for="id_last_name">Last name <span class="req">*</span></label>
+              <input class="input" type="text" id="id_last_name" name="last_name" value="{{ account_form.last_name.value|default:'' }}" autocomplete="family-name" required>
+              {% for e in account_form.last_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field">
+              <label class="label" for="id_username">Username</label>
+              <input class="input" type="text" id="id_username" value="{{ user.username }}" readonly>
+              <span class="field-help">Used to sign in alongside your email. It can't be changed.</span>
+            </div>
+            <div class="field{% if account_form.email.errors %} has-error{% endif %}">
+              <label class="label" for="id_email">Email address <span class="req">*</span></label>
+              <input class="input" type="email" id="id_email" name="email" value="{{ account_form.email.value|default:'' }}" autocomplete="email" required>
+              {% for e in account_form.email.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="field{% if account_form.business_name.errors %} has-error{% endif %}">
+              <label class="label" for="id_business_name">Business name</label>
+              <input class="input" type="text" id="id_business_name" name="business_name" value="{{ account_form.business_name.value|default:'' }}" autocomplete="organization" placeholder="Optional">
+              {% for e in account_form.business_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+            <div class="field{% if account_form.phone_number.errors %} has-error{% endif %}">
+              <label class="label" for="id_phone_number">Mobile number <span class="req">*</span></label>
+              <input class="input" type="tel" id="id_phone_number" name="phone_number" value="{{ account_form.phone_number.value|default:'' }}" autocomplete="tel" placeholder="0712 345 678" required>
+              <span class="field-help">Also used for M-Pesa prompts and delivery updates.</span>
+              {% for e in account_form.phone_number.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+          </div>
+
+          <div class="field{% if account_form.tax_id.errors %} has-error{% endif %}">
+            <label class="label" for="id_tax_id">KRA PIN</label>
+            <input class="input" type="text" id="id_tax_id" name="tax_id" value="{{ account_form.tax_id.value|default:'' }}" placeholder="A012345678Z" style="text-transform:uppercase">
+            <span class="field-help">Needed for eTIMS-compliant invoices.</span>
+            {% for e in account_form.tax_id.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+
+          <button type="submit" class="btn btn-primary" data-busy="Saving…"><i class="fa-solid fa-floppy-disk"></i> Save changes</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header"><h3><i class="fa-solid fa-lock" style="color:var(--brand-600)"></i> Change password</h3></div>
+      <div class="card-body">
+        <form data-ajax data-reset method="post" action="{% url 'update_account' %}" novalidate>
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="password">
+          <div class="alert alert-danger form-alert{% if password_form.non_field_errors %} is-visible{% endif %}" data-form-alert role="alert">{{ password_form.non_field_errors|join:" " }}</div>
+
+          <div class="field{% if password_form.current_password.errors %} has-error{% endif %}">
+            <label class="label" for="id_current_password">Current password <span class="req">*</span></label>
+            <div class="input-group">
+              <input class="input" type="password" id="id_current_password" name="current_password" autocomplete="current-password" required>
+              <button type="button" class="input-addon" data-toggle-password="id_current_password">Show</button>
+            </div>
+            {% for e in password_form.current_password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+          </div>
+
+          <div class="form-row">
+            <div class="field{% if password_form.new_password.errors %} has-error{% endif %}">
+              <label class="label" for="id_new_password">New password <span class="req">*</span></label>
+              <div class="input-group">
+                <input class="input" type="password" id="id_new_password" name="new_password" autocomplete="new-password" required>
+                <button type="button" class="input-addon" data-toggle-password="id_new_password">Show</button>
+              </div>
+              <span class="field-help">At least 8 characters, not entirely numeric.</span>
+              {% for e in password_form.new_password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+            <div class="field{% if password_form.confirm_password.errors %} has-error{% endif %}">
+              <label class="label" for="id_confirm_password">Confirm new password <span class="req">*</span></label>
+              <div class="input-group">
+                <input class="input" type="password" id="id_confirm_password" name="confirm_password" autocomplete="new-password" required>
+                <button type="button" class="input-addon" data-toggle-password="id_confirm_password">Show</button>
+              </div>
+              {% for e in password_form.confirm_password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-dark" data-busy="Updating…"><i class="fa-solid fa-key"></i> Update password</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3><i class="fa-solid fa-layer-group" style="color:var(--brand-600)"></i> Account tier</h3>
+      <span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span>
+    </div>
+    <div class="card-body">
+      <p class="text-2">Every Mahitaji account starts on retail pricing. Verified businesses that buy in bales and cartons move to the wholesale tier.</p>
+      <div class="tier-row">
+        <i class="fa-solid fa-store"></i>
+        <div><strong>Retailer</strong><p>Shelf-ready quantities at retail prices. Order any amount, pay by M-Pesa or on delivery.</p></div>
+      </div>
+      <div class="tier-row">
+        <i class="fa-solid fa-boxes-stacked"></i>
+        <div><strong>Wholesaler</strong><p>Bale and carton pricing across the catalogue, priority dispatch and a dedicated sales contact.</p></div>
+      </div>
+      {% if profile.is_wholesaler %}
+      <div class="alert alert-success mt-4 mb-0"><i class="fa-solid fa-circle-check"></i><span>Your account is on the <strong>wholesale tier</strong>. Wholesale prices apply to everything in your cart.</span></div>
+      {% else %}
+      <div class="alert alert-muted mt-4"><i class="fa-solid fa-circle-info"></i><span>You are currently on the <strong>retail tier</strong>. Running a shop, kiosk or distribution business? Ask us to review your account for wholesale pricing.</span></div>
+      <div class="flex gap-2 wrap">
+        <a href="{% url 'contact' %}?inquiry=wholesale" class="btn btn-amber btn-sm"><i class="fa-solid fa-arrow-up-right-dots"></i> Request wholesale upgrade</a>
+        <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm"><i class="fa-brands fa-whatsapp"></i> WhatsApp sales</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

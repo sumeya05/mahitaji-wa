@@ -1,0 +1,87 @@
+{% extends 'base/base.html' %}
+
+{% block title %}FAQs · Ordering, Delivery, Payments &amp; Returns · Mahitaji{% endblock %}
+{% block meta_description %}Answers to common questions about ordering from Mahitaji: delivery times in Nairobi and upcountry, minimum wholesale orders, M-Pesa and cash on delivery, credit lines, KEBS certification and the 48-hour return window.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Frequently asked questions" subtitle="Quick answers on ordering, delivery, payments, credit and returns. Can't find what you need? Our team is one call away." crumb="FAQs" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <nav class="help-nav" aria-label="Help desk">
+      <a href="{% url 'pickups' %}" class="chip"><i class="fa-solid fa-truck-fast"></i> Pick-ups &amp; deliveries</a>
+      <a href="{% url 'payment_info' %}" class="chip"><i class="fa-solid fa-mobile-screen-button"></i> Payment options</a>
+      <a href="{% url 'returns' %}" class="chip"><i class="fa-solid fa-rotate-left"></i> Return policy</a>
+      <a href="{% url 'faqs' %}" class="chip is-active"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+      <a href="{% url 'terms' %}" class="chip"><i class="fa-solid fa-file-contract"></i> Terms</a>
+    </nav>
+
+    <span class="eyebrow">Ordering &amp; delivery</span>
+    <h2 class="mb-4">Placing and receiving orders</h2>
+    <details class="accordion" open>
+      <summary>How do I track my order?</summary>
+      <div class="accordion-body">Log into your account and visit the <a href="{% url 'transactions' %}">My orders</a> section in your dashboard for real-time status updates once your items have been dispatched. You will also receive an SMS or email with the driver's contact details when your order leaves our warehouse.</div>
+    </details>
+    <details class="accordion">
+      <summary>Do you deliver outside Nairobi?</summary>
+      <div class="accordion-body">Yes, we deliver across all major towns in Kenya. Orders within Nairobi and its environs are delivered within 24 hours of confirmation; orders outside the Nairobi Metropolitan area are typically fulfilled within 2–3 business days. See our <a href="{% url 'pickups' %}">delivery zones</a>.</div>
+    </details>
+    <details class="accordion">
+      <summary>What is the minimum order for wholesalers?</summary>
+      <div class="accordion-body">Minimum wholesale orders vary by product category but generally start at KSh 50,000 to qualify for bulk pricing tiers. Retail accounts have no minimum order value.</div>
+    </details>
+    <details class="accordion">
+      <summary>Can I collect my order myself?</summary>
+      <div class="accordion-body">Yes. Choose self-collection at checkout and pick up from our warehouse at Prabhaki Industrial Park, Baba Dogo Road. Collection hours are Monday to Friday 08:30–16:30 and Saturday 08:30–12:30. Bring your order number and a valid ID.</div>
+    </details>
+    <details class="accordion">
+      <summary>What is the difference between a retail and a wholesale account?</summary>
+      <div class="accordion-body">Every business account sees retail prices by default. Once your business is verified for volume purchasing, your account is moved to the wholesale tier and the catalogue shows bale and carton pricing automatically. <a href="{% url 'register' %}">Register</a> or <a href="{% url 'contact' %}">ask us to upgrade</a> an existing account.</div>
+    </details>
+
+    <span class="eyebrow mt-6">Payments &amp; credit</span>
+    <h2 class="mb-4">Paying for your order</h2>
+    <details class="accordion">
+      <summary>What payment methods are accepted?</summary>
+      <div class="accordion-body">We accept M-Pesa (Express STK push and Till), bank transfers and business cheques for account customers. Cash on delivery is available for specific verified routes. Full details are on our <a href="{% url 'payment_info' %}">payment options</a> page.</div>
+    </details>
+    <details class="accordion">
+      <summary>How can I apply for a credit line?</summary>
+      <div class="accordion-body">Established retailers with a consistent purchase history of over 3 months can apply for credit terms following a credit risk assessment by our finance department. Please contact your account manager or email <a href="mailto:finance@mahitaji.co.ke">finance@mahitaji.co.ke</a> for details.</div>
+    </details>
+    <details class="accordion">
+      <summary>When am I charged for an M-Pesa order?</summary>
+      <div class="accordion-body">When you choose M-Pesa at checkout, an STK prompt is sent to your phone immediately. Enter your PIN to confirm and your order is processed the moment the payment is received. If the prompt times out you can request it again from the order page.</div>
+    </details>
+
+    <span class="eyebrow mt-6">Products &amp; returns</span>
+    <h2 class="mb-4">Quality and after-sales</h2>
+    <details class="accordion">
+      <summary>Are all your products KEBS certified?</summary>
+      <div class="accordion-body">Yes. As a premier distributor, we exclusively stock products that meet all Kenya Bureau of Standards (KEBS) requirements and are sourced through official manufacturer channels.</div>
+    </details>
+    <details class="accordion">
+      <summary>What if an item arrives damaged, expired or incorrect?</summary>
+      <div class="accordion-body">Report it within 48 hours of delivery to <a href="mailto:claims@mahitaji.co.ke">claims@mahitaji.co.ke</a> or by phone. Approved returns are replaced, refunded to the original payment method or credited to your account within 5–7 business days. Fresh and perishable goods must be inspected at the point of delivery. See the <a href="{% url 'returns' %}">return policy</a>.</div>
+    </details>
+    <details class="accordion">
+      <summary>Do prices include VAT?</summary>
+      <div class="accordion-body">Yes. All prices shown in the catalogue are inclusive of VAT where applicable, and an itemised invoice is issued with every order for your records.</div>
+    </details>
+
+    <div class="card card-body mt-8" style="background:var(--brand-50);border-color:var(--brand-200)">
+      <div class="flex items-center gap-4 wrap justify-between">
+        <div>
+          <h3 class="mb-1">Still need help?</h3>
+          <p class="text-2 mb-0">Our team is available {{ site.hours }}.</p>
+        </div>
+        <div class="flex gap-2 wrap">
+          <a href="{{ site.phone_href }}" class="btn btn-primary"><i class="fa-solid fa-phone"></i> {{ site.phone }}</a>
+          <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-soft"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a>
+          <a href="{% url 'contact' %}" class="btn btn-outline">Contact form</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

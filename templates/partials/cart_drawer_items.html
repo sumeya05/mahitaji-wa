@@ -1,0 +1,29 @@
+{% load shop %}{% if cart.is_empty %}
+<div class="cd-empty">
+  <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
+  <h4>Your cart is empty</h4>
+  <p class="text-sm">Add products from the catalogue to get started.</p>
+  <a href="{% url 'products' %}" class="btn btn-primary btn-sm mt-2" data-close>Browse products</a>
+</div>
+{% else %}
+{% for item in cart %}{% with product=item.product %}
+<div class="cd-item" data-cart-row="{{ product.id }}">
+  <a href="{{ product.get_absolute_url }}" class="cd-thumb">
+    {% if product.has_image %}<img src="{{ product.image_url }}" alt="">{% else %}{% include 'partials/pack.html' with product=product compact=True %}{% endif %}
+  </a>
+  <div>
+    <a href="{{ product.get_absolute_url }}" class="cd-name">{{ product.name }}</a>
+    <div class="cd-meta">{{ item.price|ksh }} × {{ item.qty }}{% if product.pack_size %} · {{ product.pack_size }}{% endif %}</div>
+    <div class="qty qty-sm mt-2">
+      <button type="button" class="qty-minus" aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
+      <input type="number" min="0" value="{{ item.qty }}" data-cart-qty="{{ product.id }}" aria-label="Quantity">
+      <button type="button" class="qty-plus" aria-label="Increase"><i class="fa-solid fa-plus"></i></button>
+    </div>
+  </div>
+  <div class="text-right">
+    <div class="cd-price" data-line-total>{{ item.total_price|ksh }}</div>
+    <button class="cd-remove mt-2" data-cart-remove="{{ product.id }}" aria-label="Remove {{ product.name }}"><i class="fa-regular fa-trash-can"></i> Remove</button>
+  </div>
+</div>
+{% endwith %}{% endfor %}
+{% endif %}

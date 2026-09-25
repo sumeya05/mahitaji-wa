@@ -1,0 +1,95 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Payment Options · M-Pesa, Cash on Delivery &amp; Bank Transfer · Mahitaji{% endblock %}
+{% block meta_description %}How to pay for your Mahitaji order: M-Pesa STK push at checkout, cash on delivery on verified routes, and bank transfer or business cheque for account customers. Secure, encrypted transactions.{% endblock %}
+
+{% block content %}
+{% include 'partials/page_hero.html' with title="Payment options" subtitle="Flexible and secure payment options tailored for both individual retailers and large-scale wholesalers." crumb="Payment options" %}
+
+<section class="section">
+  <div class="container container-narrow">
+    <nav class="help-nav" aria-label="Help desk">
+      <a href="{% url 'pickups' %}" class="chip"><i class="fa-solid fa-truck-fast"></i> Pick-ups &amp; deliveries</a>
+      <a href="{% url 'payment_info' %}" class="chip is-active"><i class="fa-solid fa-mobile-screen-button"></i> Payment options</a>
+      <a href="{% url 'returns' %}" class="chip"><i class="fa-solid fa-rotate-left"></i> Return policy</a>
+      <a href="{% url 'faqs' %}" class="chip"><i class="fa-solid fa-circle-question"></i> FAQs</a>
+      <a href="{% url 'terms' %}" class="chip"><i class="fa-solid fa-file-contract"></i> Terms</a>
+    </nav>
+
+    <span class="eyebrow">Payment policies</span>
+    <h2>Choose the way that suits your business</h2>
+    <p class="lead mb-5">At Mahitaji, we provide flexible and secure payment options tailored for both individual retailers and large-scale wholesalers.</p>
+
+    <div class="grid grid-2" style="grid-template-columns:1fr" id="payGrid">
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon" style="background:var(--success-100);color:var(--success-700)"><i class="fa-solid fa-mobile-screen"></i></span>
+          <div><h3 class="mb-0">M-Pesa STK push</h3><span class="badge badge-success">Fastest</span></div>
+        </div>
+        <p class="text-2">Enjoy faster processing with our secure online gateway. We support M-Pesa Express (STK push) so you never have to type a paybill number.</p>
+        <ol class="list text-2 text-sm mb-0" style="display:grid;gap:6px">
+          <li>Choose <strong>M-Pesa</strong> at checkout and confirm the phone number.</li>
+          <li>A payment prompt appears on your phone. Enter your M-Pesa PIN.</li>
+          <li>Your order is confirmed instantly and dispatched on the next route.</li>
+        </ol>
+      </div>
+
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon"><i class="fa-solid fa-hand-holding-dollar"></i></span>
+          <div><h3 class="mb-0">Cash on delivery</h3><span class="badge badge-info">Verified routes</span></div>
+        </div>
+        <p class="text-2">Available for verified business accounts on our regular Nairobi delivery routes. Pay the driver on arrival by cash, M-Pesa Buy Goods Till or business cheque.</p>
+        <ul class="list text-2 text-sm mb-0" style="display:grid;gap:6px">
+          <li>Payment must be settled in full at the point of delivery.</li>
+          <li>Available once your account and delivery address are verified.</li>
+          <li>Goods are released only after payment is confirmed.</li>
+        </ul>
+      </div>
+
+      <div class="card card-body">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon" style="background:var(--amber-100);color:var(--amber-600)"><i class="fa-solid fa-building-columns"></i></span>
+          <div><h3 class="mb-0">Bank transfer / cheque</h3><span class="badge badge-amber">Account customers</span></div>
+        </div>
+        <p class="text-2">For wholesale and account customers placing larger orders. Transfer to our bank account using your order number as the reference, or settle by business cheque on delivery.</p>
+        <ul class="list text-2 text-sm mb-0" style="display:grid;gap:6px">
+          <li>Bank details are printed on your pro-forma invoice.</li>
+          <li>Orders are dispatched once funds are cleared.</li>
+          <li>Credit terms are available to established partners after assessment.</li>
+        </ul>
+      </div>
+
+      <div class="card card-body" style="background:var(--brand-50);border-color:var(--brand-200)">
+        <div class="flex items-center gap-3 mb-3">
+          <span class="feature-icon"><i class="fa-solid fa-shield-halved"></i></span>
+          <h3 class="mb-0">Security guarantee</h3>
+        </div>
+        <p class="text-2">All transactions are encrypted and processed through industry-standard secure protocols. We do not store your M-Pesa PIN or full payment details on our servers.</p>
+        <ul class="list text-2 text-sm mb-0" style="display:grid;gap:6px">
+          <li>M-Pesa payments are confirmed directly by Safaricom.</li>
+          <li>Every order receives an itemised, VAT-compliant invoice.</li>
+          <li>Our drivers never ask for your PIN or card details.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cta-card dark mt-8" style="min-height:0">
+      <i class="fa-solid fa-cart-shopping cta-icon"></i>
+      <span class="eyebrow">Ready to order?</span>
+      <h3>Stock up today and pay the way you prefer</h3>
+      <p>Browse the catalogue, add what you need and choose your payment method at checkout.</p>
+      <div class="flex gap-3 wrap">
+        <a href="{% url 'products' %}" class="btn btn-amber">Browse the catalogue</a>
+        <a href="{% url 'checkout' %}" class="btn btn-outline-light">Go to checkout</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  @media (min-width: 640px) { #payGrid { grid-template-columns: 1fr 1fr !important; } }
+</style>
+{% endblock %}

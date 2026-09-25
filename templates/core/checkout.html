@@ -1,275 +1,359 @@
-{% extends "base/base.html" %}
-{% load static %}
+{% extends 'base/base.html' %}
+{% load shop %}
 
-{% block title %} Checkout | Mahitaji{% endblock %}
+{% block title %}Checkout · Mahitaji{% endblock %}
+{% block meta_description %}Confirm your delivery details and pay by M-Pesa or cash on delivery. Next-day delivery across Nairobi from Mahitaji Enterprises.{% endblock %}
+{% block body_class %}is-checkout{% endblock %}
 
 {% block content %}
-<main class="body-wrapper">
+{% url 'shopping-cart' as cart_url %}
+{% include 'partials/page_hero.html' with title="Checkout" subtitle="Confirm where to deliver and how you'd like to pay." crumb="Checkout" compact=True parent_url=cart_url parent_label="Cart" %}
 
-            <!-- Begin Li's Breadcrumb Area -->
-            <div class="breadcrumb-area">
-                <div class="container">
-                    <div class="breadcrumb-content">
-                        <ul>
-                            <li><a href="{% url 'home' %}">Home</a></li>
-                            <li><a href="{% url 'shopping-cart' %}">Shopping Cart</a></li>
-                            <li class="active">Checkout</li>
-                        </ul>
-                    </div>
-                </div>
+<div class="container">
+  <div class="checkout-steps mt-5">
+    <span><a href="{% url 'shopping-cart' %}" class="link-muted"><i class="fa-solid fa-circle-check" style="color:var(--brand-600);font-size:.8rem"></i> Cart</a></span>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span class="is-active"><i class="fa-solid fa-circle" style="color:var(--amber-500)"></i> Delivery &amp; payment</span>
+    <i class="fa-solid fa-chevron-right"></i>
+    <span><i class="fa-regular fa-circle"></i> Confirmation</span>
+  </div>
+
+  <div class="cart-layout" style="padding-top:0">
+    <form id="checkoutForm" method="post" action="{% url 'place-order' %}" novalidate autocomplete="on">
+      {% csrf_token %}
+      <div class="card">
+        <div class="card-header"><h3><i class="fa-solid fa-location-dot" style="color:var(--brand-600);margin-right:6px"></i>Delivery details</h3><span class="text-sm muted">Fields marked <span style="color:var(--danger)">*</span> are required</span></div>
+        <div class="card-body">
+          <div class="form-row">
+            <div class="field">
+              <label class="label" for="first_name">First name <span class="req">*</span></label>
+              <input class="input" type="text" id="first_name" name="first_name" value="{{ request.user.first_name }}" autocomplete="given-name" required>
             </div>
+            <div class="field">
+              <label class="label" for="last_name">Last name <span class="req">*</span></label>
+              <input class="input" type="text" id="last_name" name="last_name" value="{{ request.user.last_name }}" autocomplete="family-name" required>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label class="label" for="email">Email <span class="req">*</span></label>
+              <input class="input" type="email" id="email" name="email" value="{{ request.user.email }}" autocomplete="email" required>
+              <span class="field-help">Your order confirmation goes here.</span>
+            </div>
+            <div class="field">
+              <label class="label" for="phone">Phone <span class="req">*</span></label>
+              <input class="input" type="tel" id="phone" name="phone" value="{{ profile.phone_number|default:'' }}" placeholder="07XX XXX XXX" autocomplete="tel" required>
+              <span class="field-help">Our driver calls this number on delivery.</span>
+            </div>
+          </div>
 
-            <section class="py-16 bg-slate-50">
+          {% if addresses|length > 1 %}
+          <div class="field">
+            <span class="label">Saved addresses</span>
+            <div class="addr-list">
+              {% for a in addresses %}
+              <label class="addr-opt">
+                <input type="radio" name="saved_address" value="{{ a.id }}" data-saved-address data-address="{{ a.physical_address }}" data-city="{{ a.city }}" {% if a.id == primary_address.id %}checked{% endif %}>
+                <span><strong>{{ a.label }}{% if a.is_primary %} <span class="badge badge-success">Primary</span>{% endif %}</strong><small>{{ a.physical_address }}, {{ a.city }}</small></span>
+              </label>
+              {% endfor %}
+            </div>
+            <span class="field-help">Pick one to fill the address below, or type a new one.</span>
+          </div>
+          {% endif %}
 
-    <div class="max-w-7xl mx-auto px-6 lg:px-8">
-
-        <div class="mb-10">
-            <h2 class="text-3xl font-bold text-slate-900">Checkout</h2>
-            <p class="text-slate-600 mt-2">Complete your order securely and confirm delivery details</p>
+          <div class="field">
+            <label class="label" for="address">Delivery address <span class="req">*</span></label>
+            <textarea class="textarea" id="address" name="address" rows="2" style="min-height:84px" placeholder="Shop name, building, street and landmark" autocomplete="street-address" required>{{ primary_address.physical_address|default:'' }}</textarea>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label class="label" for="city">Town / city</label>
+              <input class="input" type="text" id="city" name="city" value="{{ primary_address.city|default:'Nairobi' }}" autocomplete="address-level2">
+            </div>
+            <div class="field">
+              <label class="label" for="notes">Delivery notes <span class="muted fw-500">(optional)</span></label>
+              <textarea class="textarea" id="notes" name="notes" rows="2" style="min-height:46px" placeholder="Gate code, opening hours, who to ask for…"></textarea>
+            </div>
+          </div>
+          <label class="check">
+            <input type="checkbox" name="save_address" value="1" checked>
+            <span>Save this as my primary delivery address</span>
+          </label>
         </div>
+      </div>
 
-        <form id="checkout-form">
+      <div class="card mt-4">
+        <div class="card-header"><h3><i class="fa-solid fa-wallet" style="color:var(--brand-600);margin-right:6px"></i>Payment</h3><span class="text-sm muted">Choose how to pay</span></div>
+        <div class="card-body">
+          <label class="pay-option">
+            <input type="radio" name="payment_method" value="cod" checked>
+            <span class="po-icon cod"><i class="fa-solid fa-truck"></i></span>
+            <span class="grow">
+              <strong>Cash on delivery</strong>
+              <small>Pay when your order arrives — cash or M-Pesa to our driver.</small>
+            </span>
+          </label>
+          <label class="pay-option{% if not mpesa_enabled %} is-disabled{% endif %}">
+            <input type="radio" name="payment_method" value="mpesa"{% if not mpesa_enabled %} disabled{% endif %}>
+            <span class="po-icon mpesa">M-PESA</span>
+            <span class="grow">
+              <strong>M-Pesa</strong>
+              <small>Pay now with an STK prompt sent straight to your phone.</small>
+              {% if mpesa_enabled %}
+              <span class="po-extra">
+                <span class="field mb-0">
+                  <span class="label">M-Pesa number</span>
+                  <input class="input" type="tel" id="mpesa_phone" name="mpesa_phone" aria-label="M-Pesa number" value="{{ profile.phone_number|default:'' }}" placeholder="07XX XXX XXX" inputmode="tel">
+                  <span class="field-help">You'll receive an STK prompt on this number.</span>
+                </span>
+              </span>
+              {% else %}
+              <span class="field-help">M-Pesa payments are being set up — choose cash on delivery for now.</span>
+              {% endif %}
+            </span>
+          </label>
+          <p class="text-sm muted mb-0 mt-2"><i class="fa-solid fa-lock"></i> Your details are used only to process this order. See our <a href="{% url 'terms' %}">terms</a> and <a href="{% url 'payment_info' %}">payment options</a>.</p>
+        </div>
+      </div>
+    </form>
 
-            <div class="grid lg:grid-cols-2 gap-10">
+    <aside class="summary">
+      <div class="card">
+        <div class="card-header"><h3>Your order</h3><a href="{% url 'shopping-cart' %}" class="link text-sm">Edit cart</a></div>
+        <div class="card-body">
+          <ul class="co-items">
+            {% for item in cart %}
+            <li>
+              <span class="grow"><span class="co-name">{{ item.product.name }}</span><span class="co-meta">{{ item.qty }} × {{ item.price|ksh }}{% if item.product.pack_size %} · {{ item.product.pack_size }}{% endif %}</span></span>
+              <span class="fw-600">{{ item.total_price|ksh }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+          <div class="summary-row mt-3"><span>Subtotal ({{ cart|length }} unit{{ cart|length|pluralize }})</span><span class="fw-600" style="color:var(--ink)">{{ cart.get_total_price|ksh }}</span></div>
+          <div class="summary-row"><span>Delivery</span><span>{% if cart.get_total_price >= site.free_delivery_threshold %}<span class="badge badge-success">Free in Nairobi</span>{% else %}Calculated on dispatch{% endif %}</span></div>
+          <div class="summary-row total"><span>Total</span><strong>{{ cart.get_total_price|ksh }}</strong></div>
+          {% if cart.get_total_price < site.free_delivery_threshold %}<p class="text-xs muted mt-2 mb-0">Orders above {{ site.free_delivery_threshold|ksh }} are delivered free within Nairobi.</p>{% endif %}
 
-                <!-- BILLING -->
-                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+          <div class="alert alert-danger form-alert mt-4" id="checkoutAlert" role="alert"></div>
+          <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg btn-block mt-4" id="placeOrderBtn"><i class="fa-solid fa-lock"></i> Place order</button>
 
-                    <h3 class="text-xl font-bold text-slate-900 mb-6">Billing Details</h3>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-                        <div>
-                            <label class="text-sm">First Name <span class="text-red-500">*</span></label>
-                            <input id="first_name" type="text"
-                                value="{{ request.user.first_name }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                        <div>
-                            <label class="text-sm">Last Name <span class="text-red-500">*</span></label>
-                            <input id="last_name" type="text"
-                                value="{{ request.user.last_name }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm">Email <span class="text-red-500">*</span></label>
-                            <input id="email_address" type="email"
-                                value="{{ request.user.email }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm">Phone <span class="text-red-500">*</span></label>
-                            <input id="phone_number" type="text"
-                                value="{{ profile.phone_number }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm">Address <span class="text-red-500">*</span></label>
-                            <input id="address" type="text"
-                                value="{{ primary_address.physical_address|default:'' }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                        <div class="md:col-span-2">
-                            <label class="text-sm">City <span class="text-red-500">*</span></label>
-                            <input id="city_town" type="text"
-                                value="{{ primary_address.city|default:'Nairobi' }}"
-                                class="w-full mt-2 px-4 py-3 border rounded-xl">
-                        </div>
-
-                    </div>
-
-                </div>
-
-                <!-- ORDER + PAYMENT -->
-                <div class="space-y-6">
-
-                    <!-- ORDER -->
-                    <div class="bg-white rounded-2xl border p-6">
-
-                        <h3 class="text-xl font-bold mb-4">Your Order</h3>
-
-                        {% for item in cart %}
-                        <div class="flex justify-between border-b py-2">
-                            <div>
-                                <div class="font-medium">{{ item.product.name }}</div>
-                                <div class="text-sm text-gray-500">Qty: {{ item.qty }}</div>
-                            </div>
-                            <div class="font-semibold">ksh {{ item.total_price }}</div>
-                        </div>
-                        {% endfor %}
-
-                        <div class="mt-4 flex justify-between font-bold">
-                            <span>Total</span>
-                            <span>ksh {{ cart.get_total_price }}</span>
-                        </div>
-
-                    </div>
-
-                    <!-- PAYMENT -->
-                <div class="bg-white rounded-2xl border border-slate-200 p-6">
-
-                    <h3 class="text-xl font-bold text-slate-900 mb-5">Payment Method</h3>
-
-                    <!-- Cash on Delivery -->
-                    <label class="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl mb-3 cursor-pointer hover:border-emerald-200 transition">
-                        <input type="radio" name="payment" value="cod" checked 
-                            class="mt-1 w-5 h-5 accent-emerald-600">
-                        <div class="flex-1">
-                            <div class="font-semibold text-slate-900">Cash on Delivery</div>
-                            <div class="text-sm text-slate-500">Pay when goods are delivered</div>
-                        </div>
-                    </label>
-
-                    <!-- M-Pesa -->
-                    <label class="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl cursor-pointer hover:border-emerald-200 transition">
-                        <input type="radio" name="payment" value="mpesa" 
-                            class="mt-1 w-5 h-5 accent-emerald-600">
-                        <div class="flex-1">
-                            <div class="font-semibold text-slate-900">M-Pesa</div>
-                            <div class="text-sm text-slate-500 mb-3">Pay via STK Push</div>
-
-                            <input id="mpesa_phone" type="text"
-                                placeholder="Phone number for M-Pesa"
-                                value="{{ request.user.customerprofile.phone_number|default:'' }}"
-                                class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-emerald-600">
-                        </div>
-                    </label>
-
-                    <button type="submit"
-                            id="place-order-btn"
-                            class="mt-6 w-full bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-2xl font-bold text-lg transition active:scale-[0.985]">
-                        Place Order
-                    </button>
-
-                </div>
-
-                </div>
-
+          <div class="pay-wait hidden mt-4" id="payWait" aria-live="polite">
+            <span class="spinner" id="paySpinner"></span>
+            <div class="grow">
+              <strong style="display:block">Check your phone and enter your M-Pesa PIN…</strong>
+              <div class="text-sm" id="payStatus">Waiting for confirmation from Safaricom.</div>
+              <button type="button" class="btn btn-outline btn-sm mt-2 hidden" id="resendBtn"><i class="fa-solid fa-rotate-right"></i> Resend prompt</button>
             </div>
+          </div>
 
-        </form>
+          <p class="text-xs muted mt-3 mb-0 text-center">By placing this order you agree to our <a href="{% url 'terms' %}">terms &amp; conditions</a>.</p>
+        </div>
+      </div>
+      <div class="card card-body mt-3 text-sm text-2">
+        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-truck-fast" style="color:var(--brand-600);width:18px;text-align:center"></i> Next-day delivery in Nairobi</div>
+        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-certificate" style="color:var(--brand-600);width:18px;text-align:center"></i> KEBS-certified, genuine stock</div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-headset" style="color:var(--brand-600);width:18px;text-align:center"></i> Help: <a href="{{ site.phone_href }}">{{ site.phone }}</a></div>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}
 
-    </div>
-
-</section>
-</main>
-
+{% block extra_css %}
+<style>
+  .is-checkout .addr-list { display: grid; gap: 8px; }
+  .is-checkout .addr-opt { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; background: var(--surface); }
+  .is-checkout .addr-opt:hover { border-color: var(--brand-400); }
+  .is-checkout .addr-opt:has(input:checked) { border-color: var(--brand-600); background: var(--brand-50); }
+  .is-checkout .addr-opt input { margin-top: 3px; accent-color: var(--brand-600); width: 18px; height: 18px; flex: none; }
+  .is-checkout .addr-opt strong { display: block; font-size: .92rem; }
+  .is-checkout .addr-opt small { color: var(--muted); }
+  .is-checkout .pay-option.is-disabled { opacity: .6; cursor: not-allowed; }
+  .is-checkout .pay-option .po-extra .field { display: block; }
+  .is-checkout .pay-option .field-help { display: block; }
+  .is-checkout .co-items { display: grid; gap: 10px; max-height: 320px; overflow: auto; }
+  .is-checkout .co-items li { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; }
+  .is-checkout .co-name { display: block; font-weight: 600; color: var(--ink); line-height: 1.3; }
+  .is-checkout .co-meta { display: block; font-size: .78rem; color: var(--muted); }
+  .is-checkout #checkoutForm.is-locked { pointer-events: none; opacity: .6; }
+</style>
 {% endblock %}
 
 {% block extra_js %}
-
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+(function () {
+  const form = document.getElementById('checkoutForm');
+  const btn = document.getElementById('placeOrderBtn');
+  const alertBox = document.getElementById('checkoutAlert');
+  const payWait = document.getElementById('payWait');
+  const paySpinner = document.getElementById('paySpinner');
+  const payStatus = document.getElementById('payStatus');
+  const resendBtn = document.getElementById('resendBtn');
+  if (!form || !btn) return;
 
-    const btn = document.getElementById("place-order-btn");
-    const form = document.getElementById("checkout-form");
+  const U = () => window.MahitajiUtils;
+  const T = () => window.MahitajiToast;
+  const PLACE_URL = "{% url 'place-order' %}";
+  const PAY_URL = "{% url 'pay' %}";
+  const FIELDS = ['first_name', 'last_name', 'email', 'phone', 'address', 'city', 'notes', 'payment_method', 'mpesa_phone', 'save_address'];
+  const POLL_EVERY = 3000, POLL_MAX = 120000;
+  let order = null, pollTimer = null, pollStart = 0;
 
-    if (!btn || !form) return;
-
-    btn.addEventListener("click", async function (e) {
-        e.preventDefault();
-
-        // payment method FIXED
-        const paymentMethod =
-            document.querySelector('input[name="payment"]:checked')?.value || "cod";
-
-        // collect data
-        const data = {
-            first_name: document.getElementById("first_name")?.value || "",
-            last_name: document.getElementById("last_name")?.value || "",
-            email: document.getElementById("email_address")?.value || "",
-            phone: document.getElementById("phone_number")?.value || "",
-            address: document.getElementById("address")?.value || "",
-            city: document.getElementById("city_town")?.value || "",
-            payment_method: paymentMethod
-        };
-
-        // validation
-        if (!data.first_name || !data.last_name || !data.phone || !data.address) {
-            alert("Please fill all required fields");
-            return;
-        }
-
-        btn.disabled = true;
-        btn.innerText = "Processing...";
-
-        try {
-            const res = await fetch("{% url 'place-order' %}", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRFToken": "{{ csrf_token }}"
-                },
-                body: JSON.stringify(data)
-            });
-
-            const result = await res.json();
-
-            if (result.status !== "success") {
-                alert("Order failed");
-                btn.disabled = false;
-                btn.innerText = "Place Order";
-                return;
-            }
-
-            const orderNumber = result.order_number || result.order_id;
-
-            // MPESA FLOW
-            if (paymentMethod === "mpesa") {
-
-                const phone =
-                    document.getElementById("mpesa_phone")?.value || data.phone;
-
-                await fetch("{% url 'pay' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": "{{ csrf_token }}"
-                    },
-                    body: JSON.stringify({
-                        order_id: result.order_id,
-                        phone: phone
-                    })
-                });
-
-                alert("Check your phone for M-Pesa PIN");
-
-                const interval = setInterval(async () => {
-
-                    const r = await fetch(`/check-payment-status/${orderNumber}/`);
-                    const s = await r.json();
-
-                    if (s.status === "paid") {
-                        clearInterval(interval);
-                        window.location.href =
-                            "{% url 'order-success' '0' %}".replace("0", orderNumber);
-                    }
-
-                }, 3000);
-
-                setTimeout(() => clearInterval(interval), 60000);
-
-            } else {
-
-                window.location.href =
-                    "{% url 'order-success' '0' %}".replace("0", orderNumber);
-
-            }
-
-        } catch (err) {
-            console.error(err);
-            alert("Something went wrong");
-            btn.disabled = false;
-            btn.innerText = "Place Order";
-        }
+  // Saved addresses fill the address / city fields.
+  document.querySelectorAll('[data-saved-address]').forEach((radio) => {
+    radio.addEventListener('change', () => {
+      if (!radio.checked) return;
+      form.elements.address.value = radio.getAttribute('data-address') || '';
+      form.elements.city.value = radio.getAttribute('data-city') || 'Nairobi';
+      clearFieldError(form.elements.address);
     });
+  });
 
-});
+  // Keep the M-Pesa number in step with the phone until the user edits it.
+  const phone = form.elements.phone, mpesaPhone = form.elements.mpesa_phone;
+  if (phone && mpesaPhone) {
+    let touched = !!mpesaPhone.value;
+    mpesaPhone.addEventListener('input', () => { touched = true; });
+    phone.addEventListener('input', () => { if (!touched) mpesaPhone.value = phone.value; });
+  }
+
+  function clearFieldError(input) {
+    const field = input && input.closest('.field');
+    if (!field) return;
+    field.classList.remove('has-error');
+    field.querySelectorAll('.field-error[data-generated]').forEach((el) => el.remove());
+  }
+  function clearErrors() {
+    form.querySelectorAll('.field.has-error').forEach((f) => f.classList.remove('has-error'));
+    form.querySelectorAll('.field-error[data-generated]').forEach((f) => f.remove());
+    alertBox.textContent = '';
+    alertBox.classList.remove('is-visible');
+  }
+  function showAlert(message) {
+    alertBox.textContent = message;
+    alertBox.classList.add('is-visible');
+  }
+  function showErrors(res) {
+    const errors = res.errors || {};
+    let first = null;
+    Object.keys(errors).forEach((name) => {
+      const input = form.querySelector('[name="' + name + '"]');
+      const field = input ? input.closest('.field') : null;
+      if (!field) return;
+      field.classList.add('has-error');
+      const span = document.createElement('span');
+      span.className = 'field-error';
+      span.setAttribute('data-generated', '1');
+      span.textContent = Array.isArray(errors[name]) ? errors[name].join(' ') : String(errors[name]);
+      field.appendChild(span);
+      if (name === 'mpesa_phone') { const r = form.querySelector('input[name="payment_method"][value="mpesa"]'); if (r) r.checked = true; document.querySelectorAll('.pay-option').forEach((o) => o.classList.toggle('is-selected', o.contains(r))); }
+      if (!first) first = input;
+    });
+    const general = (errors.__all__ && errors.__all__.join(' ')) || res.error || 'Please check the highlighted fields.';
+    showAlert(general);
+    if (first) { first.focus(); first.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    else alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function collect() {
+    const data = {};
+    FIELDS.forEach((name) => {
+      const el = form.elements[name];
+      if (!el) return;
+      if (typeof RadioNodeList !== 'undefined' && el instanceof RadioNodeList) data[name] = el.value;
+      else if (el.type === 'checkbox') data[name] = el.checked;
+      else data[name] = (el.value || '').trim();
+    });
+    if (data.payment_method === 'mpesa' && !data.mpesa_phone) data.mpesa_phone = data.phone;
+    return data;
+  }
+
+  function stopPolling() { if (pollTimer) { clearInterval(pollTimer); pollTimer = null; } }
+  function startPolling() {
+    stopPolling();
+    pollStart = Date.now();
+    pollTimer = setInterval(async () => {
+      if (Date.now() - pollStart > POLL_MAX) {
+        stopPolling();
+        payStatus.textContent = 'Still waiting — taking you to your order page where you can keep tracking the payment.';
+        setTimeout(() => { window.location.href = order.redirect_url; }, 1200);
+        return;
+      }
+      let res;
+      try { res = await U().request(order.status_url); } catch (err) { return; }
+      if (!res || !res.ok) return;
+      if (res.status === 'paid') {
+        stopPolling();
+        paySpinner.classList.add('hidden');
+        payStatus.innerHTML = '<i class="fa-solid fa-circle-check"></i> Payment received' + (res.receipt ? ' (receipt ' + U().escapeHtml(res.receipt) + ')' : '') + '. Taking you to your order…';
+        window.location.href = order.redirect_url;
+      } else if (res.status === 'failed') {
+        stopPolling();
+        paySpinner.classList.add('hidden');
+        payStatus.textContent = (res.description || 'The payment was not completed.') + ' You can send the prompt again.';
+        resendBtn.classList.remove('hidden');
+      }
+    }, POLL_EVERY);
+  }
+
+  resendBtn.addEventListener('click', async () => {
+    if (!order) return;
+    const number = ((mpesaPhone && mpesaPhone.value) || (phone && phone.value) || '').trim();
+    U().setBusy(resendBtn, true, 'Sending…');
+    try {
+      const res = await U().request(PAY_URL, { method: 'POST', data: { order_number: order.order_number, phone: number } });
+      if (res.ok) {
+        T().show(res.message || 'Prompt sent. Check your phone.', 'success');
+        resendBtn.classList.add('hidden');
+        paySpinner.classList.remove('hidden');
+        payStatus.textContent = 'Prompt sent again — enter your M-Pesa PIN to complete the payment.';
+        startPolling();
+      } else {
+        T().show(res.error || 'Could not resend the prompt. Please try again.', 'danger');
+      }
+    } catch (err) {
+      T().show('Connection problem. Please check your internet and try again.', 'danger');
+    } finally { U().setBusy(resendBtn, false); }
+  });
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (btn.disabled) return;
+    clearErrors();
+    U().setBusy(btn, true, 'Placing order…');
+    let res;
+    try {
+      res = await U().request(PLACE_URL, { method: 'POST', data: collect() });
+    } catch (err) {
+      showAlert('Connection problem. Please check your internet and try again.');
+      U().setBusy(btn, false);
+      return;
+    }
+    if (!res.ok) {
+      showErrors(res);
+      U().setBusy(btn, false);
+      return;
+    }
+    order = res;
+    if (res.payment_method === 'mpesa') {
+      if (res.payment && res.payment.sent) {
+        btn.classList.add('hidden');
+        form.classList.add('is-locked');
+        payWait.classList.remove('hidden');
+        payStatus.textContent = res.payment.message || 'Waiting for confirmation from Safaricom.';
+        payWait.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        startPolling();
+      } else {
+        T().show((res.payment && res.payment.message) || 'We could not send the M-Pesa prompt. You can pay from your order page.', 'warning');
+        U().setBusy(btn, true, 'Redirecting…');
+        setTimeout(() => { window.location.href = res.redirect_url; }, 1500);
+      }
+    } else {
+      U().setBusy(btn, true, 'Order placed…');
+      window.location.href = res.redirect_url;
+    }
+  });
+})();
 </script>
-
 {% endblock %}

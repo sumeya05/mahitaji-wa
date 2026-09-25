@@ -1,1045 +1,206 @@
 {% extends 'base/base.html' %}
-{% load static %}
+{% load static shop %}
 
-{% block title %} Mahitaji | Home {% endblock %}
-{% block body_class %}is-landing-page{% endblock %}
+{% block title %}Mahitaji · Wholesale &amp; Retail FMCG Distributor in Kenya{% endblock %}
+{% block body_class %}is-home{% endblock %}
 
 {% block content %}
-
-<main class="body-wrapper">
-
-    <section class="hero">
-
-        <div class="hero-slider">
-            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_four.png');"></div>
-            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_two.png');"></div>
-            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_five.png');"></div>
-            <div class="hero-slide active" style="background-image: linear-gradient(rgba(15,23,42,0.7), rgba(15,23,42,0.9)), url('static/assets/slides/slide_three.png');"></div>       
-        </div>
-
-        <div class="rotary-wrapper">
-
-            <div class="middle-container">
-                <a href="#"><img src="{% static 'assets/logos/1.gif' %}" alt="Logo" class="center-logo"></a>
-            </div>
-
-            <div id="categories" class="categories-container">
-                <div class="category-item">
-                    <a href="{% url 'categories' %}" class="category-link" data-category="cereals">
-                        <img src="{% static 'assets/categories/cereals.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                        <span class="category-tooltip">Cereals</span>
-                    </a>
-                </div>
-                <div class="category-item">
-                    <a href="{% url 'categories' %}" class="category-link" data-category="oils">
-                        <img src="{% static 'assets/categories/oils.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                        <span class="category-tooltip">Oils</span>
-                    </a>
-                </div>                                               
-                <div class="category-item">
-                    <a href="{% url 'categories' %}" class="category-link" data-category="drinks">
-                        <img src="{% static 'assets/categories/drinks.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                        <span class="category-tooltip">Drinks</span>
-                    </a>
-                </div>  
-                <div class="category-item">
-                    <a href="{% url 'categories' %}" class="category-link" data-category="soaps">
-                        <img src="{% static 'assets/categories/soaps.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                        <span class="category-tooltip">Soaps</span>
-                    </a>
-                </div>  
-                <div class="category-item">
-                    <a href="{% url 'categories' %}" class="category-link" data-category="flour">
-                        <img src="{% static 'assets/categories/flour.jpg' %}" alt="Cereals Category Icon" width="100" height="100">
-                        <span class="category-tooltip">Flour</span>
-                    </a>
-                </div>  
-            </div>
-
-            <div id="suppliers" class="ring suppliers-container desktop-only">
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"><span class="supplier-name">Ajab</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"><span class="supplier-name">Coca-Cola</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"><span class="supplier-name">Soko</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"><span class="supplier-name">Del Monte</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"><span class="supplier-name">Kensalt</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"><span class="supplier-name">Ketepa</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"><span class="supplier-name">Jetlak</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"><span class="supplier-name">Tropical Heat</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"><span class="supplier-name">Kapa Oil</span></a>
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"><span class="supplier-name">Pembe</span></a>                
-                <a href="{% url 'brands' %}" class="supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"><span class="supplier-name">EXE</span></a>
-            </div>
-
-        </div>
-
-        <div id="ourSuppliers" class="mobile-only-bar">
-            <h3>Browse By Brand</h3>
-            <div class="suppliersCarousel">
-                <div id="suppliers-mobile" class="cards-container suppliers-mobile-track">
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="ajab"><img src="{% static 'assets/brands/ajab.jpeg' %}" alt="Ajab"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="cocacola"><img src="{% static 'assets/brands/cocacola.png' %}" alt="Coca-Cola"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="soko"><img src="{% static 'assets/brands/soko.jpeg' %}" alt="Soko"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="delmonte"><img src="{% static 'assets/brands/delmonte.png' %}" alt="Del Monte"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="kensalt"><img src="{% static 'assets/brands/kensalt.jpeg' %}" alt="Kensalt"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="exe"><img src="{% static 'assets/brands/exe.png' %}" alt="EXE"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="ketepa"><img src="{% static 'assets/brands/ketepa.jpeg' %}" alt="Ketepa"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="jetlak"><img src="{% static 'assets/brands/jetlak.png' %}" alt="Jetlak"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="tropicalheat"><img src="{% static 'assets/brands/tropicalheat.jpeg' %}" alt="Tropical Heat"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="kapa"><img src="{% static 'assets/brands/kapa.png' %}" alt="Kapa Oil"></a>
-                    <a href="{% url 'products' %}" class="mobile-supplier-item" data-supplier="pembe"><img src="{% static 'assets/brands/pembe.jpeg' %}" alt="Pembe"></a>
-                </div>
-            </div>                
-        </div>
-
-    </section>
-
-    <div class="section-wrapper">
-
-    <section class="relative w-full bg-emerald-900 text-white py-16 lg:py-24 overflow-hidden">
-
-        <!-- BACKGROUND GLOWS (safe z-index) -->
-        <div class="absolute -top-32 -left-32 w-[500px] h-[500px] bg-emerald-500/20 blur-3xl rounded-full animate-pulse"></div>
-        <div class="absolute -bottom-32 -right-32 w-[500px] h-[500px] bg-emerald-700/20 blur-3xl rounded-full animate-pulse"></div>
-
-        <div class="relative z-10 container mx-auto px-4">
-
-            <div class="grid lg:grid-cols-2 gap-12 items-center">
-
-                <!-- TEXT -->
-                <div class="space-y-8">
-
-                    <!-- badge -->
-                    <div class="inline-flex items-center space-x-2 bg-white/10 border border-white/20 px-4 py-2 rounded-full">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        <span class="text-emerald-200 text-xs font-bold uppercase tracking-widest">
-                            Authorized Distributor
-                        </span>
-                    </div>
-
-                    <!-- headline -->
-                    <h1 class="text-5xl md:text-7xl font-extrabold leading-tight">
-                        Premium FMCG <br>
-                        <span class="text-emerald-300">
-                            Wholesale Allocations.
-                        </span>
-                    </h1>
-
-                    <!-- paragraph -->
-                    <p class="text-lg md:text-xl text-emerald-100 max-w-lg leading-relaxed">
-                        Direct manufacturer pricing for verified retailers. Secure your stock, manage your margins,
-                        and access our wholesale distribution network in one click.
-                    </p>
-
-                    <!-- CTA -->
-                    <div class="flex flex-col sm:flex-row gap-4">
-
-                        <a href="{% url 'offers' %}"
-                        class="bg-emerald-600 hover:bg-emerald-700 px-8 py-4 rounded-xl font-bold
-                                transition-all hover:-translate-y-1 shadow-lg">
-                            See Product Offers
-                        </a>
-
-                        <a href="{% url 'products' %}"
-                        class="border border-white/20 hover:bg-white/10 px-8 py-4 rounded-xl font-bold
-                                transition-all hover:-translate-y-1">
-                            Browse Full Catalog
-                        </a>
-
-                    </div>
-
-                </div>
-
-                <!-- IMAGE -->
-                <div class="relative lg:block hidden">
-
-                    <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl
-                                transition-all hover:bg-emerald-950">
-
-                        <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">
-                            Volume Price
-                        </span>
-
-                        <h3 class="text-3xl font-extrabold text-white mb-4">
-                            FMCG Distribution Network
-                        </h3>
-
-                        <p class="text-emerald-100 mb-8 max-w-sm">
-                            Fast-moving consumer goods distributed efficiently across Kenya through our verified retail network.
-                        </p>
-
-                        <a href="/categories/"
-                        class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
-                            Check Availability
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor"
-                                viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                            </svg>
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-        </div>
-    </section>
-            
-            
-        <!-- ====================== 2ND GROUP (MOTION UPGRADE) ====================== -->
-        <section class="relative w-full overflow-hidden bg-[#0b1220] py-20 lg:py-32">
-
-            <!-- BASE DARK LAYER -->
-            <div class="absolute inset-0 bg-[#0b1220]"></div>
-
-            <!-- SUBTLE GRID (no gradient, just depth) -->
-            <div class="absolute inset-0 opacity-10">
-                <div class="w-full h-full bg-[url('/static/assets/patterns/grid.png')] bg-repeat"></div>
-            </div>
-
-            <!-- SOFT STATIC GLOWS (solid tone, no gradient blending) -->
-            <div class="absolute -top-40 left-1/4 w-[420px] h-[420px] bg-[#1c3f2a]/20 blur-3xl rounded-full animate-pulse"></div>
-            <div class="absolute bottom-0 right-1/4 w-[380px] h-[380px] bg-[#1e40af]/20 blur-3xl rounded-full animate-pulse"></div>
-
-            <div class="container mx-auto px-4 relative z-10">
-
-                <div class="max-w-4xl mx-auto text-center text-white space-y-8">
-
-                    <!-- BADGE -->
-                    <div class="opacity-0 translate-y-6 transition-all duration-700 ease-out reveal">
-                        <span class="inline-block py-1 px-4 rounded-full bg-[#1c3f2a]/20 text-[#7dd3fc] text-xs font-bold tracking-widest uppercase border border-[#1e40af]/30">
-                            Strategic Logistics
-                        </span>
-                    </div>
-
-                    <!-- TITLE -->
-                    <h1 class="opacity-0 translate-y-10 transition-all duration-1000 delay-150 reveal
-                            text-4xl md:text-6xl font-extrabold leading-tight text-white">
-                        Supply Chain <span class="text-[#7dd3fc]">Excellence</span><br>
-                        Delivered.
-                    </h1>
-
-                    <!-- DESCRIPTION -->
-                    <p class="opacity-0 translate-y-10 transition-all duration-1000 delay-300 reveal
-                            text-lg md:text-xl text-slate-300 max-w-2xl mx-auto">
-                        We bridge the gap between manufacturers and retail outlets with optimized distribution,
-                        stock visibility, and bulk-break efficiency.
-                    </p>
-
-                    <!-- CTA -->
-                    <div class="opacity-0 translate-y-10 transition-all duration-1000 delay-500 reveal
-                                flex flex-col sm:flex-row justify-center gap-4">
-
-                        <a href="{% url 'categories' %}"
-                        class="group relative px-8 py-4 bg-[#1c3f2a] hover:bg-[#163325] text-white font-bold rounded-full
-                                transition-all duration-300 shadow-lg shadow-black/40 hover:-translate-y-1">
-
-                            Browse Categories
-                        </a>
-
-                        <a href="https://wa.me/254750530130"
-                        class="px-8 py-4 bg-[#111827] hover:bg-[#0f172a] text-white font-bold rounded-full
-                                border border-[#1e40af]/30 transition-all duration-300 hover:-translate-y-1">
-                            Speak to Sales
-                        </a>
-
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <section class="py-16 bg-slate-50">
-            <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
-                    <div class="group relative overflow-hidden rounded-3xl bg-white p-8 md:p-12 border border-slate-100 shadow-sm transition-all hover:shadow-2xl">
-                        <div class="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-500">
-                            <svg class="w-32 h-32 text-emerald-900" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>
-                        </div>
-                        
-                        <span class="text-emerald-800 font-bold tracking-widest text-xs uppercase block mb-4">Retailer Preference</span>
-                        <h3 class="text-3xl font-extrabold text-slate-900 mb-4">Premium Foodstuffs</h3>
-                        <p class="text-slate-600 mb-8 max-w-sm">Allocations from certified millers across East Africa. Reliable, high-margin, and in-demand.</p>
-                        
-                        <a href="{% url 'categories' %}" class="inline-flex items-center text-emerald-700 font-bold hover:gap-2 transition-all">
-                            View Price Tiers 
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </a>
-                    </div>
-
-                    <div class="group relative overflow-hidden rounded-3xl bg-emerald-900 p-8 md:p-12 shadow-xl transition-all hover:bg-emerald-950">
-                        <span class="text-emerald-400 font-bold tracking-widest text-xs uppercase block mb-4">Volume Price</span>
-                        <h3 class="text-3xl font-extrabold text-white mb-4">Hygiene & Cleaners</h3>
-                        <p class="text-emerald-100 mb-8 max-w-sm">Sanitizers, domestic soaps, and household protective lines available for bulk distribution.</p>
-                        
-                        <a href="{% url 'categories' %}" class="inline-flex items-center text-white font-bold hover:gap-2 transition-all">
-                            Check Availability 
-                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </a>
-                    </div>
-
-                </div>
-            </div>
-        </section>
-        <!-- ====================== 2ND GROUP ENDS HERE ====================== -->
-
-
-
-        <!-- ====================== 3RD GROUP - TRENDING + CURATED ====================== -->
-
-        <!-- Trending Products -->
-        <section class="py-20 bg-white overflow-hidden">
-            <div class="max-w-7xl mx-auto px-6">
-
-                <div class="text-center mb-12">
-                    <span class="inline-block px-6 py-2.5 bg-amber-100 text-amber-700 rounded-3xl text-sm font-semibold tracking-widest uppercase">HOT RIGHT NOW</span>
-                    <h2 class="text-5xl font-bold text-slate-900 mt-4 tracking-tight">Trending Products</h2>
-                    <p class="text-slate-600 mt-4 max-w-2xl mx-auto text-lg">High-demand essentials currently leading the market for retailers and households.</p>
-                </div>
-
-                <div id="trending-track" class="flex gap-6 w-max animate-trending px-4">
-
-                    {% for item in trending_data %}
-                        {% for product in item.products %}
-
-                        <div class="w-[280px] flex-shrink-0">
-                            <div class="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full flex flex-col"
-                                data-category="{{ product.category.id|default:'' }}" data-brand="{{ product.brand.id|default:'' }}">
-
-                                <!-- Image -->
-                                <div class="relative aspect-[1/0.9] bg-slate-50 flex items-center justify-center overflow-hidden">
-                                    <a href="{% url 'product_detail' product.id %}" class="w-full h-full flex items-center justify-center">
-                                        <img src="{{ product.image_url }}" alt="{{ product.name }}"
-                                            class="max-h-full max-w-full object-contain group-hover:scale-105 transition-transform duration-300">
-                                    </a>
-
-                                    {% if product.discount_percentage and product.discount_percentage != '0%' and product.discount_percentage != '-0%' and product.discount_percentage != '0' %}
-                                    <div class="absolute top-3 right-3 bg-pink-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow">
-                                        - {{ product.discount_percentage }}
-                                    </div>
-                                    {% endif %}
-                                </div>
-
-                                <!-- Content -->
-                                <div class="p-4 flex-1 flex flex-col">
-                                    <p class="text-xs font-semibold text-emerald-600 uppercase tracking-wider">{{ product.brand.name|default:"MAHITAJI" }}</p>
-
-                                    <h3 class="text-sm font-semibold text-slate-900 leading-snug line-clamp-2 min-h-[42px] mt-1">
-                                        <a href="{% url 'product_detail' product.id %}" class="hover:text-emerald-600 transition">{{ product.name }}</a>
-                                    </h3>
-
-                                    <!-- UOM -->
-                                    {% if product.unit_of_measure %}
-                                    <p class="text-sm font-medium text-slate-600 mt-1 mb-2">
-                                        {{ product.unit_of_measure.short_name|default:product.unit_of_measure.name }}
-                                    </p>
-                                    {% endif %}
-
-                                    <!-- Rating -->
-                                    <div class="flex items-center gap-1 text-yellow-400 text-sm">
-                                        {% for i in "12345" %}
-                                            {% if product.average_rating >= forloop.counter %}★{% else %}☆{% endif %}
-                                        {% endfor %}
-                                    </div>
-
-                                    <!-- Description -->
-                                    <p class="text-sm text-slate-600 line-clamp-3 mt-3 mb-4 flex-1">
-                                        {{ product.description|default:"Premium quality product suitable for retail and wholesale distribution."|truncatechars:110 }}
-                                    </p>
-
-                                    <!-- Price + Button -->
-                                    <div class="flex items-end justify-between mt-auto pt-2">
-                                        <div>
-                                            <p class="text-[10px] text-slate-400 uppercase tracking-wide">Retail Price</p>
-                                            <div class="text-lg font-extrabold text-slate-900">KSh {{ product.retail_price }}</div>
-                                            {% if product.old_price %}
-                                            <div class="text-xs text-slate-400 line-through">KSh {{ product.old_price }}</div>
-                                            {% endif %}
-                                        </div>
-
-                                        <button type="button" value="{{ product.id }}"
-                                                class="add-to-cart-btn flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold px-6 py-3 rounded-2xl transition-all active:scale-95">
-                                            <i class="fa fa-cart-plus"></i>
-                                            <span>Add</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        {% endfor %}
-                    {% endfor %}
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Curated Commercial Categories -->
-        <section class="py-20 bg-slate-50">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-12">
-                    <div>
-                        <span class="text-emerald-600 font-semibold tracking-widest text-sm uppercase">EXPLORE CATEGORIES</span>
-                        <h2 class="text-4xl font-bold text-slate-900 mt-2">Curated for Business Growth</h2>
-                    </div>
-                    <a href="{% url 'products' %}" class="mt-4 md:mt-0 text-emerald-600 hover:text-emerald-700 font-medium flex items-center gap-2 group">
-                        Browse Full Catalog 
-                        <i class="fas fa-arrow-right transition-transform group-hover:translate-x-1"></i>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                    <!-- Big Featured Card -->
-                    <div class="lg:col-span-7 group relative bg-slate-900 rounded-3xl overflow-hidden h-[520px] flex items-end">
-                        <img src="{% static 'assets/categories/flour.jpg' %}" 
-                             alt="FMCG" 
-                             class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
-                        <div class="relative p-10 lg:p-12 text-white z-10">
-                            <span class="uppercase tracking-widest text-amber-400 text-sm font-bold">MOST POPULAR</span>
-                            <h3 class="text-4xl lg:text-5xl font-bold mt-4 leading-none">Fast-Moving Consumer Goods</h3>
-                            <p class="mt-6 text-slate-200 max-w-md text-lg">Oils, Rice, Sugar, Soaps, Detergents &amp; daily essentials — always in stock at best prices.</p>
-                            <a href="{% url 'products' %}" class="mt-8 inline-flex items-center gap-3 bg-white text-slate-900 px-8 py-4 rounded-2xl font-semibold hover:bg-amber-400 hover:text-slate-900 transition-all">
-                                Shop FMCG Now →
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Side Cards -->
-                    <div class="lg:col-span-5 space-y-8">
-                        <div class="group relative bg-white rounded-3xl overflow-hidden h-[250px] flex items-end border border-slate-100 hover:shadow-xl transition-all">
-                            <img src="{% static 'assets/categories/oils.png' %}" 
-                                 alt="Oils" 
-                                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <div class="relative p-8 text-white z-10">
-                                <h3 class="text-3xl font-bold">Cooking Oils</h3>
-                                <a href="{% url 'products' %}" class="text-sm mt-4 inline-flex items-center gap-2 hover:underline">
-                                    Explore Collection →
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="group relative bg-white rounded-3xl overflow-hidden h-[250px] flex items-end border border-slate-100 hover:shadow-xl transition-all">
-                            <img src="{% static 'assets/categories/soaps.jpg' %}" 
-                                 alt="Hygiene" 
-                                 class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
-                            <div class="relative p-8 text-white z-10">
-                                <h3 class="text-3xl font-bold">Hygiene &amp; Cleaning</h3>
-                                <a href="{% url 'products' %}" class="text-sm mt-4 inline-flex items-center gap-2 hover:underline">
-                                    Explore Collection →
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- ====================== 3RD GROUP ENDS HERE ====================== -->
-
-
-        <!-- ====================== LAST GROUP - WHY MAHITAJI & CLOSING ====================== -->
-        <!-- Why Mahitaji Hero Banner -->
-        <section class="bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-950 py-24 relative overflow-hidden">
-
-            <!-- ambient glow -->
-            <div class="absolute inset-0">
-                <div class="absolute w-[500px] h-[500px] bg-emerald-500/10 blur-3xl rounded-full top-10 left-10 animate-pulse"></div>
-                <div class="absolute w-[400px] h-[400px] bg-white/5 blur-3xl rounded-full bottom-10 right-10 animate-pulse"></div>
-            </div>
-
-            <div class="max-w-7xl mx-auto px-6 relative z-10">
-
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- TEXT BLOCK -->
-                    <div class="space-y-10">
-
-                        <div class="opacity-0 translate-y-6 transition-all duration-700 ease-out reveal">
-                            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-lg px-6 py-3 rounded-2xl border border-white/20">
-                                <span class="text-emerald-400 font-semibold tracking-widest text-sm">
-                                    OUR PROMISE
-                                </span>
-                            </div>
-                        </div>
-
-                        <h1 class="text-5xl lg:text-6xl font-bold text-white leading-none opacity-0 translate-y-8 transition-all duration-700 delay-150 reveal">
-                            Why Smart Retailers<br>
-                            Choose <span class="text-emerald-400">Mahitaji</span>
-                        </h1>
-
-                        <p class="text-xl text-slate-300 max-w-md opacity-0 translate-y-8 transition-all duration-700 delay-300 reveal">
-                            We deliver quality FMCG products at wholesale prices with reliability you can trust.
-                        </p>
-
-                        <div class="flex flex-wrap gap-4 opacity-0 translate-y-8 transition-all duration-700 delay-500 reveal">
-
-                            <a href="{% url 'about' %}"
-                            class="group bg-emerald-500 hover:bg-emerald-600 px-8 py-4 rounded-2xl font-semibold text-white flex items-center gap-2 transition-all duration-300 hover:scale-[1.03]">
-                                Our Story
-                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-                            </a>
-
-                            <a href="{% url 'products' %}"
-                            class="border-2 border-white/70 hover:bg-white/10 px-8 py-4 rounded-2xl font-semibold text-white transition-all duration-300 hover:scale-[1.03]">
-                                Shop Now
-                            </a>
-
-                        </div>
-                    </div>
-
-                    <!-- IMAGE BLOCK -->
-                    <div class="relative flex justify-center opacity-0 translate-x-10 transition-all duration-1000 delay-300 reveal">
-
-                        <div class="w-80 h-80 bg-white/10 backdrop-blur-3xl rounded-3xl flex items-center justify-center border border-white/20 shadow-2xl
-                                    animate-[float_6s_ease-in-out_infinite]">
-
-                            <img src="{% static 'assets/logos/logo_sa.png' %}"
-                                alt="Mahitaji"
-                                class="w-52 opacity-95">
-
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Order Steps -->
-        <section class="relative py-20 bg-white overflow-hidden">
-
-            <!-- soft ambient background -->
-            <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white"></div>
-
-            <!-- floating glow -->
-            <div class="absolute -top-40 left-1/3 w-[500px] h-[500px] bg-emerald-100 blur-3xl rounded-full animate-pulse"></div>
-
-            <div class="max-w-7xl mx-auto px-6 relative z-10">
-
-                <!-- HEADER -->
-                <div class="text-center mb-16 space-y-3">
-
-                    <div class="reveal opacity-0 translate-y-6 transition-all duration-700">
-                        <span class="text-emerald-600 font-semibold tracking-widest text-sm">
-                            HOW IT WORKS
-                        </span>
-                    </div>
-
-                    <h2 class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
-                            text-4xl font-bold text-slate-900">
-                        Three Steps to Get Stocked
-                    </h2>
-
-                </div>
-
-                <!-- STEPS -->
-                <div class="grid md:grid-cols-3 gap-12 relative">
-
-                    <!-- connector line (desktop only) -->
-                    <div class="hidden md:block absolute top-10 left-0 right-0 h-[2px] bg-slate-100"></div>
-
-                    <!-- STEP 1 -->
-                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
-                                text-center group relative">
-
-                        <!-- number -->
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
-                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
-                                    flex items-center justify-center shadow-lg">
-                            1
-                        </div>
-
-                        <!-- icon -->
-                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
-                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
-                                    group-hover:bg-emerald-100">
-                            🔍
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
-                            Browse & Select
-                        </h3>
-
-                        <p class="text-slate-600 max-w-sm mx-auto">
-                            Explore thousands of quality products with real-time pricing and availability.
-                        </p>
-
-                    </div>
-
-                    <!-- STEP 2 -->
-                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-300
-                                text-center group relative">
-
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
-                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
-                                    flex items-center justify-center shadow-lg">
-                            2
-                        </div>
-
-                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
-                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
-                                    group-hover:bg-emerald-100">
-                            📋
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
-                            Place Order
-                        </h3>
-
-                        <p class="text-slate-600 max-w-sm mx-auto">
-                            Fast checkout with M-Pesa. Get instant order confirmation.
-                        </p>
-
-                    </div>
-
-                    <!-- STEP 3 -->
-                    <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-500
-                                text-center group relative">
-
-                        <div class="absolute -top-6 left-1/2 -translate-x-1/2
-                                    w-8 h-8 rounded-full bg-emerald-600 text-white text-sm font-bold
-                                    flex items-center justify-center shadow-lg">
-                            3
-                        </div>
-
-                        <div class="w-20 h-20 mx-auto bg-emerald-50 rounded-2xl flex items-center justify-center
-                                    text-4xl mb-6 group-hover:scale-110 group-hover:shadow-lg transition-all duration-300
-                                    group-hover:bg-emerald-100">
-                            🚚
-                        </div>
-
-                        <h3 class="text-2xl font-semibold mb-3 text-slate-900">
-                            Fast Delivery
-                        </h3>
-
-                        <p class="text-slate-600 max-w-sm mx-auto">
-                            Reliable delivery across Nairobi. Track your order in real-time.
-                        </p>
-
-                    </div>
-
-                </div>
-            </div>
-        </section>
-
-        <!-- Trust Bar -->
-        <section class="py-12 bg-slate-50 border-t border-b">
-            <div class="max-w-7xl mx-auto px-6">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-                    <div>
-                        <div class="text-4xl font-bold text-slate-900">5000+</div>
-                        <div class="text-slate-600 mt-1">Active Retailers</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-slate-900">98%</div>
-                        <div class="text-slate-600 mt-1">On-time Delivery</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-slate-900">200+</div>
-                        <div class="text-slate-600 mt-1">Brands Partnered</div>
-                    </div>
-                    <div>
-                        <div class="text-4xl font-bold text-slate-900">24/7</div>
-                        <div class="text-slate-600 mt-1">Support</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- About Summary -->
-        <section class="relative py-20 lg:py-28 bg-white overflow-hidden">
-
-            <!-- SOFT BACKGROUND DEPTH -->
-            <div class="absolute inset-0 bg-gradient-to-b from-white via-slate-50 to-white"></div>
-
-            <!-- FLOATING BLUR BLOBS (subtle premium feel) -->
-            <div class="absolute -top-40 -left-40 w-[500px] h-[500px] bg-emerald-100 blur-3xl rounded-full animate-pulse"></div>
-            <div class="absolute bottom-0 right-0 w-[400px] h-[400px] bg-blue-100 blur-3xl rounded-full animate-pulse"></div>
-
-            <div class="max-w-7xl mx-auto px-6 relative z-10">
-
-                <div class="grid lg:grid-cols-2 gap-16 items-center">
-
-                    <!-- IMAGE -->
-                    <div class="reveal opacity-0 translate-x-10 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]
-                                parallax-medium">
-
-                        <div class="relative group">
-
-                            <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=1200"
-                                alt="Mahitaji Warehouse"
-                                class="rounded-3xl shadow-2xl transition-transform duration-700 group-hover:scale-[1.02]">
-
-                            <!-- subtle overlay glow -->
-                            <div class="absolute inset-0 rounded-3xl bg-gradient-to-tr from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-500"></div>
-
-                        </div>
-                    </div>
-
-                    <!-- CONTENT -->
-                    <div class="space-y-8">
-
-                        <!-- badge -->
-                        <div class="reveal opacity-0 translate-y-6 transition-all duration-700">
-                            <span class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-full text-sm font-medium shadow-sm">
-                                Since 2018
-                            </span>
-                        </div>
-
-                        <!-- heading -->
-                        <h2 class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-150
-                                text-4xl font-bold text-slate-900 leading-tight">
-                            Your Trusted Partner in Wholesale Supply
-                        </h2>
-
-                        <!-- paragraph -->
-                        <p class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-300
-                                text-lg text-slate-600 leading-relaxed max-w-xl">
-                            At Mahitaji, we believe business should be simple. We source directly from manufacturers, maintain high standards, and deliver with speed and reliability.
-                        </p>
-
-                        <!-- feature grid -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-
-                            <!-- feature 1 -->
-                            <div class="reveal opacity-0 translate-y-6 transition-all duration-700 delay-300
-                                        flex gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-
-                                <div class="text-emerald-500 text-2xl mt-1">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-
-                                <div>
-                                    <h4 class="font-semibold text-slate-900">Direct from Source</h4>
-                                    <p class="text-sm text-slate-500">Better prices, better quality</p>
-                                </div>
-
-                            </div>
-
-                            <!-- feature 2 -->
-                            <div class="reveal opacity-0 translate-y-6 transition-all duration-700 delay-500
-                                        flex gap-4 p-4 rounded-xl hover:bg-slate-50 transition">
-
-                                <div class="text-emerald-500 text-2xl mt-1">
-                                    <i class="fas fa-check-circle"></i>
-                                </div>
-
-                                <div>
-                                    <h4 class="font-semibold text-slate-900">Fast Delivery</h4>
-                                    <p class="text-sm text-slate-500">Nairobi &amp; environs</p>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                        <!-- CTA -->
-                        <div class="reveal opacity-0 translate-y-10 transition-all duration-1000 delay-500">
-                            <a href="{% url 'about' %}"
-                            class="inline-flex items-center gap-2 text-emerald-600 font-semibold hover:text-emerald-700 transition group">
-
-                                Learn more about us
-                                <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
-
-                            </a>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </section>
-        <!-- ====================== LAST GROUP ENDS HERE ====================== -->
-
-
+<section class="hero">
+  <div class="container">
+    <div>
+      <span class="eyebrow">Kenya's FMCG distribution partner since 1997</span>
+      <h1>Stock your shop <em>direct from the source.</em></h1>
+      <p class="lead">Cooking oil, rice, flour, soaps, beverages and every fast-moving essential, delivered from our Baba Dogo hub to your shelf. Retail and wholesale pricing on one account.</p>
+      <form action="{% url 'search' %}" method="get" class="search-form mt-5" style="max-width:560px;border-color:#fff" role="search">
+        <input type="search" name="q" placeholder="Search 100+ products, e.g. cooking oil" aria-label="Search products">
+        <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      </form>
+      <div class="hero-cta">
+        <a href="{% url 'products' %}" class="btn btn-amber btn-lg">Browse the catalogue</a>
+        <a href="{% url 'wholesalers' %}" class="btn btn-outline-light btn-lg">Wholesale pricing</a>
+      </div>
+      <div class="hero-trust">
+        <span><i class="fa-solid fa-truck-fast"></i>Next-day delivery in Nairobi</span>
+        <span><i class="fa-solid fa-mobile-screen"></i>Pay with M-Pesa or on delivery</span>
+        <span><i class="fa-solid fa-shield-halved"></i>KEBS-certified products</span>
+      </div>
     </div>
+    <div class="hero-panel">
+      <div class="hero-card">
+        <h3><span><i class="fa-solid fa-bolt" style="color:var(--amber-500)"></i> Today's top offers</span><a href="{% url 'offers' %}">See all</a></h3>
+        {% for product in top_offers|slice:":4" %}{% product_price product as price %}{% product_old_price product as was %}{% product_discount product as discount %}
+        <a href="{{ product.get_absolute_url }}" class="hero-deal">
+          <span class="hd-thumb">{% if product.has_image %}<img src="{{ product.image_url }}" alt="">{% else %}{% include 'partials/pack.html' with product=product compact=True %}{% endif %}</span>
+          <span><span class="hd-name">{{ product.name }}</span><br><span class="hd-meta">{{ product.brand.name|default:'Mahitaji' }}{% if product.pack_size %} · {{ product.pack_size }}{% endif %}{% if discount %} · <strong style="color:var(--amber-500)">-{{ discount }}</strong>{% endif %}</span></span>
+          <span class="hd-price">{{ price|ksh }}{% if was %}<small>{{ was|ksh }}</small>{% endif %}</span>
+        </a>
+        {% empty %}
+        <p class="muted" style="color:rgba(255,255,255,.6)">New offers are published every week.</p>
+        {% endfor %}
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat"><strong>{{ stats.products }}+</strong><span>Products</span></div>
+        <div class="hero-stat"><strong>{{ stats.brands }}</strong><span>Brands</span></div>
+        <div class="hero-stat"><strong>3,000+</strong><span>Retail partners</span></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-</main>
+<section class="usp-bar">
+  <div class="container">
+    <div class="usp"><i class="fa-solid fa-truck-fast"></i><div><strong>Fast, reliable delivery</strong><span>Nairobi in 24h · upcountry in 2–3 days</span></div></div>
+    <div class="usp"><i class="fa-solid fa-mobile-screen-button"></i><div><strong>Flexible payments</strong><span>M-Pesa STK push or cash on delivery</span></div></div>
+    <div class="usp"><i class="fa-solid fa-layer-group"></i><div><strong>Two price tiers</strong><span>Retail &amp; wholesale on one account</span></div></div>
+    <div class="usp"><i class="fa-solid fa-headset"></i><div><strong>Dedicated support</strong><span>{{ site.phone }} · WhatsApp sales desk</span></div></div>
+  </div>
+</section>
 
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Shop by category</span><h2>What are you stocking today?</h2></div>
+      <a href="{% url 'categories' %}" class="link">All {{ stats.categories }} categories <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="tile-grid cols-4">
+      {% for cat in top_categories %}
+      <a href="{{ cat.get_absolute_url }}" class="tile">
+        <span class="tile-icon" style="--hue:{{ cat.name|hue }}">{% if cat.image_url %}<img src="{{ cat.image_url }}" alt="">{% else %}{{ cat.name|initials }}{% endif %}</span>
+        <span><span class="tile-title">{{ cat.name }}</span><span class="tile-sub">{{ cat.product_count }} product{{ cat.product_count|pluralize }}</span></span>
+        <i class="fa-solid fa-arrow-right tile-arrow"></i>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% if top_offers %}
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Offers &amp; deals</span><h2>Biggest savings this week</h2><p>Reduced prices on the lines that move fastest.</p></div>
+      <a href="{% url 'offers' %}" class="link">View all offers <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="product-grid">
+      {% for product in top_offers %}{% include 'partials/product_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="split-cta">
+      <div class="cta-card light">
+        <i class="fa-solid fa-store cta-icon"></i>
+        <span class="eyebrow">For shops &amp; kiosks</span>
+        <h3>Retailers shop</h3>
+        <p>Shop-ready pack sizes at retail prices with next-day delivery, so you never run out of the essentials your customers ask for.</p>
+        <div><a href="{% url 'retailers' %}" class="btn btn-primary">Shop retail prices</a></div>
+      </div>
+      <div class="cta-card dark">
+        <i class="fa-solid fa-warehouse cta-icon"></i>
+        <span class="eyebrow">For distributors &amp; supermarkets</span>
+        <h3>Wholesalers shop</h3>
+        <p>Bale and carton pricing straight from the manufacturer, volume allocations and credit terms for established partners.</p>
+        <div><a href="{% url 'wholesalers' %}" class="btn btn-amber">See wholesale prices</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% if bestsellers %}
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Best sellers</span><h2>What retailers reorder most</h2></div>
+      <a href="{% url 'products' %}?sort=featured" class="link">Browse catalogue <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="product-grid">
+      {% for product in bestsellers %}{% include 'partials/product_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">How it works</span><h2>Three steps to a stocked shop</h2></div></div>
+    <div class="steps">
+      <div class="step"><i class="fa-solid fa-magnifying-glass"></i><h3>Browse &amp; select</h3><p>Search the catalogue, compare pack sizes and add what you need. Prices reflect your account tier automatically.</p></div>
+      <div class="step"><i class="fa-solid fa-mobile-screen-button"></i><h3>Place your order</h3><p>Check out in under a minute. Pay by M-Pesa STK push or choose cash on delivery on verified routes.</p></div>
+      <div class="step"><i class="fa-solid fa-truck-fast"></i><h3>Receive your stock</h3><p>Our fleet delivers across Nairobi within 24 hours, or collect from our Baba Dogo hub at your convenience.</p></div>
+    </div>
+  </div>
+</section>
+
+{% if trending %}
+<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+  <div class="container">
+    <div class="section-head">
+      <div><span class="eyebrow">Trending now</span><h2>Moving fast this month</h2></div>
+      <a href="{% url 'products' %}?sort=newest" class="link">New arrivals <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
+    <div class="product-grid">
+      {% for product in trending|slice:":4" %}{% include 'partials/product_card.html' %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><div><span class="eyebrow">Brands we distribute</span><h2>Trusted names, official supply</h2></div><a href="{% url 'brands' %}" class="link">All brands <i class="fa-solid fa-arrow-right"></i></a></div>
+    <div class="brand-strip">
+      {% for brand in all_brands %}<a href="{{ brand.get_absolute_url }}">{{ brand.name }}</a>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section-lg bg-green">
+  <div class="container">
+    <div class="grid" style="gap:40px;align-items:center;grid-template-columns:1fr">
+      <div class="grid" style="grid-template-columns:1fr;gap:40px" id="whyGrid">
+        <div>
+          <span class="eyebrow">Why Mahitaji</span>
+          <h2>Why smart retailers choose Mahitaji</h2>
+          <p class="lead" style="color:rgba(255,255,255,.75)">Since 1997 we have bridged manufacturers and more than 3,000 retail outlets with disciplined logistics, verified stock and honest pricing.</p>
+          <div class="grid grid-2 mt-5" style="gap:18px">
+            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-warehouse"></i></span><div><h4 style="color:#fff">100,000 sq ft hub</h4><p style="color:rgba(255,255,255,.65)">Modern warehousing at Baba Dogo Industrial Park.</p></div></div>
+            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-truck"></i></span><div><h4 style="color:#fff">50+ vehicle fleet</h4><p style="color:rgba(255,255,255,.65)">Dedicated routes across Nairobi, Central and Rift Valley.</p></div></div>
+            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-certificate"></i></span><div><h4 style="color:#fff">KEBS-certified stock</h4><p style="color:rgba(255,255,255,.65)">Only genuine, compliant products from official channels.</p></div></div>
+            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-handshake"></i></span><div><h4 style="color:#fff">Credit for partners</h4><p style="color:rgba(255,255,255,.65)">Flexible terms for established retailers after review.</p></div></div>
+          </div>
+          <div class="flex gap-3 wrap mt-6">
+            <a href="{% url 'about' %}" class="btn btn-amber">Our story</a>
+            <a href="{% url 'register' %}" class="btn btn-outline-light">Open a business account</a>
+          </div>
+        </div>
+        <div class="grid grid-2" style="gap:14px">
+          <div class="hero-stat"><strong>30+</strong><span>Years in distribution</span></div>
+          <div class="hero-stat"><strong>3,000+</strong><span>Active retail clients</span></div>
+          <div class="hero-stat"><strong>99.8%</strong><span>Delivery accuracy</span></div>
+          <div class="hero-stat"><strong>24h</strong><span>Nairobi delivery window</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="newsletter-band">
+  <div class="container">
+    <div><span class="eyebrow">Stay stocked</span><h2>Price drops and new stock, straight to your inbox</h2><p>One email a week. Unsubscribe any time.</p></div>
+    <form action="{% url 'newsletter_subscribe' %}" method="post" data-newsletter class="newsletter-form">
+      {% csrf_token %}
+      <input type="email" name="email" class="input" placeholder="you@business.co.ke" required aria-label="Email address">
+      <button class="btn btn-amber btn-lg" type="submit">Subscribe</button>
+    </form>
+  </div>
+</section>
 {% endblock %}
 
 {% block extra_css %}
 <style>
-
-    /* ====================== HERO & ROTARY ====================== */
-    .hero { 
-        min-height: 920px; 
-        padding-top: 140px; 
-    }
-    .rotary-wrapper { 
-        margin: 0 auto; 
-    }
-
-    /* ====================== SECTION SPACING ====================== */
-    .section-wrapper > section {
-        padding-top: 5rem;
-        padding-bottom: 5rem;
-    }
-
-    /* ====================== TRENDING PRODUCTS ====================== */
-    #trending-track .product-card-ap {
-        min-height: 430px;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    #trending-track .product-card-ap:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.15);
-    }
-
-    #trending-track .image-inner-frame {
-        padding: 28px;
-        background: #f8fafc;
-    }
-
-    #trending-track .product-main-title {
-        color: #313761 !important;
-        font-size: 16.5px;
-        font-weight: 600;
-        line-height: 1.35;
-    }
-
-    #trending-track .brand-subtext {
-        font-size: 12.5px;
-        color: #64748b;
-        letter-spacing: 0.8px;
-    }
-
-    #trending-track p.line-clamp-3 {
-        font-size: 13.5px;
-        line-height: 1.45;
-        color: #64748b;
-    }
-
-    #trending-track .add-to-cart-btn {
-        border-radius: 9999px !important;
-        padding: 14px 28px !important;
-        font-size: 13.5px;
-        font-weight: 600;
-    }
-
-    /* Trending Slideshow Animation */
-    .animate-trending {
-        animation: trending-scroll 45s linear infinite;
-    }
-
-    @keyframes trending-scroll {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
-    }
-
-    #trending-track:hover {
-        animation-play-state: paused;
-    }
-
-    /* ====================== GENERAL ====================== */
-    .text-5xl { font-size: 2.75rem; line-height: 1.1; }
-    .text-4xl { font-size: 2.25rem; }
-
-    @media (max-width: 768px) {
-        .hero { 
-            min-height: 700px; 
-            padding-top: 100px; 
-        }
-        .rotary-wrapper { 
-            transform: scale(0.75); 
-        }
-    }
-
+  @media (min-width: 992px) { #whyGrid { grid-template-columns: 1.3fr .7fr !important; } }
 </style>
-{% endblock %}
-
-{% block extra_js %}
-<script id="scroll-nav">
-
-    // Pause trending animation on hover
-    const trendingTrack = document.getElementById('trending-track');
-    if (trendingTrack) {
-        trendingTrack.addEventListener('mouseenter', () => {
-            trendingTrack.style.animationPlayState = 'paused';
-        });
-        trendingTrack.addEventListener('mouseleave', () => {
-            trendingTrack.style.animationPlayState = 'running';
-        });
-    }
-
-    const reveals = document.querySelectorAll(".reveal");
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.remove("opacity-0", "translate-y-6", "translate-y-10", "translate-x-10");
-                entry.target.classList.add("opacity-100", "translate-y-0", "translate-x-0");
-            }
-        });
-    }, {
-        threshold: 0.2
-    });
-
-    reveals.forEach(el => observer.observe(el));
-
-    document.addEventListener("DOMContentLoaded", () => {
-        const elements = document.querySelectorAll(".reveal");
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.remove("opacity-0", "translate-y-6", "translate-y-8", "translate-x-10");
-                    entry.target.classList.add("opacity-100", "translate-x-0", "translate-y-0");
-                }
-            });
-        }, {
-            threshold: 0.2
-        });
-
-        elements.forEach(el => observer.observe(el));
-    });
-
-    const slider = document.getElementById('trending-slider');
-
-    document.getElementById('trend-next').addEventListener('click', () => {
-        slider.scrollBy({
-            left: 900,
-            behavior: 'smooth'
-        });
-    });
-
-    document.getElementById('trend-prev').addEventListener('click', () => {
-        slider.scrollBy({
-            left: -900,
-            behavior: 'smooth'
-        });
-    });
-
-    const header = document.querySelector('.header-bottom');
-    const heroSectionElement = document.querySelector('.hero');
-
-    if (header && heroSectionElement) {
-        window.addEventListener('scroll', () => {
-            const trigger = heroSectionElement.offsetHeight - 80;
-            if (window.scrollY > trigger) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const slides = [
-            "{% static 'assets/banners/slide1.jpg' %}",
-            "{% static 'assets/banners/slide2.jpg' %}"
-        ];
-        let current = 0;
-        const slider = document.querySelector('.promo-item');
-
-        if (slider) {
-            setInterval(() => {
-                current = (current + 1) % slides.length;
-                slider.style.backgroundImage = `linear-gradient(to right, rgba(49, 55, 97, 0.9), transparent), url('${slides[current]}')`;
-            }, 5000);
-        }
-    });
-
-    // Master Isolated Slider Controller Engine
-    (function() {
-        let localEclipseIndex = 0;
-        let localLogisticsIndex = 0;
-
-        // Slide Swapping Handler for Slider Group 1 (#eclipseMainSlider)
-        function applyEclipseSlideState(targetIdx) {
-            const allSlides = document.querySelectorAll('#eclipseMainSlider .eclipse-slide');
-            const allDots = document.querySelectorAll('#eclipseMainSlider .eclipse-dot');
-
-            if (allSlides.length === 0) return;
-
-            if (targetIdx >= allSlides.length) localEclipseIndex = 0;
-            else if (targetIdx < 0) localEclipseIndex = allSlides.length - 1;
-            else localEclipseIndex = targetIdx;
-
-            allSlides.forEach((slide, idx) => {
-                if (idx === localEclipseIndex) {
-                    slide.classList.add('active-slide');
-                    slide.style.opacity = "1";
-                    slide.style.visibility = "visible";
-                    slide.style.zIndex = "5";
-                } else {
-                    slide.classList.remove('active-slide');
-                    slide.style.opacity = "0";
-                    slide.style.visibility = "hidden";
-                    slide.style.zIndex = "1";
-                }
-            });
-
-            allDots.forEach((dot, idx) => {
-                if (idx === localEclipseIndex) dot.classList.add('active-dot');
-                else dot.classList.remove('active-dot');
-            });
-        }
-
-        // Slide Swapping Handler for Slider Group 2 (#eclipseLogisticsSlider)
-        function applyLogisticsSlideState(targetIdx) {
-            const allSlides = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-slide');
-            const allDots = document.querySelectorAll('#eclipseLogisticsSlider .eclipse-dot');
-
-            if (allSlides.length === 0) return;
-
-            if (targetIdx >= allSlides.length) localLogisticsIndex = 0;
-            else if (targetIdx < 0) localLogisticsIndex = allSlides.length - 1;
-            else localLogisticsIndex = targetIdx;
-
-            allSlides.forEach((slide, idx) => {
-                if (idx === localLogisticsIndex) {
-                    slide.classList.add('active-slide');
-                    slide.style.opacity = "1";
-                    slide.style.visibility = "visible";
-                    slide.style.zIndex = "5";
-                } else {
-                    slide.classList.remove('active-slide');
-                    slide.style.opacity = "0";
-                    slide.style.visibility = "hidden";
-                    slide.style.zIndex = "1";
-                }
-            });
-
-            allDots.forEach((dot, idx) => {
-                if (idx === localLogisticsIndex) dot.classList.add('active-dot');
-                else dot.classList.remove('active-dot');
-            });
-        }
-
-        // Direct Window Injection for global scope exposure
-        window.shiftEclipseSlider = function(stepValue) {
-            applyEclipseSlideState(localEclipseIndex + stepValue);
-        };
-        window.jumpToEclipseSlide = function(exactIdx) {
-            applyEclipseSlideState(exactIdx);
-        };
-
-        window.shiftLogisticsSlider = function(stepValue) {
-            applyLogisticsSlideState(localLogisticsIndex + stepValue);
-        };
-        window.jumpToLogisticsSlide = function(exactIdx) {
-            applyLogisticsSlideState(exactIdx);
-        };
-
-        function safeInitSliders() {
-            applyEclipseSlideState(0);
-            applyLogisticsSlideState(0);
-            
-            // Balanced independent loops running smoothly at 5-second intervals
-            setInterval(function() { window.shiftEclipseSlider(1); }, 5000);
-            setInterval(function() { window.shiftLogisticsSlider(1); }, 5000);
-        }
-
-        if (document.readyState === "loading") {
-            document.addEventListener("DOMContentLoaded", safeInitSliders);
-        } else {
-            safeInitSliders();
-        }
-    })();
-
-</script>
 {% endblock %}
