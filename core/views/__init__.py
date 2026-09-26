@@ -42,8 +42,8 @@ from .pages import (  # noqa: F401
 )
 from .payments import check_payment_status, initiate_stk_push, mpesa_callback  # noqa: F401
 from .storefront import (  # noqa: F401
-    PAGE_SIZE, SORT_OPTIONS, brands, catalog, categories, home, offers, product_detail, products, retailers,
-    search, search_suggest, wholesalers,
+    PAGE_SIZE, SORT_OPTIONS, brands, catalog, categories, home, offers, price_list, product_detail, products,
+    retailers, search, search_suggest, wholesalers,
 )
 
 __all__ = [name for name in dir() if not name.startswith('_') and name not in ('form_errors', 'get_profile', 'is_ajax', 'json_error', 'json_ok', 'request_data', 'safe_next_url')] + [

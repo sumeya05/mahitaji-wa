@@ -729,3 +729,16 @@ class AssistantTests(TestCase):
         self.assertEqual(data['handled_by'], 'llm')
         self.assertIn("Golden Fry Cooking Oil 3L", generate.call_args[0][0])
         self.assertEqual(data['products'][0]['name'], "Golden Fry Cooking Oil 3L")
+
+
+class PriceListTests(TestCase):
+    def test_csv_is_generated_from_live_catalogue(self):
+        make_product(name="Golden Fry Cooking Oil 3L", item_code="OIL1", retail="1050", wholesale="900", old="1100")
+        make_product(name="Hidden", item_code="H1", is_active=False)
+        response = self.client.get(reverse('price_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv; charset=utf-8')
+        body = response.content.decode('utf-8')
+        self.assertIn("Golden Fry Cooking Oil 3L", body)
+        self.assertIn("1050.00,900.00,1100.00,,yes", body)
+        self.assertNotIn("Hidden", body)

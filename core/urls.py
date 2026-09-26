@@ -22,6 +22,7 @@ urlpatterns = [
     path('brands/', views.brands, name='brands'),
     path('product/<int:pk>/', views.product_detail, name='product_detail'),
     path('search/suggest/', views.search_suggest, name='search_suggest'),
+    path('price-list.csv', views.price_list, name='price_list'),
 
     # Cart
     path('shopping-cart/', views.shopping_cart, name='shopping-cart'),

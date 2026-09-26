@@ -1,8 +1,10 @@
 """
 Public catalogue: home page, product listings (catalogue / retailers / wholesalers / offers), search, categories, brands and the product page.
 """
+import csv
 import logging
 
+from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
 from django.shortcuts import get_object_or_404, render
@@ -231,3 +233,21 @@ def product_detail(request, pk):
         context['tier'] = requested_tier
         context['tier_notice'] = requested_tier
     return render(request, 'core/product-detail.html', context)
+
+
+def price_list(request):
+    """Downloadable CSV price list generated from the live catalogue, so it never goes stale."""
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="mahitaji-price-list.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Item code', 'Product', 'Category', 'Brand', 'Unit', 'Retail price (KSh)', 'Wholesale price (KSh)',
+                     'Was (retail)', 'Was (wholesale)', 'In stock'])
+    products = Product.objects.active().with_relations().order_by('category__name', 'name')
+    for p in products:
+        writer.writerow([
+            p.item_code or '', p.name, p.category.name if p.category else '', p.brand.name if p.brand else '',
+            p.pack_size, p.retail_price or '', p.wholesale_price or '',
+            p.old_price_for(PRICE_TIER_RETAIL) or '', p.old_price_for(PRICE_TIER_WHOLESALE) or '',
+            'yes' if p.in_stock else 'no',
+        ])
+    return response
