@@ -208,7 +208,17 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Mahitaji <no-reply@mahitaj
 ORDER_NOTIFICATION_EMAIL = os.getenv('ORDER_NOTIFICATION_EMAIL', '')
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
-GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'models/gemini-2.0-flash')
+GEMINI_MODEL = os.getenv('GEMINI_MODEL', 'gemini-3.8-flash')
+
+# Shopping assistant (core/assistant.py). Counters live in the cache: with the
+# default in-process cache each Gunicorn worker counts separately, so point
+# CACHES at Redis/Memcached in production for exact limits.
+ASSISTANT_RATE_LIMIT = int(os.getenv('ASSISTANT_RATE_LIMIT', '20'))          # messages per visitor per window
+ASSISTANT_RATE_WINDOW = int(os.getenv('ASSISTANT_RATE_WINDOW', '600'))       # seconds
+ASSISTANT_DAILY_LLM_LIMIT = int(os.getenv('ASSISTANT_DAILY_LLM_LIMIT', '500'))  # model calls per day, all visitors
+ASSISTANT_MAX_MESSAGE_LENGTH = int(os.getenv('ASSISTANT_MAX_MESSAGE_LENGTH', '500'))
+ASSISTANT_TIMEOUT_SECONDS = float(os.getenv('ASSISTANT_TIMEOUT_SECONDS', '12'))
+ASSISTANT_HISTORY_TURNS = int(os.getenv('ASSISTANT_HISTORY_TURNS', '8'))
 
 CART_SESSION_ID = 'cart'
 

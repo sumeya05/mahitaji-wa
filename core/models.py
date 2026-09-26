@@ -547,3 +547,33 @@ class NewsletterSubscriber(models.Model):
 
     def __str__(self):
         return self.email
+
+
+# ---------------------------------------------------------------------------
+# G. Assistant chat log
+# ---------------------------------------------------------------------------
+class ChatMessage(models.Model):
+    """One question/answer exchange with the shopping assistant, kept so the
+    questions customers actually ask can be reviewed and turned into better
+    answers (or FAQ entries) over time."""
+    HANDLED_CHOICES = (
+        ('order', 'Order status'),
+        ('catalogue', 'Catalogue lookup'),
+        ('faq', 'FAQ'),
+        ('llm', 'Language model'),
+        ('fallback', 'Fallback'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='chat_messages')
+    session_key = models.CharField(max_length=40, blank=True, db_index=True)
+    message = models.TextField()
+    reply = models.TextField()
+    handled_by = models.CharField(max_length=12, choices=HANDLED_CHOICES, default='llm', db_index=True)
+    product_ids = models.JSONField(default=list, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.created_at:%Y-%m-%d %H:%M} · {self.handled_by} · {self.message[:40]}"

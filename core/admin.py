@@ -3,6 +3,7 @@ from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
 
 from .models import (
+    ChatMessage,
     Address, Brand, Category, ContactMessage, CustomerProfile, MpesaTransaction,
     NewsletterSubscriber, Order, OrderItem, Product, StockLedger, Supplier,
     UnitOfMeasure, WishlistItem,
@@ -195,3 +196,28 @@ class NewsletterAdmin(admin.ModelAdmin):
     list_display = ['email', 'is_active', 'created_at']
     list_filter = ['is_active']
     search_fields = ['email']
+
+
+@admin.register(ChatMessage)
+class ChatMessageAdmin(admin.ModelAdmin):
+    """Read-only log of assistant conversations."""
+    list_display = ['created_at', 'handled_by', 'user', 'short_message', 'short_reply']
+    list_filter = ['handled_by', 'created_at']
+    search_fields = ['message', 'reply', 'user__username', 'session_key']
+    readonly_fields = ['user', 'session_key', 'message', 'reply', 'handled_by', 'product_ids', 'created_at']
+    date_hierarchy = 'created_at'
+    list_per_page = 50
+
+    @admin.display(description='Question')
+    def short_message(self, obj):
+        return obj.message[:80]
+
+    @admin.display(description='Answer')
+    def short_reply(self, obj):
+        return obj.reply[:80]
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False

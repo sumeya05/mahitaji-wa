@@ -624,3 +624,108 @@ class TierAwareDiscountTests(TestCase):
         self.both.old_wholesale_price = Decimal('1000')
         self.both.save()
         self.assertEqual(self.client.get(reverse('offers')).context['total_count'], 1)
+
+
+@override_settings(ASSISTANT_RATE_LIMIT=5, ASSISTANT_DAILY_LLM_LIMIT=100)
+class AssistantTests(TestCase):
+    """Deterministic answers, rate limiting, history hand-off to the model, and logging."""
+
+    def setUp(self):
+        from django.core.cache import cache
+        cache.clear()
+        self.user = make_user()
+        self.oil = make_product(name="Golden Fry Cooking Oil 3L", item_code="OIL1", retail="1050", wholesale="900", old="1100")
+        self.rice = make_product(name="Amana Long Grain Rice 24x1kg", item_code="RICE1", retail="3200", wholesale="3000",
+                                 old=None, category_name="Rice")
+
+    def ask(self, message, history=None):
+        payload = {'message': message}
+        if history is not None:
+            payload['history'] = history
+        return self.client.post(reverse('ai_assistant_chat'), json.dumps(payload), content_type='application/json',
+                                HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+
+    def test_price_question_is_answered_from_catalogue_without_a_model(self):
+        with mock.patch('core.assistant._generate') as generate:
+            response = self.ask("What is the price of cooking oil?")
+        generate.assert_not_called()
+        data = response.json()
+        self.assertEqual(data['handled_by'], 'catalogue')
+        self.assertIn("KSh 1,050", data['reply'])
+        self.assertIn("was KSh 1,100", data['reply'])
+        self.assertEqual(data['products'][0]['name'], "Golden Fry Cooking Oil 3L")
+
+    def test_wholesaler_gets_wholesale_prices(self):
+        self.client.force_login(make_user(username='ws', email='ws@x.com', wholesaler=True))
+        data = self.ask("how much is rice?").json()
+        self.assertEqual(data['handled_by'], 'catalogue')
+        self.assertIn("KSh 3,000", data['reply'])
+        self.assertIn("wholesale prices", data['reply'])
+
+    def test_faq_delivery_and_payment(self):
+        self.assertIn("next working day", self.ask("Do you deliver outside Nairobi?").json()['reply'])
+        data = self.ask("How do I pay with M-Pesa?").json()
+        self.assertEqual(data['handled_by'], 'faq')
+        self.assertIn("STK prompt", data['reply'])
+
+    def test_order_status_requires_sign_in_then_reports_latest_order(self):
+        self.assertIn("Sign in", self.ask("Where is my order?").json()['reply'])
+        self.client.force_login(self.user)
+        self.assertIn("haven't placed any orders", self.ask("where is my order").json()['reply'])
+        order = Order.objects.create(customer=self.user.customerprofile, payment_method=Order.PAYMENT_MPESA,
+                                     status=Order.STATUS_PENDING, total_amount=Decimal('2100'), full_name="Jane Doe")
+        OrderItem.objects.create(order=order, product=self.oil, quantity=2, price_at_purchase=Decimal('1050'))
+        data = self.ask(f"track {order.order_number}").json()
+        self.assertEqual(data['handled_by'], 'order')
+        self.assertIn(order.order_number, data['reply'])
+        self.assertIn("Pending", data['reply'])
+        self.assertIn("awaiting M-Pesa payment", data['reply'])
+        self.assertIn("couldn't find MAH-ZZZZZZZZ", self.ask("order MAH-ZZZZZZZZ status").json()['reply'])
+
+    @override_settings(GEMINI_API_KEY='test-key')
+    def test_free_form_question_goes_to_model_with_history_and_products(self):
+        history = [{'role': 'user', 'text': 'hi'}, {'role': 'assistant', 'text': 'Hello!'}, {'role': 'bogus', 'text': 'x'}, 'junk']
+        with mock.patch('core.assistant._generate', return_value="Try the Golden Fry oil.") as generate:
+            data = self.ask("Which cooking oil is best for chips?", history).json()
+        self.assertEqual(data['handled_by'], 'llm')
+        self.assertEqual(data['reply'], "Try the Golden Fry oil.")
+        system_prompt, sent_history, message = generate.call_args[0]
+        self.assertEqual(sent_history, [{'role': 'user', 'text': 'hi'}, {'role': 'assistant', 'text': 'Hello!'}])
+        self.assertEqual(message, "Which cooking oil is best for chips?")
+        self.assertIn("never invent products or prices", system_prompt)
+        self.assertIn("Golden Fry Cooking Oil 3L", system_prompt)
+
+    @override_settings(GEMINI_API_KEY='test-key')
+    def test_model_failure_degrades_gracefully(self):
+        with mock.patch('core.assistant._generate', side_effect=RuntimeError("429 quota")):
+            data = self.ask("Which of these is best for chips?").json()
+        self.assertEqual(data['handled_by'], 'fallback')
+        self.assertIn("try again", data['reply'])
+
+    def test_rate_limit_and_message_length(self):
+        for _ in range(5):
+            self.assertEqual(self.ask("hello there").status_code, 200)
+        response = self.ask("hello again")
+        self.assertEqual(response.status_code, 429)
+        self.assertIn("very quickly", response.json()['error'])
+        from django.core.cache import cache
+        cache.clear()
+        self.assertEqual(self.ask("x" * 600).status_code, 400)
+
+    def test_every_exchange_is_logged(self):
+        from core.models import ChatMessage
+        self.client.force_login(self.user)
+        self.ask("price of rice")
+        self.ask("do you deliver?")
+        rows = list(ChatMessage.objects.order_by('created_at'))
+        self.assertEqual([r.handled_by for r in rows], ['catalogue', 'faq'])
+        self.assertEqual(rows[0].user, self.user)
+        self.assertEqual(rows[0].product_ids, [self.rice.id])
+
+    @override_settings(GEMINI_API_KEY='test-key')
+    def test_advisory_price_question_goes_to_model_with_products(self):
+        with mock.patch('core.assistant._generate', return_value="The Golden Fry oil suits chips.") as generate:
+            data = self.ask("Which cooking oil would you recommend, and is it on offer?").json()
+        self.assertEqual(data['handled_by'], 'llm')
+        self.assertIn("Golden Fry Cooking Oil 3L", generate.call_args[0][0])
+        self.assertEqual(data['products'][0]['name'], "Golden Fry Cooking Oil 3L")
