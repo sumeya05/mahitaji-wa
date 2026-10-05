@@ -21,6 +21,7 @@ class ProductSerializer(serializers.ModelSerializer):
     unit = serializers.CharField(source='pack_size', read_only=True)
     discount_percentage = serializers.CharField(read_only=True)
     current_stock = serializers.IntegerField(read_only=True)
+    stock_state = serializers.CharField(read_only=True)
     image_url = serializers.CharField(read_only=True)
 
     class Meta:
@@ -28,8 +29,8 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'item_code', 'name', 'slug', 'description',
             'category', 'category_name', 'brand', 'brand_name', 'unit',
-            'retail_price', 'wholesale_price', 'old_price', 'discount_percentage',
-            'current_stock', 'image', 'image_url', 'is_trending', 'is_best_seller',
+            'retail_price', 'wholesale_price', 'old_price', 'discount_percentage', 'vat_rate',
+            'current_stock', 'stock_state', 'image', 'image_url', 'is_trending', 'is_best_seller',
         ]
 
 
@@ -46,11 +47,13 @@ class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True, read_only=True)
     customer_name = serializers.CharField(source='customer.display_name', read_only=True)
     status_display = serializers.CharField(source='get_status_display', read_only=True)
+    is_paid = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Order
         fields = [
             'id', 'order_number', 'customer_name', 'full_name', 'phone', 'address', 'city',
-            'payment_method', 'total_amount', 'status', 'status_display', 'created_at', 'items',
+            'payment_method', 'total_amount', 'vat_amount', 'coupon_code', 'discount_amount',
+            'status', 'status_display', 'is_paid', 'paid_at', 'created_at', 'items',
         ]
-        read_only_fields = ['order_number', 'total_amount', 'status']
+        read_only_fields = fields

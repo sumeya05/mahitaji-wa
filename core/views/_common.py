@@ -37,9 +37,10 @@ def request_data(request):
     """Accept JSON bodies as well as regular form posts."""
     if request.content_type and 'application/json' in request.content_type:
         try:
-            return json.loads(request.body or b'{}')
+            data = json.loads(request.body or b'{}')
         except ValueError:
             return {}
+        return data if isinstance(data, dict) else {}  # a JSON list or string carries no fields
     return request.POST
 
 
@@ -55,6 +56,14 @@ def get_profile(user):
 
 def safe_next_url(request, fallback='dashboard'):
     candidate = request.POST.get('next') or request.GET.get('next')
+    if candidate and url_has_allowed_host_and_scheme(candidate, allowed_hosts={request.get_host()}):
+        return candidate
+    return reverse(fallback)
+
+
+def back_url(request, fallback='home'):
+    """The page a form was posted from, if it is on this site (the Referer header is not trusted blindly)."""
+    candidate = request.POST.get('next') or request.META.get('HTTP_REFERER')
     if candidate and url_has_allowed_host_and_scheme(candidate, allowed_hosts={request.get_host()}):
         return candidate
     return reverse(fallback)

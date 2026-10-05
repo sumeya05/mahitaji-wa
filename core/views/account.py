@@ -7,6 +7,7 @@ from django.contrib import messages
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.db.models import Sum
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_http_methods, require_POST
 
@@ -38,7 +39,8 @@ def dashboard(request):
     ctx.update({
         'recent_orders': orders[:5],
         'pending_count': orders.filter(status__in=[Order.STATUS_PENDING, Order.STATUS_PAID, Order.STATUS_SHIPPED]).count(),
-        'total_spent': sum((o.total_amount for o in orders if o.is_paid), 0),
+        'total_spent': orders.filter(paid_at__isnull=False).exclude(status=Order.STATUS_CANCELLED)
+                             .aggregate(total=Sum('total_amount'))['total'] or 0,
         'primary_address': ctx['profile'].primary_address,
         'recent_wishlist': WishlistItem.objects.filter(user=request.user).select_related('product__brand')[:4],
     })
@@ -171,7 +173,12 @@ def update_account(request):
 @login_required
 def wishlist(request):
     ctx = _account_context(request, 'wishlist')
-    ctx['items'] = WishlistItem.objects.filter(user=request.user).select_related('product__brand', 'product__category', 'product__unit_of_measure')
+    items = list(WishlistItem.objects.filter(user=request.user, product__is_active=True))
+    # One query for the products, with the stock figures the product card shows.
+    products = Product.objects.filter(id__in=[item.product_id for item in items]).with_relations().with_stock().in_bulk()
+    for item in items:
+        item.product = products[item.product_id]
+    ctx['items'] = items
     return render(request, 'core/account/wishlist.html', ctx)
 
 

@@ -3,13 +3,12 @@
 
 {% block title %}{{ product.name }}{% if product.pack_size %} ({{ product.pack_size }}){% endif %} · {{ product.brand.name|default:site.name }} · Mahitaji{% endblock %}
 {% block meta_description %}Buy {{ product.name }}{% if product.brand %} by {{ product.brand.name }}{% endif %} from Mahitaji Enterprises at retail or wholesale prices. Next-day delivery in Nairobi, pay by M-Pesa or cash on delivery.{% endblock %}
-{% block body_class %}is-product{% endblock %}
 
 {% block content %}
 {% product_price product as price %}{% price_tier as tier %}{% product_old_price product as was %}{% product_discount product as discount %}
-<section class="section-sm bg-surface" style="border-bottom:1px solid var(--line);padding:16px 0">
+<section class="page-head">
   <div class="container">
-    <ul class="breadcrumb">
+    <ul class="breadcrumb" style="margin-bottom:0">
       <li><a href="{% url 'home' %}">Home</a></li>
       {% if product.category %}<li><a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></li>{% else %}<li><a href="{% url 'products' %}">Catalogue</a></li>{% endif %}
       <li class="current truncate" style="max-width:60vw">{{ product.name }}</li>
@@ -19,10 +18,11 @@
 
 <div class="container">
   {% if tier_notice == 'wholesale' and price_tier != 'wholesale' %}
-  <div class="tier-note" style="margin-top:18px"><i class="fa-solid fa-circle-info"></i><span>You are viewing the <strong>wholesale price</strong>. It applies to verified wholesale accounts. {% if user.is_authenticated %}<a href="{% url 'contact' %}">Ask us to upgrade your account</a>{% else %}<a href="{% url 'register' %}">Register a business account</a>{% endif %} to order at this price. Your cart is charged at retail until then.</span></div>
+  <div class="tier-note mt-4 mb-0"><i class="fa-solid fa-circle-info"></i><span>You are viewing the <strong>wholesale price</strong>. It applies to verified wholesale accounts. {% if user.is_authenticated %}<a href="{% url 'contact' %}">Ask us to upgrade your account</a>{% else %}<a href="{% url 'register' %}">Register a business account</a>{% endif %} to order at this price. Your cart is charged at retail until then.</span></div>
   {% elif tier_notice == 'retail' and price_tier == 'wholesale' %}
-  <div class="tier-note" style="margin-top:18px"><i class="fa-solid fa-circle-info"></i><span>Your account is on the <strong>wholesale tier</strong>. This is the retail price for reference; your cart is charged at wholesale.</span></div>
+  <div class="tier-note mt-4 mb-0"><i class="fa-solid fa-circle-info"></i><span>Your account is on the <strong>wholesale tier</strong>. This is the retail price for reference; your cart is charged at wholesale.</span></div>
   {% endif %}
+
   <div class="pd">
     <div class="pd-media">
       {% if product.has_image %}
@@ -30,174 +30,125 @@
       {% else %}
       {% include 'partials/pack.html' with product=product %}
       {% endif %}
-      <div class="pc-badges">
-        {% if discount %}<span class="badge badge-sale">-{{ discount }}</span>{% endif %}
-        {% if product.is_best_seller %}<span class="badge badge-amber">Best seller</span>{% endif %}
-        {% if product.is_trending %}<span class="badge badge-green">Trending</span>{% endif %}
-      </div>
     </div>
 
     <div>
       {% if product.brand %}<a href="{{ product.brand.get_absolute_url }}" class="pc-brand">{{ product.brand.name }}</a>{% else %}<span class="pc-brand">Mahitaji</span>{% endif %}
       <h1 class="pd-title">{{ product.name }}</h1>
-
-      <div class="pd-meta">
-        {% if product.item_code %}<span><i class="fa-solid fa-barcode"></i> Item {{ product.item_code }}</span>{% endif %}
-        {% if product.pack_size %}<span><i class="fa-solid fa-box-open"></i> {{ product.pack_size }}</span>{% endif %}
-        {% if product.category %}<span><i class="fa-solid fa-tags"></i> <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a></span>{% endif %}
-        <span>{% stars product.average_rating %}</span>
-        {% if in_stock %}<span style="color:var(--brand-700);font-weight:600"><i class="fa-solid fa-circle-check"></i> In stock</span>{% else %}<span style="color:var(--danger);font-weight:600"><i class="fa-solid fa-circle-xmark"></i> Out of stock</span>{% endif %}
+      <div class="pd-badges">
+        {% if product.item_code %}<span class="badge badge-muted">Item {{ product.item_code }}</span>{% endif %}
+        {% if product.category %}<a href="{{ product.category.get_absolute_url }}" class="badge badge-muted">{{ product.category.name }}</a>{% endif %}
+        {% if discount %}<span class="badge badge-sale">-{{ discount }}</span>{% endif %}
+        {% if product.is_best_seller %}<span class="badge badge-amber">Best seller</span>{% endif %}
+        {% if product.is_trending %}<span class="badge badge-green">Trending</span>{% endif %}
+        {% if product.stock_state == 'out' %}<span class="badge badge-danger"><i class="fa-solid fa-circle-xmark"></i> Out of stock</span>
+        {% elif product.stock_state == 'low' %}<span class="badge badge-warning"><i class="fa-solid fa-circle-exclamation"></i> Low stock: {{ product.available_stock }} left</span>
+        {% else %}<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> In stock</span>{% endif %}
       </div>
 
-      <div class="pd-price">
+      <div class="card card-body pd-price">
         <span class="tier">{% product_price_label product %}</span>
         <div class="flex items-center wrap gap-2">
           <span class="now">{{ price|ksh }}</span>
-          {% if was %}{% product_saving product as saved %}
-          <span class="was">{{ was|ksh }}</span>
-          <span class="badge badge-success">Save {{ saved|ksh }} ({{ discount }})</span>
-          {% endif %}
-          {% if product.pack_size %}<span class="muted text-sm">per {{ product.pack_size|lower }}</span>{% endif %}
+          {% if product.pack_size %}<span class="per">per {{ product.pack_size|lower }}</span>{% endif %}
         </div>
+        {% if was %}{% product_saving product as saved %}
+        <div class="flex items-center wrap gap-2 mt-1"><span class="was">{{ was|ksh }}</span><span class="badge badge-success">Save {{ saved|ksh }} ({{ discount }})</span></div>
+        {% endif %}
         {% if tier == 'wholesale' and product.wholesale_price %}
         <div class="other-tier">Retail: <strong>{{ product.retail_price|default:price|ksh }}</strong></div>
         {% elif product.wholesale_price %}
-        <div class="other-tier">Wholesale: <strong>{{ product.wholesale_price|ksh }}</strong>{% if product.pack_size %} per {{ product.pack_size|lower }}{% endif %} — for verified wholesale accounts. {% if user.is_authenticated %}<a href="{% url 'contact' %}">Ask us to upgrade</a>{% else %}<a href="{% url 'register' %}">Open a business account</a>{% endif %}</div>
+        <div class="other-tier">Wholesale: <strong>{{ product.wholesale_price|ksh }}</strong>{% if product.pack_size %} per {{ product.pack_size|lower }}{% endif %}, for verified wholesale accounts. {% if user.is_authenticated %}<a href="{% url 'contact' %}">Ask us to upgrade</a>{% else %}<a href="{% url 'register' %}">Open a business account</a>{% endif %}</div>
         {% endif %}
-      </div>
 
-      {% if in_cart_qty %}
-      <div class="alert alert-success"><i class="fa-solid fa-cart-shopping"></i><span>You already have <strong>{{ in_cart_qty }}</strong> in your cart. <a href="{% url 'shopping-cart' %}">View cart</a></span></div>
-      {% endif %}
+        {% if variants %}
+        <hr>
+        <h2 class="filter-title">Also available as</h2>
+        <div class="variant-list">
+          <span class="is-active">{{ product.pack_size|default:'This pack' }} · {{ price|ksh }}</span>
+          {% for v in variants %}{% product_price v as vprice %}<a href="{% product_url v %}">{{ v.pack_size|default:v.name }} · {{ vprice|ksh }}</a>{% endfor %}
+        </div>
+        {% endif %}
 
-      <div data-buy-box>
-        <div class="pd-buy">
+        {% if in_cart_qty %}
+        <div class="alert alert-success mt-4 mb-0"><i class="fa-solid fa-cart-shopping"></i><span>You already have <strong>{{ in_cart_qty }}</strong> in your cart. <a href="{% url 'shopping-cart' %}">View cart</a></span></div>
+        {% endif %}
+
+        <div class="pd-buy" data-buy-box>
           <div class="qty" aria-label="Quantity">
             <button type="button" class="qty-minus" aria-label="Decrease quantity"><i class="fa-solid fa-minus"></i></button>
-            <input type="number" name="qty" min="1" max="999" value="1" aria-label="Quantity">
+            <input type="number" name="qty" min="1" max="{{ product.available_stock|default_if_none:999 }}" value="1" aria-label="Quantity">
             <button type="button" class="qty-plus" aria-label="Increase quantity"><i class="fa-solid fa-plus"></i></button>
           </div>
-          <button class="btn btn-primary btn-lg" data-add-to-cart="{{ product.id }}"{% if not in_stock %} disabled{% endif %}><i class="fa-solid fa-cart-plus"></i> Add to cart</button>
+          <button class="btn btn-primary btn-lg" data-add-to-cart="{{ product.id }}"{% if not can_buy %} disabled{% endif %}><i class="fa-solid fa-cart-plus"></i> {% if not in_stock %}Out of stock{% elif not can_buy %}Price on request{% else %}Add to cart{% endif %}</button>
           {% if product|in_wishlist:wishlist_ids %}
-          <button class="btn btn-outline btn-lg btn-icon is-active" data-wishlist="{{ product.id }}" aria-pressed="true" aria-label="Remove from wishlist" style="flex:0 0 52px;color:#b4453d"><i class="fa-solid fa-heart"></i></button>
+          <button class="btn btn-outline btn-lg btn-icon is-active" data-wishlist="{{ product.id }}" aria-pressed="true" aria-label="Remove from wishlist"><i class="fa-solid fa-heart"></i></button>
           {% else %}
-          <button class="btn btn-outline btn-lg btn-icon" data-wishlist="{{ product.id }}" aria-pressed="false" aria-label="Save to wishlist" style="flex:0 0 52px"><i class="fa-regular fa-heart"></i></button>
+          <button class="btn btn-outline btn-lg btn-icon" data-wishlist="{{ product.id }}" aria-pressed="false" aria-label="Save to wishlist"><i class="fa-regular fa-heart"></i></button>
           {% endif %}
         </div>
-        <a href="{{ site.whatsapp }}?text=Hello%20Mahitaji%2C%20I%27d%20like%20to%20ask%20about%20{{ product.name|urlencode }}{% if product.item_code %}%20(item%20{{ product.item_code|urlencode }}){% endif %}" target="_blank" rel="noopener" class="btn btn-outline btn-block mb-4"><i class="fa-brands fa-whatsapp" style="color:var(--success)"></i> Ask about this product on WhatsApp</a>
+        <p class="pd-note">Price includes {{ product.vat_rate|plain }}% VAT. Next-day delivery in Nairobi, free above {{ site.free_delivery_threshold|ksh }}. Pay by M-Pesa or cash on delivery.</p>
       </div>
 
-      <dl class="pd-facts">
-        <div><dt>Brand</dt><dd>{{ product.brand.name|default:'Mahitaji' }}</dd></div>
-        <div><dt>Category</dt><dd>{{ product.category.name|default:'General' }}</dd></div>
-        <div><dt>Pack size</dt><dd>{% if product.unit_of_measure %}{{ product.pack_size }}{% else %}—{% endif %}</dd></div>
-        <div><dt>Item code</dt><dd>{{ product.item_code|default:'—' }}</dd></div>
-        <div><dt>Availability</dt><dd>{% if in_stock %}In stock · ships next day{% else %}Out of stock{% endif %}</dd></div>
-      </dl>
+      <a href="{{ site.whatsapp }}?text=Hello%20Mahitaji%2C%20I%27d%20like%20to%20ask%20about%20{{ product.name|urlencode }}{% if product.item_code %}%20(item%20{{ product.item_code|urlencode }}){% endif %}" target="_blank" rel="noopener" class="btn btn-outline btn-block mt-3"><i class="fa-brands fa-whatsapp" style="color:var(--success)"></i> Ask about this product on WhatsApp</a>
 
-      <div class="pd-assure">
-        <div><i class="fa-solid fa-certificate"></i><span>KEBS-certified, genuine stock</span></div>
-        <div><i class="fa-solid fa-truck-fast"></i><span>Next-day delivery in Nairobi</span></div>
-        <div><i class="fa-solid fa-mobile-screen-button"></i><span>M-Pesa or cash on delivery</span></div>
+      <div class="mt-5" data-tabs>
+        <div class="tabs" role="tablist">
+          <button class="tab is-active" data-tab="tabDetails" role="tab">Details</button>
+          <button class="tab" data-tab="tabDescription" role="tab">Description</button>
+          <button class="tab" data-tab="tabDelivery" role="tab">Delivery &amp; returns</button>
+        </div>
+        <div class="tab-panel is-active" id="tabDetails">
+          <dl class="dl">
+            <dt>Item code</dt><dd>{{ product.item_code|default:'—' }}</dd>
+            <dt>Brand</dt><dd>{{ product.brand.name|default:'Mahitaji' }}</dd>
+            <dt>Category</dt><dd>{{ product.category.name|default:'General' }}</dd>
+            <dt>Unit of sale</dt><dd>{% if product.unit_of_measure %}{{ product.pack_size }}{% if product.unit_of_measure.conversion_factor and product.unit_of_measure.conversion_factor != 1 %} · {{ product.unit_of_measure.conversion_factor|floatformat:0 }} pieces{% endif %}{% else %}—{% endif %}</dd>
+            <dt>Retail price</dt><dd>{{ product.retail_price|ksh }}</dd>
+            {% if product.wholesale_price %}<dt>Wholesale price</dt><dd>{{ product.wholesale_price|ksh }}</dd>{% endif %}
+            {% if product.supplier %}<dt>Supplier</dt><dd>{{ product.supplier.name }}</dd>{% endif %}
+            <dt>VAT</dt><dd>{{ product.vat_rate|plain }}% (included in the price)</dd>
+            <dt>Availability</dt><dd>{% if in_stock %}In stock, ships next working day{% else %}Out of stock{% endif %}</dd>
+          </dl>
+        </div>
+        <div class="tab-panel prose" id="tabDescription">
+          {% if product.description %}
+          {{ product.description|linebreaks }}
+          {% else %}
+          <p>{{ product.name }}{% if product.brand %} by {{ product.brand.name }}{% endif %} is stocked at our Baba Dogo hub and supplied directly from the manufacturer.{% if product.pack_size %} Sold per {{ product.pack_size|lower }}.{% endif %} Contact us if you need shelf life, pack dimensions or other details for this product.</p>
+          {% endif %}
+        </div>
+        <div class="tab-panel prose" id="tabDelivery">
+          <p><strong>Delivery.</strong> Orders placed before 2 pm are delivered across Nairobi the next working day; upcountry routes take 2–3 days. Delivery is free in Nairobi for orders above {{ site.free_delivery_threshold|ksh }}. You can also collect from our hub at {{ site.address }}.</p>
+          <p><strong>Returns.</strong> Damaged, expired or incorrectly supplied items are replaced or refunded when reported within 48 hours of delivery, with the goods in their original packaging.</p>
+          <p class="mb-0"><a href="{% url 'pickups' %}" class="link">Pick-ups &amp; deliveries</a> &nbsp;·&nbsp; <a href="{% url 'returns' %}" class="link">Return policy</a></p>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<section class="section-sm">
-  <div class="container">
-    <div class="card" data-tabs>
-      <div class="tabs" role="tablist" style="padding:0 12px">
-        <button class="tab is-active" data-tab="tabDescription" role="tab">Description</button>
-        <button class="tab" data-tab="tabDetails" role="tab">Product details</button>
-        <button class="tab" data-tab="tabDelivery" role="tab">Delivery &amp; returns</button>
-      </div>
-      <div class="card-body" style="padding-top:4px">
-        <div class="tab-panel is-active prose" id="tabDescription">
-          {% if product.description %}
-          {{ product.description|linebreaks }}
-          {% else %}
-          <p>{{ product.name }}{% if product.brand %} by {{ product.brand.name }}{% endif %} is a fast-moving essential stocked at our Baba Dogo hub and supplied directly from the manufacturer.{% if product.pack_size %} Sold per {{ product.pack_size|lower }}.{% endif %} Order at retail or wholesale pricing and have it on your shelf within 24 hours in Nairobi.</p>
-          {% endif %}
-        </div>
-        <div class="tab-panel" id="tabDetails">
-          <dl class="pd-facts">
-            <div><dt>Product</dt><dd>{{ product.name }}</dd></div>
-            <div><dt>Brand</dt><dd>{{ product.brand.name|default:'Mahitaji' }}</dd></div>
-            <div><dt>Category</dt><dd>{{ product.category.name|default:'General' }}</dd></div>
-            <div><dt>Unit of sale</dt><dd>{% if product.unit_of_measure %}{{ product.unit_of_measure.name }}{% if product.unit_of_measure.conversion_factor and product.unit_of_measure.conversion_factor != 1 %} · {{ product.unit_of_measure.conversion_factor|floatformat:0 }} pieces{% endif %}{% else %}—{% endif %}</dd></div>
-            <div><dt>Item code</dt><dd>{{ product.item_code|default:'—' }}</dd></div>
-            <div><dt>Retail price</dt><dd>{{ product.retail_price|ksh }}</dd></div>
-            {% if product.wholesale_price %}<div><dt>Wholesale price</dt><dd>{{ product.wholesale_price|ksh }}</dd></div>{% endif %}
-            <div><dt>Supplier</dt><dd>{{ product.supplier.name|default:'Official distributor channel' }}</dd></div>
-          </dl>
-        </div>
-        <div class="tab-panel prose" id="tabDelivery">
-          <p><strong>Delivery.</strong> Orders placed before 2 pm are delivered across Nairobi the next working day; upcountry routes take 2–3 days. Delivery is free in Nairobi for orders above {{ site.free_delivery_threshold|ksh }}. You can also collect from our hub at {{ site.address }}.</p>
-          <p><strong>Returns.</strong> Damaged, expired or incorrectly supplied items are replaced or refunded when reported within 48 hours of delivery, with the goods in their original packaging.</p>
-          <p class="mb-0"><a href="{% url 'pickups' %}" class="link">Pick-ups &amp; deliveries <i class="fa-solid fa-arrow-right"></i></a> &nbsp;·&nbsp; <a href="{% url 'returns' %}" class="link">Return policy <i class="fa-solid fa-arrow-right"></i></a></p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-{% if variants %}
-<section class="section-sm">
-  <div class="container">
-    <div class="section-head"><div><span class="eyebrow">Pack sizes</span><h2 style="font-size:1.4rem">Also available as</h2></div></div>
-    <div class="tile-grid cols-4">
-      {% for v in variants %}{% product_price v as vprice %}
-      <a href="{% product_url v %}" class="tile">
-        <span class="tile-icon tile-icon--pack">{% if v.has_image %}<img src="{{ v.image_url }}" alt="">{% else %}{% include 'partials/pack.html' with product=v compact=True %}{% endif %}</span>
-        <span><span class="tile-title">{{ v.pack_size|default:v.name }}</span><span class="tile-sub">{{ vprice|ksh }}{% if v.unit_of_measure %} per {{ v.pack_size|lower }}{% endif %}</span></span>
-        <i class="fa-solid fa-arrow-right tile-arrow"></i>
-      </a>
-      {% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
 {% if brand_products %}
-<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<section class="section-sm">
   <div class="container">
     <div class="section-head">
-      <div><span class="eyebrow">Same brand</span><h2>More from {{ product.brand.name }}</h2></div>
-      <a href="{{ product.brand.get_absolute_url }}" class="link">All {{ product.brand.name }} products <i class="fa-solid fa-arrow-right"></i></a>
+      <div><h2 class="section-title">More from {{ product.brand.name }}</h2></div>
+      <a href="{{ product.brand.get_absolute_url }}" class="link">See all <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-    {% include 'partials/product_grid.html' with products=brand_products page_obj=None has_filters=False grid_cols=4 %}
+    {% include 'partials/product_grid.html' with products=brand_products|slice:":4" page_obj=None has_filters=False grid_cols=4 grid_id="brandGrid" %}
   </div>
 </section>
 {% endif %}
 
 {% if related_products %}
-<section class="section">
+<section class="section-sm" style="padding-bottom:56px">
   <div class="container">
     <div class="section-head">
-      <div><span class="eyebrow">Related products</span><h2>You may also like</h2></div>
-      {% if product.category %}<a href="{{ product.category.get_absolute_url }}" class="link">More in {{ product.category.name }} <i class="fa-solid fa-arrow-right"></i></a>{% endif %}
+      <div><h2 class="section-title">More in {{ product.category.name|default:'this category' }}</h2></div>
+      {% if product.category %}<a href="{{ product.category.get_absolute_url }}" class="link">See all <i class="fa-solid fa-arrow-right"></i></a>{% endif %}
     </div>
-    {% include 'partials/product_grid.html' with products=related_products page_obj=None has_filters=False grid_cols=4 %}
+    {% include 'partials/product_grid.html' with products=related_products|slice:":4" page_obj=None has_filters=False grid_cols=4 grid_id="relatedGrid" %}
   </div>
 </section>
 {% endif %}
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .is-product .pd-media .pack { width: 100%; height: 100%; }
-  .is-product .pd-price .badge { font-size: .78rem; }
-  .is-product .pd-facts dd { overflow-wrap: anywhere; }
-  .is-product .tabs .tab { background: none; }
-  @media (max-width: 560px) {
-    .is-product .pd-buy .qty { flex: 1 1 auto; justify-content: space-between; }
-    .is-product .pd-buy .qty input { flex: 1; width: auto; }
-    .is-product .pd-buy .btn-primary { order: 3; flex: 1 1 100%; }
-  }
-  @media (max-width: 640px) {
-    .is-product .section-head { flex-direction: column; align-items: flex-start; gap: 6px; }
-    .is-product .section-head h2 { font-size: 1.5rem; }
-  }
-</style>
 {% endblock %}

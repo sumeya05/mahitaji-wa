@@ -158,7 +158,7 @@ def find_products(message, limit=6):
     query = Q()
     for word in words:
         query |= Q(name__icontains=word) | Q(brand__name__icontains=word) | Q(category__name__icontains=word)
-    qs = Product.objects.active().with_relations().filter(query)
+    qs = Product.objects.active().with_relations().with_stock().filter(query)
     # Products matching more of the words first, then best sellers.
     scored = sorted(
         qs[:40],

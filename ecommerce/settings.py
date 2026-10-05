@@ -25,8 +25,13 @@ def env_list(name, default=''):
 # ---------------------------------------------------------------------------
 # Core
 # ---------------------------------------------------------------------------
-SECRET_KEY = os.getenv('SECRET_KEY') or 'dev-only-insecure-key-change-me'
 DEBUG = env_bool('DEBUG', False)
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if not DEBUG and 'test' not in sys.argv:
+        from django.core.exceptions import ImproperlyConfigured
+        raise ImproperlyConfigured("Set SECRET_KEY in .env before running with DEBUG off.")
+    SECRET_KEY = 'dev-only-insecure-key-change-me'
 ALLOWED_HOSTS = env_list('ALLOWED_HOSTS', 'localhost,127.0.0.1,.ngrok-free.app' if DEBUG else '')
 CSRF_TRUSTED_ORIGINS = env_list(
     'CSRF_TRUSTED_ORIGINS',
@@ -120,6 +125,10 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+if 'test' in sys.argv:
+    # Real password hashing is deliberately slow; the test-suite creates many users.
+    PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
+
 LOGIN_REDIRECT_URL = 'dashboard'
 LOGOUT_REDIRECT_URL = 'home'
 LOGIN_URL = 'login'
@@ -184,6 +193,11 @@ MPESA_PASSKEY = os.getenv('MPESA_PASSKEY', '')
 MPESA_CALLBACK_URL = os.getenv('MPESA_CALLBACK_URL', '')
 MPESA_INITIATOR_USERNAME = os.getenv('MPESA_INITIATOR_USERNAME', 'testapi')
 MPESA_INITIATOR_SECURITY_CREDENTIAL = os.getenv('MPESA_INITIATOR_SECURITY_CREDENTIAL', '')
+if 'test' in sys.argv:
+    # The test-suite must never talk to Safaricom; tests that need M-Pesa switch it on with mocks.
+    MPESA_CALLBACK_URL = MPESA_CONSUMER_KEY = MPESA_CONSUMER_SECRET = ''
+MPESA_TIMEOUT = int(os.getenv('MPESA_TIMEOUT', '30'))                # seconds per call to Safaricom
+MPESA_PROMPT_INTERVAL = int(os.getenv('MPESA_PROMPT_INTERVAL', '20'))  # seconds between two prompts for one order
 
 # ---------------------------------------------------------------------------
 # Messages, email, AI, site info
@@ -221,6 +235,10 @@ ASSISTANT_TIMEOUT_SECONDS = float(os.getenv('ASSISTANT_TIMEOUT_SECONDS', '12'))
 ASSISTANT_HISTORY_TURNS = int(os.getenv('ASSISTANT_HISTORY_TURNS', '8'))
 
 CART_SESSION_ID = 'cart'
+COUPON_SESSION_ID = 'coupon'
+
+# Stock: at or below this many units (in the product's unit of sale) a line shows "Low stock".
+LOW_STOCK_THRESHOLD = int(os.getenv('LOW_STOCK_THRESHOLD', '5'))
 
 SITE_INFO = {
     'name': 'Mahitaji',
@@ -234,6 +252,7 @@ SITE_INFO = {
     'po_box': 'P.O. Box 48312 - 00100, Nairobi, Kenya',
     'hours': 'Mon – Fri 08:00 – 17:00 · Sat 08:00 – 13:00',
     'free_delivery_threshold': 20000,
+    'kra_pin': os.getenv('COMPANY_KRA_PIN', ''),   # printed on order documents when set
 }
 
 # ---------------------------------------------------------------------------

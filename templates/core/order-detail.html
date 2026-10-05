@@ -3,23 +3,19 @@
 
 {% block title %}Order {{ order.order_number }} · Mahitaji{% endblock %}
 {% block meta_description %}Track the status, payment and delivery of your Mahitaji order.{% endblock %}
-{% block body_class %}is-order-detail{% endblock %}
 
 {% block content %}
 {% url 'transactions' as orders_url %}
 {% with placed=order.created_at|date:'d M Y, H:i' %}{% with order_title="Order "|add:order.order_number subtitle_text="Placed "|add:placed|add:" · "|add:order.get_payment_method_display %}
-{% include 'partials/page_hero.html' with title=order_title crumb=order.order_number parent_url=orders_url parent_label="My orders" compact=True subtitle=subtitle_text %}
+{% include 'partials/page_head.html' with title=order_title crumb=order.order_number parent_url=orders_url parent_label="My orders" subtitle=subtitle_text %}
 {% endwith %}{% endwith %}
 
 <div class="container">
-  <div class="cart-layout">
-    <div>
+  <div class="cart-layout order-layout">
+    <div class="stack">
       <div class="card card-body">
         <div class="flex items-center justify-between wrap gap-3 mb-3">
-          <div>
-            <div class="text-sm muted">Placed {{ order.created_at|date:'d M Y, H:i' }} · {{ order.get_payment_method_display }}</div>
-            <div class="flex items-center gap-2 mt-1">{% status_badge order %}<span class="text-sm text-2">{{ order.item_count }} unit{{ order.item_count|pluralize }} · {{ order.total_amount|ksh }}</span></div>
-          </div>
+          <div class="flex items-center gap-2 wrap">{% status_badge order %}<span class="text-sm text-2">{{ order.item_count }} unit{{ order.item_count|pluralize }} · {{ order.total_amount|ksh }}</span></div>
           {% if order.is_paid %}<span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Paid</span>{% elif order.payment_method == 'cod' %}<span class="badge badge-muted"><i class="fa-solid fa-truck"></i> Pay on delivery</span>{% endif %}
         </div>
 
@@ -41,63 +37,44 @@
           {% elif order.status == 'PAID' %}Payment confirmed. Your order is being packed at our Baba Dogo hub.
           {% elif order.status == 'SHIPPED' %}Your order is on its way. Our driver will call {{ order.phone|default:'you' }} when nearby.
           {% elif order.status == 'DELIVERED' %}Delivered. Thank you for shopping with Mahitaji!
-          {% elif order.status == 'FAILED' %}Payment failed — resend the prompt to complete your order.
+          {% elif order.status == 'FAILED' %}Payment failed. Resend the prompt to complete your order.
           {% else %}This order is closed.{% endif %}
         </p>
       </div>
 
-      <div class="card mt-4">
-        <div class="card-header"><h3><i class="fa-solid fa-box-open" style="color:var(--brand-600);margin-right:6px"></i>Items</h3><span class="text-sm muted">{{ order.items.all|length }} line{{ order.items.all|length|pluralize }}</span></div>
-        <div class="table-wrap" style="border:0;border-radius:0">
-          <table class="table">
-            <thead><tr><th>Product</th><th class="num">Qty</th><th class="num">Unit price</th><th class="num">Subtotal</th></tr></thead>
-            <tbody>
-              {% for item in order.items.all %}
-              <tr>
-                <td><a href="{{ item.product.get_absolute_url }}" class="fw-600" style="color:var(--ink)">{{ item.product.name }}</a><div class="text-xs muted">{{ item.product.brand.name|default:'Mahitaji' }}{% if item.product.pack_size %} · {{ item.product.pack_size }}{% endif %}</div></td>
-                <td class="num">{{ item.quantity }}</td>
-                <td class="num">{{ item.price_at_purchase|ksh }}</td>
-                <td class="num fw-600">{{ item.subtotal|ksh }}</td>
-              </tr>
-              {% empty %}
-              <tr><td colspan="4" class="muted text-center">No items recorded for this order.</td></tr>
-              {% endfor %}
-            </tbody>
-            <tfoot>
-              <tr><td colspan="3" class="num text-2">Delivery</td><td class="num">{% if order.total_amount >= site.free_delivery_threshold %}Free{% else %}Confirmed on dispatch{% endif %}</td></tr>
-              <tr><td colspan="3" class="num fw-700" style="color:var(--ink)">Total</td><td class="num fw-800" style="font-family:var(--font-display);font-size:1.15rem;color:var(--ink)">{{ order.total_amount|ksh }}</td></tr>
-            </tfoot>
-          </table>
-        </div>
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Items</h2><span class="text-sm muted">{{ order.items.all|length }} line{{ order.items.all|length|pluralize }}</span></div>
+        {% include 'partials/order_items_table.html' with show_delivery=True %}
       </div>
     </div>
 
-    <aside>
+    <aside class="stack">
       <div class="card">
-        <div class="card-header"><h4><i class="fa-solid fa-location-dot" style="color:var(--brand-600);margin-right:6px"></i>Delivery</h4></div>
+        <div class="card-header"><h2 class="card-title">Delivery</h2></div>
         <div class="card-body">
-          <dl class="kv">
-            <div><dt>Name</dt><dd>{{ order.full_name|default:'—' }}</dd></div>
-            <div><dt>Phone</dt><dd>{% if order.phone %}<a href="tel:{{ order.phone }}">{{ order.phone }}</a>{% else %}—{% endif %}</dd></div>
-            <div><dt>Email</dt><dd>{{ order.email|default:'—' }}</dd></div>
-            <div><dt>Address</dt><dd>{{ order.address|default:'—'|linebreaksbr }}</dd></div>
-            <div><dt>City</dt><dd>{{ order.city|default:'Nairobi' }}</dd></div>
-            {% if order.notes %}<div><dt>Notes</dt><dd>{{ order.notes|linebreaksbr }}</dd></div>{% endif %}
+          <dl class="dl">
+            <dt>Name</dt><dd>{{ order.full_name|default:'—' }}</dd>
+            <dt>Phone</dt><dd>{% if order.phone %}<a href="tel:{{ order.phone }}">{{ order.phone }}</a>{% else %}—{% endif %}</dd>
+            <dt>Email</dt><dd>{{ order.email|default:'—' }}</dd>
+            <dt>Address</dt><dd>{{ order.address|default:'—'|linebreaksbr }}</dd>
+            <dt>City</dt><dd>{{ order.city|default:'Nairobi' }}</dd>
+            {% if order.notes %}<dt>Notes</dt><dd>{{ order.notes|linebreaksbr }}</dd>{% endif %}
           </dl>
         </div>
       </div>
 
-      <div class="card mt-3">
-        <div class="card-header"><h4><i class="fa-solid fa-wallet" style="color:var(--brand-600);margin-right:6px"></i>Payment</h4>{% status_badge order %}</div>
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Payment</h2>{% status_badge order %}</div>
         <div class="card-body">
-          <dl class="kv">
-            <div><dt>Method</dt><dd>{{ order.get_payment_method_display }}</dd></div>
-            <div><dt>Amount</dt><dd class="fw-700">{{ order.total_amount|ksh }}</dd></div>
+          <dl class="dl">
+            <dt>Method</dt><dd>{{ order.get_payment_method_display }}</dd>
+            <dt>Amount</dt><dd>{{ order.total_amount|ksh }}</dd>
+            <dt>Status</dt><dd>{% if order.is_paid %}Paid on {{ order.paid_at|date:'d M Y' }}{% elif order.payment_method == 'cod' %}Pay on delivery{% else %}Not yet paid{% endif %}</dd>
             {% if mpesa_txn %}
-            {% if mpesa_txn.receipt_number %}<div><dt>Receipt</dt><dd class="fw-700" style="color:var(--brand-700)">{{ mpesa_txn.receipt_number }}</dd></div>{% endif %}
-            <div><dt>M-Pesa no.</dt><dd>{{ mpesa_txn.phone_number }}</dd></div>
-            <div><dt>Date</dt><dd>{{ mpesa_txn.transaction_date|default:mpesa_txn.created_at|date:'d M Y, H:i' }}</dd></div>
-            {% if mpesa_txn.response_description and not mpesa_txn.is_success %}<div><dt>Note</dt><dd class="text-sm">{{ mpesa_txn.response_description }}</dd></div>{% endif %}
+            {% if mpesa_txn.receipt_number %}<dt>Receipt</dt><dd>{{ mpesa_txn.receipt_number }}</dd>{% endif %}
+            <dt>M-Pesa no.</dt><dd>{{ mpesa_txn.phone_number }}</dd>
+            <dt>Date</dt><dd>{{ mpesa_txn.transaction_date|default:mpesa_txn.created_at|date:'d M Y, H:i' }}</dd>
+            {% if mpesa_txn.state == 'failed' and mpesa_txn.response_description %}<dt>Note</dt><dd class="text-sm">{{ mpesa_txn.response_description }}</dd>{% endif %}
             {% endif %}
           </dl>
 
@@ -115,19 +92,26 @@
             <input class="input" type="tel" id="mpesaPhone" name="phone" value="{{ mpesa_txn.phone_number|default:order.phone|default:'' }}" placeholder="07XX XXX XXX" inputmode="tel">
             <button type="submit" class="btn btn-primary btn-block mt-2" id="resendBtn"><i class="fa-solid fa-mobile-screen-button"></i> {% if order.status == 'FAILED' or mpesa_txn %}Pay now · resend prompt{% else %}Pay now{% endif %}</button>
           </form>
+{# Shown once a prompt fails or is cancelled: the customer need not retry M-Pesa. #}
+<div class="pay-options mt-3{% if order.status != 'FAILED' %} hidden{% endif %}" id="payOptions">
+  <span class="text-sm muted">Prefer not to pay by M-Pesa now?</span>
+  <form method="post" action="{% url 'order_pay_on_delivery' order.order_number %}">{% csrf_token %}<button type="submit" class="btn btn-outline btn-sm"><i class="fa-solid fa-truck"></i> Pay on delivery instead</button></form>
+  <form method="post" action="{% url 'order_cancel' order.order_number %}">{% csrf_token %}<button type="submit" class="btn btn-danger-soft btn-sm" data-confirm="Cancel this order? The items go back on sale and nothing is delivered."><i class="fa-solid fa-ban"></i> Cancel order</button></form>
+</div>
           {% endif %}
         </div>
       </div>
 
-      <div class="card card-body mt-3" style="display:grid;gap:8px">
+      <div class="card card-body" style="display:grid;gap:8px">
         {% if order.can_cancel %}
         <form method="post" action="{% url 'order_cancel' order.order_number %}">{% csrf_token %}<button type="submit" class="btn btn-danger-soft btn-block" data-confirm="Cancel this order? This cannot be undone."><i class="fa-solid fa-ban"></i> Cancel order</button></form>
         {% endif %}
-        <a href="{% url 'transactions' %}" class="btn btn-outline btn-block"><i class="fa-solid fa-clock-rotate-left"></i> All my orders</a>
-        <a href="{% url 'products' %}" class="btn btn-ghost btn-block"><i class="fa-solid fa-rotate-right"></i> Reorder from the catalogue</a>
+        <a href="{% url 'order_pdf' order.order_number %}" class="btn btn-outline btn-block"><i class="fa-solid fa-download"></i> Download sales order (PDF)</a>
+        <a href="{% url 'transactions' %}" class="btn btn-outline btn-block">All my orders</a>
+        <a href="{% url 'products' %}" class="btn btn-ghost btn-block">Reorder from the catalogue</a>
       </div>
 
-      <div class="card card-body mt-3" style="background:var(--brand-50);border-color:var(--brand-200)">
+      <div class="card card-body" style="background:var(--brand-50);border-color:var(--brand-200)">
         <strong style="display:block;margin-bottom:4px"><i class="fa-solid fa-headset" style="color:var(--brand-600)"></i> Need help with this order?</strong>
         <p class="text-sm text-2 mb-2">Quote <strong>{{ order.order_number }}</strong> and we'll sort it out.</p>
         <div class="grid grid-2" style="gap:8px">
@@ -138,22 +122,6 @@
     </aside>
   </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .is-order-detail .kv { display: grid; gap: 10px; }
-  .is-order-detail .kv div { display: grid; grid-template-columns: 92px 1fr; gap: 8px; font-size: .9rem; }
-  .is-order-detail .kv dt { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; padding-top: 2px; }
-  .is-order-detail .kv dd { margin: 0; color: var(--text); overflow-wrap: anywhere; }
-  .is-order-detail .table tfoot td { border-top: 1px solid var(--line); border-bottom: 0; background: var(--bg); }
-  .is-order-detail .table td.num, .is-order-detail .table th.num { white-space: nowrap; }
-  .is-order-detail .table td:first-child { min-width: 120px; }
-  .is-order-detail .cart-layout > * { min-width: 0; }
-  @media (max-width: 560px) { .is-order-detail .table th:nth-child(3), .is-order-detail .table td:nth-child(3) { display: none; } .is-order-detail .table th, .is-order-detail .table td { padding: 10px 8px; } .is-order-detail .table-wrap .table td:first-child { padding-left: 14px; } }
-  .is-order-detail .timeline { position: relative; z-index: 0; }
-  @media (min-width: 992px) { .is-order-detail .cart-layout { grid-template-columns: 1fr 380px; } }
-</style>
 {% endblock %}
 
 {% block extra_js %}
@@ -170,6 +138,7 @@
   const form = document.getElementById('resendForm');
   const btn = document.getElementById('resendBtn');
   const phone = document.getElementById('mpesaPhone');
+  const options = document.getElementById('payOptions');
   const U = () => window.MahitajiUtils, T = () => window.MahitajiToast;
   let timer = null, resent = false;
   {% if order.status == 'FAILED' %}spinner.classList.add('hidden');{% endif %}
@@ -185,8 +154,11 @@
       status.textContent = 'Payment received' + (res.receipt ? ' — receipt ' + res.receipt : '') + '. Refreshing…';
       T().show('Payment received. Thank you!', 'success');
       setTimeout(() => window.location.reload(), 900);
+    } else if (res.status === 'pending') {
+      resent = false;  // the new prompt is registered; a later failure must show again
     } else if (res.status === 'failed' && !resent) {
       spinner.classList.add('hidden');
+      options.classList.remove('hidden');
       failedText.textContent = (res.description || 'The payment was not completed.') + ' You can send the prompt again.';
       failed.classList.remove('hidden');
     }

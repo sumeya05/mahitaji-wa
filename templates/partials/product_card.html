@@ -22,19 +22,24 @@
   <div class="pc-body">
     <span class="pc-brand">{{ product.brand.name|default:'Mahitaji' }}</span>
     <h3 class="pc-name clamp-2"><a href="{% product_url product %}">{{ product.name }}</a></h3>
-    <div class="pc-meta">
-      {% if product.pack_size %}<span class="pc-pack"><i class="fa-solid fa-box-open"></i> {{ product.pack_size }}</span>{% endif %}
-      {% stars product.average_rating %}
-    </div>
+    {% if product.item_code %}<span class="pc-code">{{ product.item_code }}</span>{% endif %}
     <div class="pc-price">
       <span class="tier">{% product_price_label product %}</span>
-      <span class="now">{{ price|ksh }}</span>
+      <div class="pc-price-row">
+        <span class="now">{{ price|ksh }}</span>
+        {% if product.pack_size %}<span class="per">per {{ product.pack_size|lower }}</span>{% endif %}
+      </div>
       {% if was %}{% product_saving product as saved %}
-        <span class="was">{{ was|ksh }}</span><span class="save">Save {{ saved|ksh }}</span>
+      <div class="pc-was"><span class="was">{{ was|ksh }}</span><span class="save">Save {{ saved|ksh }}</span></div>
       {% endif %}
+      {% stock_badge product %}
     </div>
     <div class="pc-actions">
-      <button class="btn btn-primary btn-sm btn-add" data-add-to-cart="{{ product.id }}"><i class="fa-solid fa-cart-plus"></i> Add</button>
+      {% if product.stock_state == 'out' and not qty %}
+      <button class="btn btn-outline btn-sm btn-add" disabled>Out of stock</button>
+      {% else %}
+      <button class="btn btn-primary btn-sm btn-add" data-add-to-cart="{{ product.id }}"><i class="fa-solid fa-cart-plus"></i> Add to cart</button>
+      {% endif %}
       <div class="qty qty-sm" aria-label="Quantity in cart">
         <button type="button" class="qty-minus" aria-label="Decrease"><i class="fa-solid fa-minus"></i></button>
         <input type="number" min="0" max="999" value="{{ qty|default:0 }}" data-cart-qty="{{ product.id }}" aria-label="Quantity">

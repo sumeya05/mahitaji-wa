@@ -8,7 +8,7 @@ from django.utils.html import format_html
 from django.utils.safestring import mark_safe
 
 from ..cart import price_tier_for
-from ..models import PRICE_TIER_WHOLESALE
+from ..models import PRICE_TIER_WHOLESALE, plain_number
 
 register = template.Library()
 
@@ -35,6 +35,15 @@ def money(value):
     if amount == amount.to_integral_value():
         return f"{int(amount):,}"
     return f"{amount:,.2f}"
+
+
+@register.filter
+def plain(value):
+    """A number without trailing zeros, for labels such as "16%" or "5% off"."""
+    try:
+        return plain_number(value)
+    except (InvalidOperation, TypeError, ValueError):
+        return value
 
 
 @register.simple_tag(takes_context=True)
@@ -152,6 +161,18 @@ def status_badge(order):
     return format_html(
         '<span class="badge badge-{}">{}</span>', order.status_tone, order.get_status_display()
     )
+
+
+STOCK_LABELS = {'in': 'In stock', 'low': 'Low stock', 'out': 'Out of stock'}
+
+
+@register.simple_tag
+def stock_badge(product):
+    """A small in / low / out of stock marker; nothing while the product's stock is not tracked."""
+    state = product.stock_state
+    if not state:
+        return ''
+    return format_html('<span class="stock stock-{}"><span class="stock-dot"></span>{}</span>', state, STOCK_LABELS[state])
 
 
 @register.filter

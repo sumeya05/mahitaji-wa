@@ -1,0 +1,8 @@
+{% load shop %}{# Money rows shared by the cart and checkout summaries. Expects: cart; delivery_note (text shown on the Delivery row) #}
+<div class="summary-row"><span>Subtotal</span><span class="fw-600" data-cart-subtotal>{{ cart.subtotal|ksh }}</span></div>
+{% include 'partials/coupon_box.html' %}
+{% if cart.coupon %}<div class="summary-row"><span>Discount ({{ cart.coupon.code }})</span><span class="discount">− <span data-cart-discount>{{ cart.discount|ksh }}</span></span></div>{% endif %}
+<div class="summary-row vat-row"><span>Net amount (excl. VAT)</span><span data-cart-net>{{ cart.net|ksh }}</span></div>
+<div class="summary-row vat-row"><span>VAT (included)</span><span data-cart-vat>{{ cart.vat|ksh }}</span></div>
+<div class="summary-row"><span>Delivery</span><span>{% if cart.total >= site.free_delivery_threshold %}<span class="badge badge-success">Free in Nairobi</span>{% else %}{{ delivery_note|default:'Confirmed on dispatch' }}{% endif %}</span></div>
+<div class="summary-row total"><span>Total <small class="muted fw-500">incl. VAT</small></span><strong data-cart-total>{{ cart.total|ksh }}</strong></div>

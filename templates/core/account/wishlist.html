@@ -4,23 +4,12 @@
 {% block account_title %}Wishlist{% endblock %}
 {% block account_crumb %}Wishlist{% endblock %}
 {% block account_heading %}Saved products{% endblock %}
-{% block account_subtitle %}{% with n=items|length %}{% if n %}{{ n }} product{{ n|pluralize }} saved for later. Add them to your cart whenever you're ready.{% else %}Tap the heart on any product to keep it here for later.{% endif %}{% endwith %}{% endblock %}
-
-{% block extra_css %}<style>
-  [data-wishlist-row] { display: flex; }
-  [data-wishlist-row] > .pc { flex: 1; }
-</style>{% endblock %}
+{% block account_subtitle %}{% with n=items|length %}{% if n %}{{ n }} product{{ n|pluralize }} saved for later, shown at your current {% if profile.is_wholesaler %}wholesale{% else %}retail{% endif %} prices. Tap the heart again to remove one.{% else %}Tap the heart on any product to keep it here for later.{% endif %}{% endwith %}{% endblock %}
 
 {% block account_content %}
 {% if items %}
-<div class="flex items-center justify-between gap-3 mb-4 wrap">
-  <p class="muted mb-0 text-sm">Prices shown are your current {% if profile.is_wholesaler %}wholesale{% else %}retail{% endif %} prices. Un-saving a product removes it from this list.</p>
-  <a href="{% url 'products' %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-store"></i> Keep shopping</a>
-</div>
 <div class="product-grid cols-3">
-  {% for item in items %}
-  <div data-wishlist-row>{% include 'partials/product_card.html' with product=item.product %}</div>
-  {% endfor %}
+  {% for item in items %}{% include 'partials/product_card.html' with product=item.product %}{% endfor %}
 </div>
 {% else %}
 <div class="empty card">

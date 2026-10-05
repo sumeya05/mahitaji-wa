@@ -3,18 +3,21 @@
 
 {% block title %}{% block account_title %}My account{% endblock %} · {{ site.name }}{% endblock %}
 {% block meta_description %}Manage your Mahitaji account: orders, delivery addresses, payments and settings.{% endblock %}
-{% block body_class %}is-account{% endblock %}
 
 {% block content %}
-<section class="page-hero compact">
+<section class="page-head">
   <div class="container">
     <ul class="breadcrumb">
       <li><a href="{% url 'home' %}">Home</a></li>
+      {% if section == 'dashboard' %}
+      <li class="current">My account</li>
+      {% else %}
       <li><a href="{% url 'dashboard' %}">My account</a></li>
-      <li class="current">{% block account_crumb %}Dashboard{% endblock %}</li>
+      <li class="current">{% block account_crumb %}{% endblock %}</li>
+      {% endif %}
     </ul>
-    <h1>{% block account_heading %}My account{% endblock %}</h1>
-    <p>{% block account_subtitle %}{% endblock %}</p>
+    <h1 class="page-title">{% block account_heading %}My account{% endblock %}</h1>
+    <p class="page-lead">{% block account_subtitle %}{% endblock %}</p>
   </div>
 </section>
 
@@ -25,20 +28,20 @@
         <div class="avatar">{{ profile.display_name|initials }}</div>
         <div style="min-width:0">
           <strong class="truncate">{{ profile.display_name }}</strong>
-          <small><span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span></small>
           <small class="truncate" style="display:block">{{ user.email }}</small>
+          <small><span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span></small>
         </div>
       </div>
       <a href="{% url 'dashboard' %}"{% if section == 'dashboard' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-gauge"></i> Dashboard</a>
-      <a href="{% url 'transactions' %}"{% if section == 'orders' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-box"></i> Orders</a>
+      <a href="{% url 'transactions' %}"{% if section == 'orders' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-receipt"></i> My orders</a>
       <a href="{% url 'addresses' %}"{% if section == 'addresses' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-location-dot"></i> Addresses</a>
       <a href="{% url 'payment_methods' %}"{% if section == 'payments' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-mobile-screen-button"></i> Payments</a>
       <a href="{% url 'wishlist' %}"{% if section == 'wishlist' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-heart"></i> Wishlist</a>
-      <a href="{% url 'update_account' %}"{% if section == 'settings' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-gear"></i> Settings</a>
+      <a href="{% url 'update_account' %}"{% if section == 'settings' %} class="is-active" aria-current="page"{% endif %}><i class="fa-solid fa-gear"></i> Account settings</a>
       <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button type="submit"><i class="fa-solid fa-right-from-bracket"></i> Sign out</button></form>
     </nav>
 
-    <div style="min-width:0">
+    <div class="stack">
       {% block account_content %}{% endblock %}
     </div>
   </div>

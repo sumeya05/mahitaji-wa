@@ -13,7 +13,9 @@ from django.views.decorators.http import require_GET, require_POST
 from ..models import (
     MpesaTransaction, Order,
 )
-from ..services import MpesaError, initiate_stk_push as mpesa_stk_push, process_stk_callback
+from ..services import (
+    MpesaError, initiate_stk_push as mpesa_stk_push, is_trusted_callback, process_stk_callback, refresh_payment,
+)
 from ._common import json_error, json_ok, request_data
 from .checkout import _owned_order
 
@@ -34,17 +36,22 @@ def initiate_stk_push(request):
     if not order.can_pay:
         return json_error(f"This order is {order.get_status_display().lower()} and can no longer be paid.")
     try:
-        txn = mpesa_stk_push(order, data.get('phone') or order.phone)
+        mpesa_stk_push(order, data.get('phone') or order.phone)
     except MpesaError as exc:
         return json_error(str(exc), status=502)
-    return json_ok(checkout_id=txn.checkout_request_id, message="Check your phone and enter your M-Pesa PIN.")
+    # Safaricom's request id stays on the server: it is what a payment confirmation is matched on.
+    return json_ok(message="Check your phone and enter your M-Pesa PIN.")
 
 
 @login_required
 @require_GET
 def check_payment_status(request, order_number):
     order = _owned_order(request, order_number)
-    txn = MpesaTransaction.objects.filter(order=order).first()
+    txn = order.latest_payment
+    if txn and not order.is_paid:
+        # The callback does not always arrive (sandbox, tunnels, outages): ask Safaricom ourselves.
+        txn = refresh_payment(txn)
+        order.refresh_from_db()
     if order.is_paid:
         status = 'paid'
     elif order.status == Order.STATUS_FAILED:
@@ -61,14 +68,19 @@ def check_payment_status(request, order_number):
 
 @csrf_exempt
 @require_POST
-def mpesa_callback(request):
+def mpesa_callback(request, token=None):
+    """
+    Safaricom posts the outcome of an STK push here. The URL we give Safaricom carries a
+    secret token; a callback without it (or with a wrong one) is still read, but a payment
+    it reports is confirmed with Safaricom before the order is marked paid.
+    """
     try:
         payload = json.loads(request.body or b'{}')
-        txn, success = process_stk_callback(payload)
-        logger.info("M-Pesa callback for %s: %s", txn.order.order_number, 'success' if success else 'failed')
+        txn, success = process_stk_callback(payload, trusted=is_trusted_callback(token))
+        logger.info("M-Pesa callback for %s: %s", txn.order.order_number, 'success' if success else 'not paid')
     except MpesaTransaction.DoesNotExist:
         logger.warning("M-Pesa callback for unknown CheckoutRequestID: %s", request.body[:200])
-    except (KeyError, ValueError, TypeError) as exc:
+    except (KeyError, ValueError, TypeError, AttributeError) as exc:
         logger.warning("Malformed M-Pesa callback: %s", exc)
         return JsonResponse({"ResultCode": 1, "ResultDesc": "Malformed payload"}, status=400)
     return JsonResponse({"ResultCode": 0, "ResultDesc": "Accepted"})

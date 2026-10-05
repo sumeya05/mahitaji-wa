@@ -11,7 +11,11 @@ Items
 -----
 {% for item in order.items.all %}- {{ item.quantity }} x {{ item.product.name }} @ KSh {{ item.price_at_purchase }} = KSh {{ item.subtotal }}
 {% endfor %}
-Total: KSh {{ order.total_amount }}
+{% if order.discount_amount %}Subtotal: KSh {{ order.subtotal_amount }}
+Discount ({{ order.coupon_code }}): - KSh {{ order.discount_amount }}
+{% endif %}Net amount (excl. VAT): KSh {{ order.net_amount }}
+VAT (included): KSh {{ order.vat_amount }}
+Total (incl. VAT): KSh {{ order.total_amount }}
 
 {% if order.payment_method == 'mpesa' %}If you have not completed the M-Pesa payment yet, open your orders page and tap "Pay now" to receive a new prompt.
 {% else %}Please have KSh {{ order.total_amount }} ready for our delivery team.

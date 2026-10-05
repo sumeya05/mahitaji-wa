@@ -3,7 +3,7 @@ from django.core.cache import cache
 from django.db.models import Count, Q
 
 from .cart import Cart, price_tier_for
-from .models import Brand, Category, Product, WishlistItem
+from .models import Brand, Category, Coupon, Product, WishlistItem
 
 NAV_CACHE_KEY = 'shop:catalogue-nav'
 NAV_CACHE_TTL = 300  # seconds; also invalidated by signals when the catalogue changes
@@ -58,4 +58,13 @@ def shop(request):
         'wishlist_ids': wishlist_ids,
         'price_tier': price_tier_for(request.user),
         'site': settings.SITE_INFO,
+        'promo_coupon': promoted_coupon(),
     }
+
+
+def promoted_coupon():
+    """The coupon the offer pop-up advertises: the best promoted code that can be used today."""
+    for coupon in Coupon.objects.filter(promote=True, active=True).order_by('-percent'):
+        if Coupon.usable(coupon.code):
+            return coupon
+    return None

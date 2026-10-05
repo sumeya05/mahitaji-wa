@@ -3,204 +3,314 @@
 
 {% block title %}Mahitaji · Wholesale &amp; Retail FMCG Distributor in Kenya{% endblock %}
 {% block body_class %}is-home{% endblock %}
+{% block topbar %}{% endblock %}
+
+{% block header %}
+{# The landing page keeps the mahitaji-wa header: logo, search, cart + account, then four drop-down menus. #}
+<header class="lp-header" id="lpHeader">
+  <div class="lp-top">
+    <button class="lp-burger" data-open="#mobileNav" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+    <a href="{% url 'home' %}" class="lp-logo" title="Home"><img src="{% static 'assets/logos/logo_sa.png' %}" alt=""><span>MAHITAJI</span></a>
+
+    <form action="{% url 'search' %}" method="get" class="lp-search" role="search" autocomplete="off">
+      <div class="lp-search-cat">
+        <select name="category" aria-label="Search within category">
+          <option value="">All Categories</option>
+          {% for cat in all_categories %}<option value="{{ cat.slug }}">{{ cat.name }}</option>{% endfor %}
+        </select>
+        <i class="fa-solid fa-angle-down"></i>
+      </div>
+      <input type="search" name="q" id="searchInput" placeholder="Enter your search key ..." aria-label="Search" autocomplete="off">
+      <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
+      <div class="search-suggest" id="searchSuggest" role="listbox"></div>
+    </form>
+
+    <div class="lp-actions">
+      <button class="lp-cart" data-open="#cartDrawer" aria-label="My shopping cart" title="My Shopping cart">
+        <i class="fa-solid fa-cart-shopping"></i><span class="lp-cart-total" data-cart-total>{{ cart.total|ksh }}</span><i class="fa-solid fa-angle-down lp-cart-caret"></i>
+      </button>
+      <a href="{% if user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'login' %}{% endif %}" class="lp-user" title="My Account" aria-label="My account"><i class="fa-regular fa-user"></i></a>
+    </div>
+  </div>
+
+  <nav class="lp-nav" aria-label="Main">
+    <ul>
+      <li><a href="{% url 'products' %}">Shop</a>
+        <ul><li><a href="{% url 'retailers' %}">Retailers Shop</a></li><li><a href="{% url 'wholesalers' %}">Wholesalers Shop</a></li></ul></li>
+      <li><a href="{% url 'products' %}">Products Catalog</a>
+        <ul><li><a href="{% url 'brands' %}">By Brand</a></li><li><a href="{% url 'categories' %}">By Category</a></li></ul></li>
+      <li><a href="{% url 'about' %}">Mahitaji</a>
+        <ul><li><a href="{% url 'about' %}">About Us</a></li><li><a href="{% url 'statement' %}">Our Statement</a></li></ul></li>
+      <li><a href="{% url 'contact' %}">Contact Us</a>
+        <ul><li><a href="{% url 'contact' %}">Contact Us</a></li><li><a href="{% url 'location' %}">Our Location</a></li></ul></li>
+    </ul>
+  </nav>
+</header>
+{% endblock %}
 
 {% block content %}
-<section class="hero">
-  <div class="container">
-    <div>
-      <span class="eyebrow">Kenya's FMCG distribution partner since 1997</span>
-      <h1>Stock your shop <em>direct from the source.</em></h1>
-      <p class="lead">Cooking oil, rice, flour, soaps, beverages and every fast-moving essential, delivered from our Baba Dogo hub to your shelf. Retail and wholesale pricing on one account.</p>
-      <form action="{% url 'search' %}" method="get" class="search-form mt-5" style="max-width:560px;border-color:#fff" role="search">
-        <input type="search" name="q" placeholder="Search 100+ products, e.g. cooking oil" aria-label="Search products">
-        <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
-      </form>
-      <div class="hero-cta">
-        <a href="{% url 'products' %}" class="btn btn-amber btn-lg">Browse the catalogue</a>
-        <a href="{% url 'wholesalers' %}" class="btn btn-outline-light btn-lg">Wholesale pricing</a>
+<section class="hero" aria-label="Categories and brands we distribute">
+  <div class="hero-slides" data-slides>
+    <div class="hero-slide is-active"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+    <div class="hero-slide"></div>
+  </div>
+
+  <div class="rotary">
+    <a href="{% url 'products' %}" class="rotary-hub" aria-label="Browse the full catalogue"><img src="{% static 'assets/logos/logo_animated.gif' %}" alt="Mahitaji Enterprises Ltd"></a>
+
+    <div class="rotary-ring rotary-ring--inner" style="--n:{{ hero_categories|length }}">
+      {% for label, file in hero_categories %}
+      <div class="rotary-arm" style="--i:{{ forloop.counter0 }}">
+        <a href="{% url 'categories' %}" class="rotary-item is-photo"><img src="{% static 'assets/categories/'|add:file %}" alt="{{ label }}" width="90" height="90"><span class="rotary-tip">{{ label }}</span></a>
       </div>
-      <div class="hero-trust">
-        <span><i class="fa-solid fa-truck-fast"></i>Next-day delivery in Nairobi</span>
-        <span><i class="fa-solid fa-mobile-screen"></i>Pay with M-Pesa or on delivery</span>
-        <span><i class="fa-solid fa-shield-halved"></i>KEBS-certified products</span>
-      </div>
+      {% endfor %}
     </div>
-    <div class="hero-panel">
-      <div class="hero-card">
-        <h3><span><i class="fa-solid fa-bolt" style="color:var(--amber-500)"></i> Today's top offers</span><a href="{% url 'offers' %}">See all</a></h3>
-        {% for product in top_offers|slice:":4" %}{% product_price product as price %}{% product_old_price product as was %}{% product_discount product as discount %}
-        <a href="{{ product.get_absolute_url }}" class="hero-deal">
-          <span class="hd-thumb">{% if product.has_image %}<img src="{{ product.image_url }}" alt="">{% else %}{% include 'partials/pack.html' with product=product compact=True %}{% endif %}</span>
-          <span><span class="hd-name">{{ product.name }}</span><br><span class="hd-meta">{{ product.brand.name|default:'Mahitaji' }}{% if product.pack_size %} · {{ product.pack_size }}{% endif %}{% if discount %} · <strong style="color:var(--amber-500)">-{{ discount }}</strong>{% endif %}</span></span>
-          <span class="hd-price">{{ price|ksh }}{% if was %}<small>{{ was|ksh }}</small>{% endif %}</span>
-        </a>
-        {% empty %}
-        <p class="muted" style="color:rgba(255,255,255,.6)">New offers are published every week.</p>
-        {% endfor %}
+
+    <div class="rotary-ring rotary-ring--outer" style="--n:{{ hero_brands|length }}">
+      {% for label, file in hero_brands %}
+      <div class="rotary-arm" style="--i:{{ forloop.counter0 }}">
+        <a href="{% url 'brands' %}" class="rotary-item"><img src="{% static 'assets/brands/'|add:file %}" alt="{{ label }}" width="90" height="90"><span class="rotary-tip">{{ label }}</span></a>
       </div>
-      <div class="hero-stats">
-        <div class="hero-stat"><strong>{{ stats.products }}+</strong><span>Products</span></div>
-        <div class="hero-stat"><strong>{{ stats.brands }}</strong><span>Brands</span></div>
-        <div class="hero-stat"><strong>3,000+</strong><span>Retail partners</span></div>
-      </div>
+      {% endfor %}
     </div>
   </div>
-</section>
 
-<section class="usp-bar">
-  <div class="container">
-    <div class="usp"><i class="fa-solid fa-truck-fast"></i><div><strong>Fast, reliable delivery</strong><span>Nairobi in 24h · upcountry in 2–3 days</span></div></div>
-    <div class="usp"><i class="fa-solid fa-mobile-screen-button"></i><div><strong>Flexible payments</strong><span>M-Pesa STK push or cash on delivery</span></div></div>
-    <div class="usp"><i class="fa-solid fa-layer-group"></i><div><strong>Two price tiers</strong><span>Retail &amp; wholesale on one account</span></div></div>
-    <div class="usp"><i class="fa-solid fa-headset"></i><div><strong>Dedicated support</strong><span>{{ site.phone }} · WhatsApp sales desk</span></div></div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container">
-    <div class="section-head">
-      <div><span class="eyebrow">Shop by category</span><h2>What are you stocking today?</h2></div>
-      <a href="{% url 'categories' %}" class="link">All {{ stats.categories }} categories <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-    <div class="tile-grid cols-4">
-      {% for cat in top_categories %}
-      <a href="{{ cat.get_absolute_url }}" class="tile">
-        <span class="tile-icon" style="--hue:{{ cat.name|hue }}">{% if cat.image_url %}<img src="{{ cat.image_url }}" alt="">{% else %}{{ cat.name|initials }}{% endif %}</span>
-        <span><span class="tile-title">{{ cat.name }}</span><span class="tile-sub">{{ cat.product_count }} product{{ cat.product_count|pluralize }}</span></span>
-        <i class="fa-solid fa-arrow-right tile-arrow"></i>
-      </a>
+  <div class="hero-brands">
+    <h3>Browse by brand</h3>
+    <div class="rail rail-logos" data-autoscroll>
+      {% for label, file in hero_brands %}
+      <a href="{% url 'brands' %}" class="hero-brand"><img src="{% static 'assets/brands/'|add:file %}" alt="{{ label }}" width="75" height="75" loading="lazy"></a>
       {% endfor %}
     </div>
   </div>
 </section>
 
-{% if top_offers %}
-<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<section class="home-dark home-intro section-lg">
   <div class="container">
-    <div class="section-head">
-      <div><span class="eyebrow">Offers &amp; deals</span><h2>Biggest savings this week</h2><p>Reduced prices on the lines that move fastest.</p></div>
-      <a href="{% url 'offers' %}" class="link">View all offers <i class="fa-solid fa-arrow-right"></i></a>
+    <div>
+      <span class="pill pill-glass"><span class="dot"></span>Authorized Distributor</span>
+      <h1 class="display">Premium FMCG <em>Wholesale Allocations.</em></h1>
+      <p class="lead">Direct manufacturer pricing for verified retailers. Secure your stock, manage your margins, and access our wholesale distribution network in one click.</p>
+      <div class="home-cta">
+        <a href="{% url 'offers' %}" class="btn btn-amber btn-lg">See Product Offers</a>
+        <a href="{% url 'products' %}" class="btn btn-outline-light btn-lg">Browse Full Catalog</a>
+      </div>
     </div>
-    <div class="product-grid">
-      {% for product in top_offers %}{% include 'partials/product_card.html' %}{% endfor %}
+    <div class="home-intro-card">
+      <span class="eyebrow">Volume price</span>
+      <h3>FMCG Distribution Network</h3>
+      <p>Fast-moving consumer goods distributed efficiently across Kenya through our verified retail network.</p>
+      <a href="{% url 'categories' %}" class="link-arrow">Check Availability <i class="fa-solid fa-arrow-right"></i></a>
     </div>
   </div>
 </section>
-{% endif %}
+
+<section class="home-dark home-band section-lg">
+  <div class="container container-narrow text-center">
+    <span class="pill pill-glass reveal">Strategic Logistics</span>
+    <h2 class="display reveal reveal-d1">Supply Chain <em>Excellence</em><br>Delivered.</h2>
+    <p class="lead reveal reveal-d2">We bridge the gap between manufacturers and retail outlets with optimized distribution, stock visibility, and bulk-break efficiency.</p>
+    <div class="home-cta justify-center reveal reveal-d3">
+      <a href="{% url 'categories' %}" class="btn btn-primary btn-lg btn-pill">Browse Categories</a>
+      <a href="{{ site.whatsapp }}" target="_blank" rel="noopener" class="btn btn-outline-light btn-lg btn-pill">Speak to Sales</a>
+    </div>
+  </div>
+</section>
 
 <section class="section">
   <div class="container">
     <div class="split-cta">
       <div class="cta-card light">
-        <i class="fa-solid fa-store cta-icon"></i>
-        <span class="eyebrow">For shops &amp; kiosks</span>
-        <h3>Retailers shop</h3>
-        <p>Shop-ready pack sizes at retail prices with next-day delivery, so you never run out of the essentials your customers ask for.</p>
-        <div><a href="{% url 'retailers' %}" class="btn btn-primary">Shop retail prices</a></div>
+        <i class="fa-solid fa-wheat-awn cta-icon"></i>
+        <span class="eyebrow">Retailer preference</span>
+        <h3>Premium Foodstuffs</h3>
+        <p>Allocations from certified millers across East Africa. Reliable, high-margin, and in-demand.</p>
+        <div><a href="{% url 'categories' %}" class="link-arrow">View Price Tiers <i class="fa-solid fa-arrow-right"></i></a></div>
       </div>
       <div class="cta-card dark">
-        <i class="fa-solid fa-warehouse cta-icon"></i>
-        <span class="eyebrow">For distributors &amp; supermarkets</span>
-        <h3>Wholesalers shop</h3>
-        <p>Bale and carton pricing straight from the manufacturer, volume allocations and credit terms for established partners.</p>
-        <div><a href="{% url 'wholesalers' %}" class="btn btn-amber">See wholesale prices</a></div>
+        <i class="fa-solid fa-pump-soap cta-icon"></i>
+        <span class="eyebrow">Volume price</span>
+        <h3>Hygiene &amp; Cleaners</h3>
+        <p>Sanitizers, domestic soaps, and household protective lines available for bulk distribution.</p>
+        <div><a href="{% url 'categories' %}" class="link-arrow">Check Availability <i class="fa-solid fa-arrow-right"></i></a></div>
       </div>
-    </div>
-  </div>
-</section>
-
-{% if bestsellers %}
-<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
-  <div class="container">
-    <div class="section-head">
-      <div><span class="eyebrow">Best sellers</span><h2>What retailers reorder most</h2></div>
-      <a href="{% url 'products' %}?sort=featured" class="link">Browse catalogue <i class="fa-solid fa-arrow-right"></i></a>
-    </div>
-    <div class="product-grid">
-      {% for product in bestsellers %}{% include 'partials/product_card.html' %}{% endfor %}
-    </div>
-  </div>
-</section>
-{% endif %}
-
-<section class="section">
-  <div class="container">
-    <div class="section-head"><div><span class="eyebrow">How it works</span><h2>Three steps to a stocked shop</h2></div></div>
-    <div class="steps">
-      <div class="step"><i class="fa-solid fa-magnifying-glass"></i><h3>Browse &amp; select</h3><p>Search the catalogue, compare pack sizes and add what you need. Prices reflect your account tier automatically.</p></div>
-      <div class="step"><i class="fa-solid fa-mobile-screen-button"></i><h3>Place your order</h3><p>Check out in under a minute. Pay by M-Pesa STK push or choose cash on delivery on verified routes.</p></div>
-      <div class="step"><i class="fa-solid fa-truck-fast"></i><h3>Receive your stock</h3><p>Our fleet delivers across Nairobi within 24 hours, or collect from our Baba Dogo hub at your convenience.</p></div>
     </div>
   </div>
 </section>
 
 {% if trending %}
-<section class="section bg-surface" style="border-top:1px solid var(--line);border-bottom:1px solid var(--line)">
+<section class="section bg-surface home-trending">
   <div class="container">
-    <div class="section-head">
-      <div><span class="eyebrow">Trending now</span><h2>Moving fast this month</h2></div>
-      <a href="{% url 'products' %}?sort=newest" class="link">New arrivals <i class="fa-solid fa-arrow-right"></i></a>
+    <div class="section-head is-center">
+      <div>
+        <span class="pill pill-amber">Hot right now</span>
+        <h2>Trending Products</h2>
+        <p>High-demand essentials currently leading the market for retailers and households.</p>
+      </div>
     </div>
-    <div class="product-grid">
-      {% for product in trending|slice:":4" %}{% include 'partials/product_card.html' %}{% endfor %}
-    </div>
+  </div>
+  <div class="rail rail-products" data-autoscroll>
+    {% for product in trending %}{% include 'partials/product_card.html' %}{% endfor %}
   </div>
 </section>
 {% endif %}
 
 <section class="section">
   <div class="container">
-    <div class="section-head"><div><span class="eyebrow">Brands we distribute</span><h2>Trusted names, official supply</h2></div><a href="{% url 'brands' %}" class="link">All brands <i class="fa-solid fa-arrow-right"></i></a></div>
-    <div class="brand-strip">
-      {% for brand in all_brands %}<a href="{{ brand.get_absolute_url }}">{{ brand.name }}</a>{% endfor %}
+    <div class="section-head">
+      <div><span class="eyebrow">Explore categories</span><h2>Curated for Business Growth</h2></div>
+      <a href="{% url 'products' %}" class="link">Browse Full Catalog <i class="fa-solid fa-arrow-right"></i></a>
     </div>
-  </div>
-</section>
-
-<section class="section-lg bg-green">
-  <div class="container">
-    <div class="grid" style="gap:40px;align-items:center;grid-template-columns:1fr">
-      <div class="grid" style="grid-template-columns:1fr;gap:40px" id="whyGrid">
-        <div>
-          <span class="eyebrow">Why Mahitaji</span>
-          <h2>Why smart retailers choose Mahitaji</h2>
-          <p class="lead" style="color:rgba(255,255,255,.75)">Since 1997 we have bridged manufacturers and more than 3,000 retail outlets with disciplined logistics, verified stock and honest pricing.</p>
-          <div class="grid grid-2 mt-5" style="gap:18px">
-            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-warehouse"></i></span><div><h4 style="color:#fff">100,000 sq ft hub</h4><p style="color:rgba(255,255,255,.65)">Modern warehousing at Baba Dogo Industrial Park.</p></div></div>
-            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-truck"></i></span><div><h4 style="color:#fff">50+ vehicle fleet</h4><p style="color:rgba(255,255,255,.65)">Dedicated routes across Nairobi, Central and Rift Valley.</p></div></div>
-            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-certificate"></i></span><div><h4 style="color:#fff">KEBS-certified stock</h4><p style="color:rgba(255,255,255,.65)">Only genuine, compliant products from official channels.</p></div></div>
-            <div class="feature"><span class="feature-icon" style="background:rgba(255,255,255,.08);color:var(--amber-500)"><i class="fa-solid fa-handshake"></i></span><div><h4 style="color:#fff">Credit for partners</h4><p style="color:rgba(255,255,255,.65)">Flexible terms for established retailers after review.</p></div></div>
-          </div>
-          <div class="flex gap-3 wrap mt-6">
-            <a href="{% url 'about' %}" class="btn btn-amber">Our story</a>
-            <a href="{% url 'register' %}" class="btn btn-outline-light">Open a business account</a>
-          </div>
+    <div class="showcase">
+      <div class="showcase-card is-feature">
+        <img src="{% static 'assets/categories/flour-wide.webp' %}" alt="" loading="lazy">
+        <div class="showcase-body">
+          <span class="showcase-tag">Most popular</span>
+          <h3>Fast-Moving Consumer Goods</h3>
+          <p>Oils, Rice, Sugar, Soaps, Detergents &amp; daily essentials, always in stock at best prices.</p>
+          <a href="{% url 'products' %}" class="btn btn-amber btn-lg">Shop FMCG Now <i class="fa-solid fa-arrow-right"></i></a>
         </div>
-        <div class="grid grid-2" style="gap:14px">
-          <div class="hero-stat"><strong>30+</strong><span>Years in distribution</span></div>
-          <div class="hero-stat"><strong>3,000+</strong><span>Active retail clients</span></div>
-          <div class="hero-stat"><strong>99.8%</strong><span>Delivery accuracy</span></div>
-          <div class="hero-stat"><strong>24h</strong><span>Nairobi delivery window</span></div>
-        </div>
+      </div>
+      <div class="showcase-side">
+        <a href="{% url 'products' %}" class="showcase-card">
+          <img src="{% static 'assets/categories/oils-wide.webp' %}" alt="" loading="lazy">
+          <div class="showcase-body"><h3>Cooking Oils</h3><span class="link-arrow">Explore Collection <i class="fa-solid fa-arrow-right"></i></span></div>
+        </a>
+        <a href="{% url 'products' %}" class="showcase-card">
+          <img src="{% static 'assets/categories/soaps-wide.webp' %}" alt="" loading="lazy">
+          <div class="showcase-body"><h3>Hygiene &amp; Cleaning</h3><span class="link-arrow">Explore Collection <i class="fa-solid fa-arrow-right"></i></span></div>
+        </a>
       </div>
     </div>
   </div>
 </section>
 
-<section class="newsletter-band">
+<section class="home-dark home-why section-lg">
   <div class="container">
-    <div><span class="eyebrow">Stay stocked</span><h2>Price drops and new stock, straight to your inbox</h2><p>One email a week. Unsubscribe any time.</p></div>
-    <form action="{% url 'newsletter_subscribe' %}" method="post" data-newsletter class="newsletter-form">
-      {% csrf_token %}
-      <input type="email" name="email" class="input" placeholder="you@business.co.ke" required aria-label="Email address">
-      <button class="btn btn-amber btn-lg" type="submit">Subscribe</button>
-    </form>
+    <div>
+      <span class="pill pill-glass reveal">Our promise</span>
+      <h2 class="display reveal reveal-d1">Why Smart Retailers<br>Choose <em>Mahitaji</em></h2>
+      <p class="lead reveal reveal-d2">We deliver quality FMCG products at wholesale prices with reliability you can trust.</p>
+      <div class="home-cta reveal reveal-d3">
+        <a href="{% url 'about' %}" class="btn btn-amber btn-lg">Our Story <i class="fa-solid fa-arrow-right"></i></a>
+        <a href="{% url 'products' %}" class="btn btn-outline-light btn-lg">Shop Now</a>
+      </div>
+    </div>
+    <div class="home-why-logo reveal reveal-d2"><div><img src="{% static 'assets/logos/logo_sa.png' %}" alt="Mahitaji" loading="lazy"></div></div>
+  </div>
+</section>
+
+<section class="section bg-surface home-how">
+  <div class="container">
+    <div class="section-head is-center">
+      <div class="reveal"><span class="eyebrow">How it works</span><h2>Three Steps to Get Stocked</h2></div>
+    </div>
+    <div class="how">
+      <div class="how-step reveal reveal-d1">
+        <span class="how-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+        <h3>Browse &amp; Select</h3>
+        <p>Explore thousands of quality products with real-time pricing and availability.</p>
+      </div>
+      <div class="how-step reveal reveal-d2">
+        <span class="how-icon"><i class="fa-solid fa-clipboard-list"></i></span>
+        <h3>Place Order</h3>
+        <p>Fast checkout with M-Pesa. Get instant order confirmation.</p>
+      </div>
+      <div class="how-step reveal reveal-d3">
+        <span class="how-icon"><i class="fa-solid fa-truck-fast"></i></span>
+        <h3>Fast Delivery</h3>
+        <p>Reliable delivery across Nairobi. Track your order in real-time.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="trust-bar">
+  <div class="container">
+    <div><strong>3,000+</strong><span>Active Retailers</span></div>
+    <div><strong>99.8%</strong><span>Delivery Accuracy</span></div>
+    <div><strong>50+</strong><span>Delivery Vehicles</span></div>
+    <div><strong>24h</strong><span>Nairobi Delivery</span></div>
+  </div>
+</section>
+
+<section class="section-lg bg-surface home-about">
+  <div class="container">
+    <div class="home-about-media reveal"><img src="{% static 'assets/images/warehouse.webp' %}" alt="Inside the Mahitaji warehouse" width="1200" height="800" loading="lazy"></div>
+    <div>
+      <span class="pill pill-soft reveal">Since 1997</span>
+      <h2 class="reveal reveal-d1">Your Trusted Partner in Wholesale Supply</h2>
+      <p class="lead reveal reveal-d2">At Mahitaji, we believe business should be simple. We source directly from manufacturers, maintain high standards, and deliver with speed and reliability.</p>
+      <div class="home-about-points">
+        <div class="feature reveal reveal-d2"><span class="feature-icon"><i class="fa-solid fa-circle-check"></i></span><div><h4>Direct from Source</h4><p>Better prices, better quality</p></div></div>
+        <div class="feature reveal reveal-d3"><span class="feature-icon"><i class="fa-solid fa-circle-check"></i></span><div><h4>Fast Delivery</h4><p>Nairobi &amp; environs</p></div></div>
+      </div>
+      <a href="{% url 'about' %}" class="link-arrow reveal reveal-d3">Learn more about us <i class="fa-solid fa-arrow-right"></i></a>
+    </div>
   </div>
 </section>
 {% endblock %}
 
-{% block extra_css %}
-<style>
-  @media (min-width: 992px) { #whyGrid { grid-template-columns: 1.3fr .7fr !important; } }
-</style>
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+  const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Past the header the menu row pins to the top of the window and turns solid white.
+  const lpHeader = document.getElementById('lpHeader');
+  if (lpHeader) {
+    const onScroll = () => lpHeader.classList.toggle('is-scrolled', window.scrollY > lpHeader.offsetHeight);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  }
+
+  // Hero background: cross-fade to the next slide every 6 seconds.
+  const slides = Array.from(document.querySelectorAll('[data-slides] .hero-slide'));
+  if (slides.length > 1 && !still) {
+    let current = 0;
+    setInterval(() => {
+      slides[current].classList.remove('is-active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('is-active');
+    }, 6000);
+  }
+
+  // Rails ([data-autoscroll]): drift left in a seamless loop, pause while the
+  // pointer or keyboard focus is inside. Without JS they are plain swipeable rows.
+  if (still) return;
+  document.querySelectorAll('[data-autoscroll]').forEach((rail) => {
+    const originals = Array.from(rail.children);
+    if (originals.length < 2) return;
+    // A second copy of the items lets the loop wrap without a visible jump.
+    originals.forEach((item) => {
+      const clone = item.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      clone.querySelectorAll('a, button, input').forEach((el) => { el.tabIndex = -1; });
+      if (clone.matches('a')) clone.tabIndex = -1;
+      rail.appendChild(clone);
+    });
+    const firstClone = rail.children[originals.length];
+    let paused = false;
+    let position = 0;
+    let last = 0;
+    ['pointerenter', 'focusin', 'touchstart'].forEach((type) => rail.addEventListener(type, () => { paused = true; }, { passive: true }));
+    ['pointerleave', 'focusout', 'touchend'].forEach((type) => rail.addEventListener(type, () => { paused = false; position = rail.scrollLeft; }, { passive: true }));
+    function tick(now) {
+      const elapsed = Math.min(now - last, 64);
+      last = now;
+      const loop = firstClone.offsetLeft - originals[0].offsetLeft; // width of one full set
+      if (!paused && loop > rail.clientWidth / 2 && rail.offsetParent) {
+        position += elapsed * 0.04; // 40px per second
+        if (position >= loop) position -= loop;
+        rail.scrollLeft = position;
+      }
+      requestAnimationFrame(tick);
+    }
+    requestAnimationFrame((now) => { last = now; tick(now); });
+  });
+})();
+</script>
 {% endblock %}

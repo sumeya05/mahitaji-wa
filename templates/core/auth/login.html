@@ -2,58 +2,40 @@
 
 {% block title %}Sign in · {{ site.name }}{% endblock %}
 {% block meta_description %}Sign in to your Mahitaji account to track orders, manage delivery addresses and reorder your regular stock.{% endblock %}
-{% block body_class %}is-auth{% endblock %}
 
 {% block content %}
 <section class="auth">
-  <aside class="auth-side">
-    <span class="eyebrow">Welcome back</span>
-    <h2>Your shop's stockroom, one login away.</h2>
-    <p>Sign in to reorder your regulars, track deliveries from our Baba Dogo hub and keep every invoice in one place.</p>
-    <ul>
-      <li><i class="fa-solid fa-circle-check"></i><span>Reorder past orders in a couple of taps</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>Live delivery status and M-Pesa receipts</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>Saved delivery addresses for faster checkout</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>Wholesale pricing on verified business accounts</span></li>
-    </ul>
-  </aside>
+  <div class="auth-card">
+    <h1 class="auth-title">Sign in</h1>
+    <p class="auth-lead">Use your Mahitaji account to place orders, track deliveries and view your M-Pesa receipts.</p>
 
-  <div class="auth-main">
-    <div class="auth-card">
-      <h1>Sign in</h1>
-      <p class="sub">Use the email or username on your Mahitaji account.</p>
+    <form data-ajax method="post" action="{% url 'login' %}" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="alert alert-danger form-alert" data-form-alert role="alert"></div>
 
-      <form data-ajax method="post" action="{% url 'login' %}" novalidate>
-        {% csrf_token %}
-        <input type="hidden" name="next" value="{{ next }}">
-        <div class="alert alert-danger form-alert" data-form-alert role="alert"></div>
+      <div class="field">
+        <label class="label" for="id_username">Email or username <span class="req">*</span></label>
+        <input class="input" type="text" id="id_username" name="username" autocomplete="username" placeholder="you@business.co.ke" required autofocus>
+      </div>
 
-        <div class="field">
-          <label class="label" for="id_username">Email or username <span class="req">*</span></label>
-          <input class="input" type="text" id="id_username" name="username" autocomplete="username" placeholder="you@business.co.ke" required autofocus>
+      <div class="field">
+        <label class="label" for="id_password">Password <span class="req">*</span></label>
+        <div class="input-group">
+          <input class="input" type="password" id="id_password" name="password" autocomplete="current-password" required>
+          <button type="button" class="input-addon" data-toggle-password="id_password">Show</button>
         </div>
+      </div>
 
-        <div class="field">
-          <label class="label" for="id_password">Password <span class="req">*</span></label>
-          <div class="input-group">
-            <input class="input" type="password" id="id_password" name="password" autocomplete="current-password" placeholder="Your password" required>
-            <button type="button" class="input-addon" data-toggle-password="id_password">Show</button>
-          </div>
-        </div>
+      <div class="flex items-center justify-between wrap gap-3 mb-5">
+        <label class="check"><input type="checkbox" name="remember_me" value="1"><span>Keep me signed in</span></label>
+        <a href="{% url 'password_reset' %}" class="link text-sm">Forgot your password?</a>
+      </div>
 
-        <div class="flex items-center justify-between gap-3 mb-5">
-          <label class="check"><input type="checkbox" name="remember_me" value="1"><span>Keep me signed in</span></label>
-          <a href="{% url 'password_reset' %}" class="link text-sm">Forgot password?</a>
-        </div>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy="Signing in…">Sign in</button>
+    </form>
 
-        <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy="Signing in…"><i class="fa-solid fa-right-to-bracket"></i> Sign in</button>
-      </form>
-
-      <div class="divider">New to Mahitaji?</div>
-      <p class="text-center text-sm muted mb-0">
-        <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="link">Create a free account</a> and start ordering today.
-      </p>
-    </div>
+    <p class="auth-foot">New to Mahitaji? <a href="{% url 'register' %}{% if next %}?next={{ next|urlencode }}{% endif %}" class="link">Create an account</a></p>
   </div>
 </section>
 {% endblock %}

@@ -4,11 +4,12 @@ from import_export.admin import ImportExportModelAdmin
 
 from .models import (
     ChatMessage,
-    Address, Brand, Category, ContactMessage, CustomerProfile, MpesaTransaction,
+    Address, Brand, Category, ContactMessage, Coupon, CustomerProfile, MpesaTransaction,
     NewsletterSubscriber, Order, OrderItem, Product, StockLedger, Supplier,
     UnitOfMeasure, WishlistItem,
 )
 from .resources import BrandResource, CategoryResource, ProductResource, StockLedgerResource, SupplierResource
+from .services import sync_order_stock
 
 admin.site.site_header = "Mahitaji Administration"
 admin.site.site_title = "Mahitaji Admin"
@@ -21,6 +22,18 @@ class OrderItemInline(admin.TabularInline):
     fields = ['product', 'quantity', 'price_at_purchase', 'subtotal']
     readonly_fields = ['subtotal']
     autocomplete_fields = ['product']
+
+
+class PaymentInline(admin.TabularInline):
+    """Every M-Pesa prompt sent for the order (read-only)."""
+    model = MpesaTransaction
+    extra = 0
+    can_delete = False
+    fields = ['created_at', 'phone_number', 'amount', 'receipt_number', 'is_success', 'response_description']
+    readonly_fields = fields
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 class AddressInline(admin.TabularInline):
@@ -55,7 +68,7 @@ class ProductAdmin(ImportExportModelAdmin):
     resource_class = ProductResource
     list_display = [
         'item_code', 'name', 'brand', 'category', 'unit_of_measure',
-        'old_price', 'retail_price', 'old_wholesale_price', 'wholesale_price', 'stock_level',
+        'old_price', 'retail_price', 'old_wholesale_price', 'wholesale_price', 'vat_rate', 'stock_level',
         'is_trending', 'is_best_seller', 'is_active', 'thumbnail',
     ]
     readonly_fields = ['stock_level', 'created_at', 'last_sync_time']
@@ -66,9 +79,14 @@ class ProductAdmin(ImportExportModelAdmin):
     list_per_page = 50
     autocomplete_fields = ['category', 'brand', 'supplier']
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).with_stock()  # stock column without a query per row
+
     @admin.display(description='Stock')
     def stock_level(self, obj):
-        return obj.current_stock
+        if not obj.is_stock_tracked:
+            return "not tracked"
+        return f"{obj.current_stock} ({obj.get_stock_state_display()})"
 
     @admin.display(description='Image')
     def thumbnail(self, obj):
@@ -93,13 +111,25 @@ class UOMAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_number', 'customer', 'full_name', 'payment_method', 'status', 'total_amount', 'synced_to_erp', 'created_at']
-    list_filter = ['status', 'payment_method', 'synced_to_erp', 'created_at']
-    search_fields = ['order_number', 'full_name', 'phone', 'customer__user__username', 'customer__business_name', 'erp_reference']
-    inlines = [OrderItemInline]
+    list_display = ['order_number', 'customer', 'full_name', 'payment_method', 'status', 'payment_state',
+                    'total_amount', 'coupon_code', 'created_at']
+    list_filter = ['status', 'payment_method', 'created_at']
+    search_fields = ['order_number', 'full_name', 'phone', 'customer__user__username', 'customer__business_name',
+                     'coupon_code', 'erp_reference']
+    inlines = [OrderItemInline, PaymentInline]
     readonly_fields = ['order_number', 'created_at', 'updated_at']
     date_hierarchy = 'created_at'
-    actions = ['mark_paid', 'mark_shipped', 'mark_delivered', 'mark_cancelled', 'sync_with_focus_erp']
+    actions = ['mark_paid', 'mark_shipped', 'mark_delivered', 'mark_cancelled']
+
+    @admin.display(description='Payment')
+    def payment_state(self, obj):
+        if obj.needs_refund:
+            return "PAID - REFUND DUE"
+        return "Paid" if obj.is_paid else "Unpaid"
+
+    def save_related(self, request, form, formsets, change):
+        super().save_related(request, form, formsets, change)
+        sync_order_stock(form.instance)  # lines may have been edited: keep the stock ledger in step
 
     def _set_status(self, request, queryset, status):
         count = 0
@@ -109,9 +139,13 @@ class OrderAdmin(admin.ModelAdmin):
             count += 1
         self.message_user(request, f"{count} order(s) marked as {status.title()}.")
 
-    @admin.action(description="Mark selected as Paid")
+    @admin.action(description="Mark selected as Paid (payment received)")
     def mark_paid(self, request, queryset):
-        self._set_status(request, queryset, Order.STATUS_PAID)
+        count = 0
+        for order in queryset:
+            order.mark_paid()
+            count += 1
+        self.message_user(request, f"Payment recorded for {count} order(s).")
 
     @admin.action(description="Mark selected as Shipped")
     def mark_shipped(self, request, queryset):
@@ -121,13 +155,17 @@ class OrderAdmin(admin.ModelAdmin):
     def mark_delivered(self, request, queryset):
         self._set_status(request, queryset, Order.STATUS_DELIVERED)
 
-    @admin.action(description="Mark selected as Cancelled")
+    @admin.action(description="Mark selected as Cancelled (releases their stock)")
     def mark_cancelled(self, request, queryset):
         self._set_status(request, queryset, Order.STATUS_CANCELLED)
 
-    @admin.action(description="Push selected orders to Focus ERP")
-    def sync_with_focus_erp(self, request, queryset):
-        self.message_user(request, f"Initiating sync for {queryset.count()} orders to Focus ERP...")
+
+@admin.register(Coupon)
+class CouponAdmin(admin.ModelAdmin):
+    list_display = ['code', 'percent', 'active', 'valid_until', 'promote']
+    list_editable = ['active', 'promote']
+    list_filter = ['active', 'promote']
+    search_fields = ['code']
 
 
 @admin.register(CustomerProfile)
@@ -141,7 +179,7 @@ class CustomerProfileAdmin(admin.ModelAdmin):
 
 @admin.register(MpesaTransaction)
 class MpesaAdmin(admin.ModelAdmin):
-    list_display = ['receipt_number', 'order', 'amount', 'phone_number', 'is_success', 'transaction_date', 'created_at']
+    list_display = ['receipt_number', 'order', 'amount', 'phone_number', 'state', 'transaction_date', 'created_at']
     list_filter = ['is_success']
     search_fields = ['receipt_number', 'checkout_request_id', 'order__order_number', 'phone_number']
     readonly_fields = [f.name for f in MpesaTransaction._meta.fields]
@@ -158,9 +196,10 @@ class StockLedgerAdmin(ImportExportModelAdmin):
     search_fields = ['product__name', 'product__item_code', 'reference_number']
     autocomplete_fields = ['product']
 
-    @admin.display(description='Qty (base units)')
+    @admin.display(description='Qty (unit of sale)', ordering='quantity')
     def quantity_in_pcs(self, obj):
-        return f"{obj.quantity} pcs"
+        unit = obj.product.pack_size.lower() if obj.product_id and obj.product.pack_size else 'unit'
+        return f"{obj.quantity:+d} {unit}"
 
 
 @admin.register(Supplier)

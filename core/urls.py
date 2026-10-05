@@ -30,6 +30,7 @@ urlpatterns = [
     path('cart-add/', views.cart_add, name='cart_add'),
     path('cart-delete/', views.cart_delete, name='cart_delete'),
     path('cart-update/', views.cart_update, name='cart_update'),
+    path('coupon/', views.apply_coupon, name='apply_coupon'),
 
     # Checkout & orders
     path('checkout/', views.checkout, name='checkout'),
@@ -37,11 +38,14 @@ urlpatterns = [
     path('order-success/<str:order_number>/', views.order_success, name='order-success'),
     path('orders/<str:order_number>/', views.order_detail, name='order_detail'),
     path('orders/<str:order_number>/cancel/', views.order_cancel, name='order_cancel'),
+    path('orders/<str:order_number>/pay-on-delivery/', views.order_pay_on_delivery, name='order_pay_on_delivery'),
+    path('orders/<str:order_number>/pdf/', views.order_pdf, name='order_pdf'),
     path('get-order-details/<int:order_id>/', views.get_order_details, name='get_order_details'),
 
     # Payments (M-Pesa)
     path('mpesa/pay/', views.initiate_stk_push, name='pay'),
     path('mpesa/callback/', views.mpesa_callback, name='callback'),
+    path('mpesa/callback/<str:token>/', views.mpesa_callback, name='callback_token'),
     path('check-payment-status/<str:order_number>/', views.check_payment_status, name='check_payment_status'),
 
     # Auth

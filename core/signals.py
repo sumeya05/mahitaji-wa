@@ -5,6 +5,7 @@ from django.dispatch import receiver
 
 from .context_processors import invalidate_catalogue_nav
 from .models import Brand, Category, Order, Product, StockLedger
+from .services import sync_order_stock
 
 # The header/filters navigation is cached; drop it whenever the catalogue changes.
 for _model in (Product, Category, Brand):
@@ -40,36 +41,12 @@ def remember_previous_status(sender, instance, **kwargs):
 @receiver(post_save, sender=Order)
 def adjust_stock_on_status_change(sender, instance, created, **kwargs):
     """
-    Deduct stock once an order is paid, shipped or delivered (cash-on-delivery orders
-    skip "paid"), and put it back if such an order is cancelled.
-    Ledger references make both operations idempotent.
+    An order holds its stock from checkout until it is cancelled, so the only status
+    changes that move stock are into and out of Cancelled. (A new order has no lines
+    yet when it is first saved; checkout books its stock once the lines exist.)
     """
-    previous = getattr(instance, '_previous_status', None)
-    if previous == instance.status:
+    if created:
         return
-
-    sale_ref = f"ORDER-{instance.order_number}"
-    restock_ref = f"RESTOCK-{instance.order_number}"
-
-    fulfilled = (Order.STATUS_PAID, Order.STATUS_SHIPPED, Order.STATUS_DELIVERED)
-
-    if instance.status in fulfilled:
-        for item in instance.items.select_related('product'):
-            if not StockLedger.objects.filter(reference_number=sale_ref, product=item.product).exists():
-                StockLedger.objects.create(
-                    product=item.product,
-                    transaction_type='SALE',
-                    quantity=-abs(item.quantity),
-                    reference_number=sale_ref,
-                )
-    elif instance.status == Order.STATUS_CANCELLED and previous in fulfilled:
-        for item in instance.items.select_related('product'):
-            sold = StockLedger.objects.filter(reference_number=sale_ref, product=item.product).exists()
-            restocked = StockLedger.objects.filter(reference_number=restock_ref, product=item.product).exists()
-            if sold and not restocked:
-                StockLedger.objects.create(
-                    product=item.product,
-                    transaction_type='ADJUSTMENT',
-                    quantity=abs(item.quantity),
-                    reference_number=restock_ref,
-                )
+    previous = getattr(instance, '_previous_status', None)
+    if previous != instance.status and Order.STATUS_CANCELLED in (previous, instance.status):
+        sync_order_stock(instance)

@@ -15,7 +15,7 @@ from ..forms import (
 from ..models import (
     NewsletterSubscriber,
 )
-from ._common import form_errors, is_ajax, json_error, json_ok, request_data
+from ._common import back_url, form_errors, is_ajax, json_error, json_ok, request_data
 
 logger = logging.getLogger(__name__)
 
@@ -95,4 +95,4 @@ def newsletter_subscribe(request):
         if is_ajax(request):
             return json_error("Enter a valid email address.", errors=form_errors(form))
         messages.error(request, "Enter a valid email address.")
-    return redirect(request.META.get('HTTP_REFERER') or 'home')
+    return redirect(back_url(request))

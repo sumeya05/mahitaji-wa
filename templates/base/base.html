@@ -12,12 +12,13 @@
   <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
-  <link rel="stylesheet" href="{% static 'css/mahitaji.css' %}?v=4">
+  <link rel="stylesheet" href="{% static 'css/mahitaji.css' %}?v=11">
   {% block extra_css %}{% endblock %}
 </head>
 <body class="{% block body_class %}{% endblock %}{% if cart.is_empty %} cart-empty{% endif %}">
 <a class="sr-only" href="#main">Skip to content</a>
 
+{% block topbar %}
 <div class="topbar desktop-only">
   <div class="container">
     <ul>
@@ -32,7 +33,9 @@
     </ul>
   </div>
 </div>
+{% endblock %}
 
+{% block header %}
 <header class="header">
   <div class="container header-main">
     <button class="nav-toggle" data-open="#mobileNav" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
@@ -68,7 +71,7 @@
           <i class="fa-solid fa-cart-shopping"></i>
           <span class="count{% if cart.is_empty %} is-zero{% endif %}" data-cart-count>{{ cart|length }}</span>
         </span>
-        <span class="h-cart-text"><small>My cart</small><strong data-cart-total>{{ cart.get_total_price|ksh }}</strong></span>
+        <span class="h-cart-text"><small>My cart</small><strong data-cart-total>{{ cart.total|ksh }}</strong></span>
       </button>
     </div>
   </div>
@@ -102,6 +105,7 @@
     </div>
   </nav>
 </header>
+{% endblock %}
 
 {% if messages %}
 <div class="messages">
@@ -223,7 +227,7 @@
   <div class="drawer-head"><h3><i class="fa-solid fa-cart-shopping" style="color:var(--brand-600)"></i> Your cart</h3><button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
   <div class="drawer-body" id="cartDrawerBody">{% include 'partials/cart_drawer_items.html' %}</div>
   <div class="drawer-foot">
-    <div class="cd-total"><span class="muted">Subtotal ({{ cart|length }} items)</span><strong data-cart-total>{{ cart.get_total_price|ksh }}</strong></div>
+    <div class="cd-total"><span class="muted">Total (<span data-cart-count>{{ cart|length }}</span> units, incl. VAT)</span><strong data-cart-total>{{ cart.total|ksh }}</strong></div>
     <div class="grid grid-2" style="gap:10px">
       <a href="{% url 'shopping-cart' %}" class="btn btn-outline">View cart</a>
       <a href="{% url 'checkout' %}" class="btn btn-primary">Checkout</a>
@@ -253,6 +257,20 @@
 
 <button class="back-top" id="backTop" aria-label="Back to top"><i class="fa-solid fa-arrow-up"></i></button>
 
+{% if promo_coupon %}
+<div class="modal" id="promoModal" data-promo="{{ promo_coupon.code }}" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+  <div class="modal-box promo-card">
+    <button class="icon-btn promo-close" data-modal-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+    <span class="eyebrow">Limited offer</span>
+    <h2 id="promoTitle" class="promo-big">{{ promo_coupon.percent|plain }}% OFF</h2>
+    <p class="promo-text">your order{% if promo_coupon.valid_until %} until {{ promo_coupon.valid_until|date:"j M Y" }}{% endif %}. Use this code at checkout:</p>
+    <button type="button" class="promo-code" data-copy-code="{{ promo_coupon.code }}" title="Copy code">{{ promo_coupon.code }} <i class="fa-regular fa-copy"></i></button>
+    <a href="{% url 'products' %}" class="btn btn-primary btn-block">Shop now</a>
+    <p class="promo-fine">One code per order. Applies to the whole cart.</p>
+  </div>
+</div>
+{% endif %}
+
 <script>
   window.MAHITAJI = {
     csrf: '{{ csrf_token }}',
@@ -264,7 +282,7 @@
     }
   };
 </script>
-<script src="{% static 'js/mahitaji.js' %}?v=3" defer></script>
+<script src="{% static 'js/mahitaji.js' %}?v=6" defer></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

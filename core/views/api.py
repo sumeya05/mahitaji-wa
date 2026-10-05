@@ -3,7 +3,7 @@ Read-only JSON API (Django REST framework viewsets mounted at /data/).
 """
 import logging
 
-from django.db.models import Q, Sum
+from django.db.models import Q
 from rest_framework import permissions, viewsets
 
 from ..models import (
@@ -27,9 +27,9 @@ class BrandViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ProductViewSet(viewsets.ReadOnlyModelViewSet):
-    # ``stock_total`` feeds Product.current_stock so the list endpoint does not
-    # run one ledger aggregate per product.
-    queryset = Product.objects.active().with_relations().annotate(stock_total=Sum('stock_ledger__quantity'))
+    # ``with_stock`` pre-computes the stock figures so the list endpoint does not
+    # run ledger queries per product.
+    queryset = Product.objects.active().with_relations().with_stock()
     serializer_class = ProductSerializer
 
     def get_queryset(self):
@@ -51,4 +51,4 @@ class OrderViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = 'order_number'
 
     def get_queryset(self):
-        return Order.objects.filter(customer__user=self.request.user).prefetch_related('items__product')
+        return Order.objects.filter(customer__user=self.request.user).select_related('customer__user').prefetch_related('items__product')

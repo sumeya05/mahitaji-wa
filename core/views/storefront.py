@@ -7,14 +7,14 @@ import logging
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
+from django.db.models.functions import Coalesce
 from django.shortcuts import get_object_or_404, render
 from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 
 from ..cart import Cart, price_tier_for
-from ..context_processors import catalogue_nav
 from ..models import (
-    PRICE_TIER_RETAIL, PRICE_TIER_WHOLESALE, Brand, Category, Product,
+    PRICE_TIER_RETAIL, PRICE_TIER_WHOLESALE, Brand, Category, Product, plain_number,
 )
 from ._common import is_ajax, json_ok
 
@@ -33,16 +33,22 @@ SORT_OPTIONS = [
 
 
 def _apply_sort(queryset, sort, tier):
-    price_field = 'wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'retail_price'
+    # The price a customer is shown: wholesale falls back to retail when a line has no
+    # wholesale price (and the other way round), exactly as Product.price_for does.
+    if tier == PRICE_TIER_WHOLESALE:
+        price = Coalesce('wholesale_price', 'retail_price')
+    else:
+        price = Coalesce('retail_price', 'wholesale_price')
     if sort == 'name':
         return queryset.order_by('name')
     if sort == 'price_asc':
-        return queryset.order_by(F(price_field).asc(nulls_last=True), 'name')
+        return queryset.annotate(shown_price=price).order_by(F('shown_price').asc(nulls_last=True), 'name')
     if sort == 'price_desc':
-        return queryset.order_by(F(price_field).desc(nulls_last=True), 'name')
+        return queryset.annotate(shown_price=price).order_by(F('shown_price').desc(nulls_last=True), 'name')
     if sort == 'newest':
         return queryset.order_by('-created_at', 'name')
     if sort == 'discount':
+        price_field = 'wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'retail_price'
         old_field = 'old_wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'old_price'
         return queryset.annotate(discount_amount=F(old_field) - F(price_field)) \
             .order_by(F('discount_amount').desc(nulls_last=True), 'name')
@@ -60,7 +66,7 @@ def catalog(request, base_qs, *, title, subtitle='', tier=None, template='core/c
     if sort not in dict(SORT_OPTIONS):
         sort = default_sort
 
-    qs = base_qs.active().with_relations()
+    qs = base_qs.active().with_relations().with_stock()
     if q:
         qs = qs.filter(
             Q(name__icontains=q) | Q(description__icontains=q) | Q(item_code__icontains=q)
@@ -106,21 +112,28 @@ def catalog(request, base_qs, *, title, subtitle='', tier=None, template='core/c
 # ---------------------------------------------------------------------------
 # Storefront
 # ---------------------------------------------------------------------------
+# Artwork for the rotating rings in the home hero: (label, file in static/assets/<folder>/).
+HERO_CATEGORIES = [
+    ('Cereals', 'cereals.jpg'), ('Oils', 'oils.jpg'), ('Drinks', 'drinks.jpg'),
+    ('Soaps', 'soaps.jpg'), ('Flour', 'flour.jpg'),
+]
+HERO_BRANDS = [
+    ('Ajab', 'ajab.jpeg'), ('Coca-Cola', 'cocacola.png'), ('Soko', 'soko.jpeg'),
+    ('Del Monte', 'delmonte.png'), ('Kensalt', 'kensalt.jpeg'), ('Ketepa', 'ketepa.jpeg'),
+    ('Jetlak', 'jetlak.png'), ('Tropical Heat', 'tropicalheat.jpeg'), ('Kapa Oil', 'kapa.png'),
+    ('Pembe', 'pembe.jpeg'), ('EXE', 'exe.png'),
+]
+TRENDING_RAIL_SIZE = 12
+
+
 def home(request):
-    active = Product.objects.active().with_relations()
-    tier = price_tier_for(request.user)
-    nav = catalogue_nav()  # cached categories/brands with product counts
+    active = Product.objects.active().with_relations().with_stock()
     context = {
-        'new_products': active.order_by('-created_at')[:8],
-        'top_offers': _apply_sort(active.on_offer(tier), 'discount', tier)[:8],
-        'bestsellers': active.filter(is_best_seller=True).order_by('name')[:8],
-        'trending': active.filter(is_trending=True).order_by('-created_at')[:8],
-        'top_categories': nav['categories'][:8],
-        'stats': {
-            'products': nav['product_count'],
-            'brands': len(nav['brands']),
-            'categories': len(nav['categories']),
-        },
+        # Flagged products lead the rail; best sellers and new arrivals top it up
+        # so it never runs short on a small catalogue.
+        'trending': active.order_by('-is_trending', '-is_best_seller', '-created_at')[:TRENDING_RAIL_SIZE],
+        'hero_categories': HERO_CATEGORIES,
+        'hero_brands': HERO_BRANDS,
     }
     return render(request, 'core/home.html', context)
 
@@ -212,8 +225,8 @@ def brands(request):
 
 
 def product_detail(request, pk):
-    product = get_object_or_404(Product.objects.with_relations(), pk=pk, is_active=True)
-    related = Product.objects.active().with_relations().exclude(pk=pk)
+    product = get_object_or_404(Product.objects.with_relations().with_stock(), pk=pk, is_active=True)
+    related = Product.objects.active().with_relations().with_stock().exclude(pk=pk)
     same_category = related.filter(category=product.category)[:8] if product.category else related[:8]
     same_brand = related.filter(brand=product.brand).exclude(pk__in=[p.pk for p in same_category])[:4] if product.brand else []
     variants = Product.objects.active().with_relations().filter(name=product.name).exclude(pk=pk)
@@ -224,7 +237,8 @@ def product_detail(request, pk):
         'brand_products': same_brand,
         'variants': variants,
         'in_cart_qty': cart.quantity_of(product.id),
-        'in_stock': product.in_stock,  # evaluated once; the template uses it three times
+        'in_stock': product.in_stock,
+        'can_buy': product.in_stock and product.is_purchasable,
     }
     # Coming from the retailers/wholesalers pages: keep showing that tier's price
     # (the cart is still charged at the account's tier, and the page says so).
@@ -241,13 +255,13 @@ def price_list(request):
     response['Content-Disposition'] = 'attachment; filename="mahitaji-price-list.csv"'
     writer = csv.writer(response)
     writer.writerow(['Item code', 'Product', 'Category', 'Brand', 'Unit', 'Retail price (KSh)', 'Wholesale price (KSh)',
-                     'Was (retail)', 'Was (wholesale)', 'In stock'])
-    products = Product.objects.active().with_relations().order_by('category__name', 'name')
+                     'Was (retail)', 'Was (wholesale)', 'VAT %', 'In stock'])
+    products = Product.objects.active().with_relations().with_stock().order_by('category__name', 'name')
     for p in products:
         writer.writerow([
             p.item_code or '', p.name, p.category.name if p.category else '', p.brand.name if p.brand else '',
             p.pack_size, p.retail_price or '', p.wholesale_price or '',
             p.old_price_for(PRICE_TIER_RETAIL) or '', p.old_price_for(PRICE_TIER_WHOLESALE) or '',
-            'yes' if p.in_stock else 'no',
+            plain_number(p.vat_rate), 'yes' if p.in_stock else 'no',
         ])
     return response

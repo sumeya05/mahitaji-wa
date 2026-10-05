@@ -5,40 +5,34 @@
 {% block meta_description %}{{ subtitle|default:title }} Shop FMCG products from Mahitaji with delivery across Kenya.{% endblock %}
 
 {% block content %}
-{% if show_hero %}
-<section class="page-hero">
+<section class="page-head">
   <div class="container">
     <ul class="breadcrumb">
       <li><a href="{% url 'home' %}">Home</a></li>
-      {% if is_offers %}<li class="current">Offers</li>{% else %}<li class="current">{{ title }}</li>{% endif %}
+      <li class="current">{% if is_offers %}Offers{% elif not show_hero %}Search{% else %}{{ title }}{% endif %}</li>
     </ul>
-    <h1>{{ title }}</h1>
-    {% if subtitle %}<p>{{ subtitle }}</p>{% endif %}
-    <div class="hero-stats">
-      <span><i class="fa-solid fa-box"></i><strong data-result-count>{{ total_count }}</strong> products</span>
-      <span><i class="fa-solid fa-truck-fast"></i>Next-day delivery in Nairobi</span>
-      <span><i class="fa-solid fa-shield-halved"></i>KEBS-certified stock</span>
-      {% if tier == 'wholesale' %}<span><i class="fa-solid fa-boxes-stacked"></i>Bale &amp; carton pricing</span>{% endif %}
+    {% if is_offers %}
+    <div class="page-hero">
+      <span class="eyebrow">Limited time</span>
+      <h1 class="page-title">{{ title }}</h1>
+      <p class="page-lead"><strong data-result-count>{{ total_count }}</strong> product{{ total_count|pluralize }} priced below the usual price. Offers run while stock lasts.</p>
     </div>
-  </div>
-</section>
-{% else %}
-<section class="section-sm bg-surface" style="border-bottom:1px solid var(--line)">
-  <div class="container">
-    <ul class="breadcrumb mb-3"><li><a href="{% url 'home' %}">Home</a></li><li class="current">Search</li></ul>
-    <h1 style="font-size:1.6rem">{{ title }}</h1>
-    {% if subtitle %}<p class="muted">{{ subtitle }}</p>{% endif %}
-    <form action="{% url 'search' %}" method="get" class="search-form mt-3" style="max-width:640px" role="search">
+    {% else %}
+    <h1 class="page-title">{{ title }}</h1>
+    {% if subtitle %}<p class="page-lead">{{ subtitle }}</p>{% endif %}
+    {% if not show_hero %}
+    <form action="{% url 'search' %}" method="get" class="search-form mt-4" style="max-width:640px" role="search">
       <input type="search" name="q" value="{{ q }}" placeholder="Search products, brands or categories…" aria-label="Search">
       <button type="submit" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></button>
     </form>
+    {% endif %}
+    {% endif %}
   </div>
 </section>
-{% endif %}
 
 <div class="container">
   <div class="catalog" id="catalog" data-url="{{ request.path }}" data-q="{{ q }}">
-    <aside class="filters">
+    <aside class="filters" aria-label="Filters">
       {% include 'partials/filters.html' %}
     </aside>
 
@@ -50,7 +44,7 @@
       {% endif %}
 
       <div class="toolbar">
-        <div class="count"><strong data-result-count>{{ total_count }}</strong> products{% if q %} for “{{ q }}”{% endif %}</div>
+        <div class="count"><strong data-result-count>{{ total_count }}</strong> product{{ total_count|pluralize }}{% if q %} for “{{ q }}”{% endif %}</div>
         <div class="flex items-center gap-2">
           <button class="btn btn-outline btn-sm mobile-only" data-open="#filtersDrawer"><i class="fa-solid fa-sliders"></i> Filters</button>
           <label class="sr-only" for="sortSelect">Sort by</label>

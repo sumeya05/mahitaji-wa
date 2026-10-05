@@ -2,87 +2,85 @@
 {% load shop %}
 
 {% block account_title %}My orders{% endblock %}
-{% block account_crumb %}Orders{% endblock %}
+{% block account_crumb %}My orders{% endblock %}
 {% block account_heading %}My orders{% endblock %}
-{% block account_subtitle %}Track and manage your orders.{% endblock %}
-
-{% block extra_css %}<style>
-  .oc-actions { display: flex; flex-wrap: wrap; gap: 8px; }
-  @media (min-width: 720px) { .oc-actions { justify-content: flex-end; } }
-  .status-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-</style>{% endblock %}
+{% block account_subtitle %}Every order you have placed with Mahitaji. Open an order to see its items, payment and delivery status.{% endblock %}
 
 {% block account_content %}
-<div class="status-chips" aria-label="Filter by status">
+<div class="flex wrap gap-2" aria-label="Filter by status">
   <a href="{% qs_replace status='' page='' %}" class="chip{% if not status_filter %} is-active{% endif %}">All</a>
   {% for value, label in status_choices %}
   <a href="{% qs_replace status=value page='' %}" class="chip{% if status_filter == value %} is-active{% endif %}">{{ label }}</a>
   {% endfor %}
 </div>
 
-{% if page_obj.object_list %}
-  {% for order in page_obj %}
-  <article class="order-card">
-    <div>
-      <div class="oc-label">Order</div>
-      <div class="oc-value"><a href="{{ order.get_absolute_url }}">{{ order.order_number }}</a></div>
-      <div class="muted text-sm">{{ order.created_at|date:"j M Y, H:i" }}</div>
-    </div>
-    <div>
-      <div class="oc-label">Items</div>
-      <div class="oc-value">{{ order.item_count }} item{{ order.item_count|pluralize }}</div>
-      <div class="muted text-sm">{{ order.get_payment_method_display }}</div>
-    </div>
-    <div>
-      <div class="oc-label">Total</div>
-      <div class="oc-value">{{ order.total_amount|ksh }}</div>
-      <div class="mt-1">{% status_badge order %}</div>
-    </div>
-    <div class="oc-actions">
-      <button type="button" class="btn btn-outline btn-sm" data-order-details="{% url 'get_order_details' order.id %}" data-order-number="{{ order.order_number }}"><i class="fa-regular fa-eye"></i> View details</button>
-      {% if order.can_pay %}
-      <a href="{{ order.get_absolute_url }}" class="btn btn-amber btn-sm"><i class="fa-solid fa-mobile-screen-button"></i> Pay now</a>
-      {% else %}
-      <a href="{{ order.get_absolute_url }}" class="btn btn-ghost btn-sm">Open <i class="fa-solid fa-arrow-right"></i></a>
-      {% endif %}
-    </div>
-  </article>
-  {% endfor %}
-
-  {% if page_obj.paginator.num_pages > 1 %}
-  <nav class="pagination" aria-label="Orders pagination">
-    {% if page_obj.has_previous %}<a href="{% qs_replace page=page_obj.previous_page_number %}"><i class="fa-solid fa-chevron-left"></i> Previous</a>{% else %}<span class="gap"></span>{% endif %}
-    <span class="is-current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
-    {% if page_obj.has_next %}<a href="{% qs_replace page=page_obj.next_page_number %}">Next <i class="fa-solid fa-chevron-right"></i></a>{% endif %}
-  </nav>
-  {% endif %}
-{% else %}
-  <div class="empty card">
-    <div class="empty-icon"><i class="fa-solid fa-box-open"></i></div>
-    <h3>{% if status_filter %}No {{ status_filter|lower }} orders{% else %}No orders yet{% endif %}</h3>
-    <p>{% if status_filter %}Try another status or clear the filter.{% else %}Your orders will appear here as soon as you place one.{% endif %}</p>
-    {% if status_filter %}<a href="{% qs_replace status='' page='' %}" class="btn btn-outline mt-3"><i class="fa-solid fa-rotate-left"></i> Show all orders</a>{% else %}<a href="{% url 'products' %}" class="btn btn-primary mt-3"><i class="fa-solid fa-store"></i> Browse the catalogue</a>{% endif %}
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Order history</h2>
+    <span class="text-sm muted">{{ page_obj.paginator.count }} order{{ page_obj.paginator.count|pluralize }}</span>
   </div>
+  {% if page_obj.object_list %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Order</th><th class="hide-sm">Date</th><th class="num hide-sm">Items</th><th class="hide-sm">Payment</th><th>Status</th><th class="num">Total</th><th class="num hide-sm"><span class="sr-only">Actions</span></th></tr>
+      </thead>
+      <tbody>
+        {% for order in page_obj %}
+        <tr>
+          <td class="nowrap"><a href="{{ order.get_absolute_url }}" class="fw-600">{{ order.order_number }}</a><small class="show-sm muted">{{ order.created_at|date:"j M Y" }} · {{ order.item_count }} item{{ order.item_count|pluralize }}</small></td>
+          <td class="nowrap hide-sm">{{ order.created_at|date:"j M Y" }}</td>
+          <td class="num hide-sm">{{ order.item_count }}</td>
+          <td class="nowrap hide-sm">{{ order.get_payment_method_display }}</td>
+          <td>{% status_badge order %}</td>
+          <td class="num nowrap fw-600">{{ order.total_amount|ksh }}</td>
+          <td class="num nowrap hide-sm">
+            {% if order.can_pay %}<a href="{{ order.get_absolute_url }}" class="btn btn-amber btn-sm">Pay now</a>{% endif %}
+            <a href="{% url 'order_pdf' order.order_number %}" class="btn btn-outline btn-sm" title="Download the sales order as PDF"><i class="fa-solid fa-download"></i> PDF</a>
+            <button type="button" class="btn btn-outline btn-sm" data-order-details="{% url 'get_order_details' order.id %}" data-order-number="{{ order.order_number }}">View</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>{% if status_filter %}No {{ status_filter|lower }} orders. Try another status or <a href="{% qs_replace status='' page='' %}">show all orders</a>.{% else %}You have not placed an order yet.{% endif %}</p>
+    {% if not status_filter %}<a href="{% url 'products' %}" class="btn btn-primary btn-sm mt-3">Browse the catalogue</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+
+{% if page_obj.paginator.num_pages > 1 %}
+<nav class="pagination" aria-label="Orders pagination" style="margin-top:0">
+  {% if page_obj.has_previous %}<a href="{% qs_replace page=page_obj.previous_page_number %}"><i class="fa-solid fa-chevron-left"></i> Previous</a>{% endif %}
+  <span class="is-current">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  {% if page_obj.has_next %}<a href="{% qs_replace page=page_obj.next_page_number %}">Next <i class="fa-solid fa-chevron-right"></i></a>{% endif %}
+</nav>
 {% endif %}
 
 {% if payments %}
-<h3 class="mt-8 mb-3">Recent M-Pesa payments</h3>
-<div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Receipt</th><th>Order</th><th class="num">Amount</th><th>Phone</th><th>Status</th><th>Date</th></tr></thead>
-    <tbody>
-      {% for p in payments %}
-      <tr>
-        <td class="fw-600">{{ p.receipt_number|default:'—' }}</td>
-        <td><a href="{{ p.order.get_absolute_url }}">{{ p.order.order_number }}</a></td>
-        <td class="num">{{ p.amount|ksh }}</td>
-        <td class="muted">{{ p.phone_number }}</td>
-        <td>{% if p.is_success %}<span class="badge badge-success">Successful</span>{% else %}<span class="badge badge-warning">Pending</span>{% endif %}</td>
-        <td class="muted" style="white-space:nowrap">{{ p.transaction_date|default:p.created_at|date:"j M Y, H:i" }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card">
+  <div class="card-header"><h2 class="card-title">Recent M-Pesa payments</h2><a href="{% url 'payment_methods' %}" class="btn btn-outline btn-sm">All payments <i class="fa-solid fa-arrow-right"></i></a></div>
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th class="hide-sm">Date</th><th class="hide-sm">Order</th><th>Receipt</th><th class="num">Amount</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td class="nowrap hide-sm">{{ p.transaction_date|default:p.created_at|date:"j M Y" }}</td>
+          <td class="nowrap hide-sm"><a href="{{ p.order.get_absolute_url }}">{{ p.order.order_number }}</a></td>
+          <td class="nowrap">{{ p.receipt_number|default:'—' }}<small class="show-sm muted">{{ p.order.order_number }}</small></td>
+          <td class="num nowrap fw-600">{{ p.amount|ksh }}</td>
+          <td>{% if p.state == 'paid' %}<span class="badge badge-success">Paid</span>{% elif p.state == 'failed' %}<span class="badge badge-danger">Not completed</span>{% else %}<span class="badge badge-warning">Pending</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 </div>
 {% endif %}
+
+<p class="text-sm muted mb-0">Download a sales order with the PDF button. Need a tax invoice copy or want to change an order? <a href="{% url 'contact' %}">Contact us</a> with the order number.</p>
 {% endblock %}

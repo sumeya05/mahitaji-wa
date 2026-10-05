@@ -1,0 +1,28 @@
+{% load shop %}{# The lines and totals of an order. Expects: order; show_delivery=True adds the delivery row #}
+<div class="table-wrap">
+  <table class="table table-items">
+    <thead><tr><th>Product</th><th class="num">Qty</th><th class="num col-unit">Unit price</th><th class="num">Subtotal</th></tr></thead>
+    <tbody>
+      {% for item in order.items.all %}
+      <tr>
+        <td><a href="{{ item.product.get_absolute_url }}" class="fw-600" style="color:var(--ink)">{{ item.product.name }}</a><div class="text-xs muted">{% if item.product.item_code %}{{ item.product.item_code }}{% endif %}{% if item.product.pack_size %} · per {{ item.product.pack_size|lower }}{% endif %}</div></td>
+        <td class="num">{{ item.quantity }}</td>
+        <td class="num nowrap col-unit">{{ item.price_at_purchase|ksh }}</td>
+        <td class="num nowrap fw-600">{{ item.subtotal|ksh }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="4" class="muted text-center">No items recorded for this order.</td></tr>
+      {% endfor %}
+    </tbody>
+    <tfoot>
+      {% if order.discount_amount %}
+      <tr><td colspan="2" class="text-2">Subtotal</td><td class="col-unit"></td><td class="num nowrap">{{ order.subtotal_amount|ksh }}</td></tr>
+      <tr><td colspan="2" class="text-2">Discount ({{ order.coupon_code }}, {{ order.discount_percent|plain }}%)</td><td class="col-unit"></td><td class="num nowrap discount">− {{ order.discount_amount|ksh }}</td></tr>
+      {% endif %}
+      <tr><td colspan="2" class="text-2">Net amount (excl. VAT)</td><td class="col-unit"></td><td class="num nowrap">{{ order.net_amount|ksh }}</td></tr>
+      <tr><td colspan="2" class="text-2">VAT (included)</td><td class="col-unit"></td><td class="num nowrap">{{ order.vat_amount|ksh }}</td></tr>
+      {% if show_delivery %}<tr><td colspan="2" class="text-2">Delivery</td><td class="col-unit"></td><td class="num">{% if order.total_amount >= site.free_delivery_threshold %}Free{% else %}Confirmed on dispatch{% endif %}</td></tr>{% endif %}
+      <tr><td colspan="2" class="fw-700">Total (incl. VAT)</td><td class="col-unit"></td><td class="num nowrap order-total">{{ order.total_amount|ksh }}</td></tr>
+    </tfoot>
+  </table>
+</div>

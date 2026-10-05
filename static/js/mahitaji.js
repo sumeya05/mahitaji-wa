@@ -201,7 +201,10 @@
     apply(summary) {
       if (!summary) return;
       $$('[data-cart-count]').forEach((el) => { el.textContent = summary.qty; el.classList.toggle('is-zero', !summary.qty); });
-      $$('[data-cart-total]').forEach((el) => { el.textContent = money(summary.total); });
+      // subtotal = list prices, total = what is paid (after the coupon, VAT included)
+      ['subtotal', 'discount', 'vat', 'net', 'total'].forEach((key) => {
+        $$(`[data-cart-${key}]`).forEach((el) => { el.textContent = money(summary[key]); });
+      });
       $$('[data-cart-lines]').forEach((el) => { el.textContent = summary.lines; });
       document.body.classList.toggle('cart-empty', !summary.qty);
     },
@@ -231,12 +234,20 @@
       const res = await request(URLS.cartUpdate, { method: 'POST', data: { product_id: productId, product_qty: qty } });
       if (!res.ok) { Toast.show(res.error || 'Could not update cart.', 'danger'); return res; }
       this.apply(res.cart); this.drawer(res.drawer_html);
-      this.markCards(productId, qty);
+      // The server may keep fewer than asked for (stock ran short): show what it kept.
+      const kept = res.item_qty === undefined ? qty : res.item_qty;
+      this.markCards(productId, kept);
       const row = $(`[data-cart-row="${productId}"]`);
       if (row) {
         const lineEl = row.querySelector('[data-line-total]');
-        if (qty <= 0) row.remove(); else if (lineEl) lineEl.textContent = money(res.line_total);
+        const input = row.querySelector('input[data-cart-qty]');
+        if (kept <= 0) row.remove();
+        else {
+          if (lineEl) lineEl.textContent = money(res.line_total);
+          if (input) input.value = kept;
+        }
       }
+      if (res.message) Toast.show(res.message, 'warning');
       checkEmptyCartPage(res.cart);
       return res;
     },
@@ -310,6 +321,51 @@
   });
 
   /* ---------------------------------------------------------------------
+     Coupons: <form data-coupon-form> applies or removes a code. Pages that show
+     totals worked out on the server (cart, checkout) reload; elsewhere the cart
+     drawer and header are refreshed in place.
+     --------------------------------------------------------------------- */
+  document.addEventListener('submit', async (e) => {
+    const form = e.target.closest('form[data-coupon-form]');
+    if (!form) return;
+    e.preventDefault();
+    const btn = e.submitter || form.querySelector('[type="submit"]');
+    const body = new FormData(form);
+    if (btn && btn.name) body.append(btn.name, btn.value);
+    setBusy(btn, true);
+    try {
+      const res = await request(form.getAttribute('action'), { method: 'POST', form: body });
+      if (!res.ok) { Toast.show(res.error || 'Could not apply the coupon.', 'danger'); return; }
+      if (form.hasAttribute('data-reload')) { window.location.reload(); return; }
+      Cart.apply(res.cart); Cart.drawer(res.drawer_html);
+      Toast.show(res.message, 'success');
+    } catch (err) {
+      Toast.show('Connection problem. Please check your internet and try again.', 'danger');
+    } finally { setBusy(btn, false); }
+  });
+
+  // Offer pop-up: shown once per coupon code and browser.
+  const promo = $('#promoModal');
+  if (promo) {
+    const key = 'mahitaji.promo.' + promo.getAttribute('data-promo');
+    let seen = false;
+    try { seen = !!localStorage.getItem(key); } catch (err) { seen = true; }
+    if (!seen && !$('#cartPage') && !$('#checkoutForm')) {
+      setTimeout(() => {
+        promo.classList.add('is-open');
+        try { localStorage.setItem(key, '1'); } catch (err) { /* private mode */ }
+      }, 1500);
+    }
+  }
+  document.addEventListener('click', async (e) => {
+    const copy = e.target.closest('[data-copy-code]');
+    if (!copy) return;
+    const code = copy.getAttribute('data-copy-code');
+    try { await navigator.clipboard.writeText(code); Toast.show(`Code ${code} copied. Enter it at checkout.`, 'success'); }
+    catch (err) { Toast.show(`Your code is ${code}. Enter it at checkout.`, 'info'); }
+  });
+
+  /* ---------------------------------------------------------------------
      Wishlist
      --------------------------------------------------------------------- */
   document.addEventListener('click', async (e) => {
@@ -347,8 +403,11 @@
       const params = new URLSearchParams();
       const q = catalogEl.getAttribute('data-q');
       if (q) params.set('q', q);
-      $$('input[data-filter="category"]:checked').forEach((cb) => params.append('category', cb.value));
-      $$('input[data-filter="brand"]:checked').forEach((cb) => params.append('brand', cb.value));
+      // The filter panel is rendered twice (sidebar and mobile drawer), so each value is taken once.
+      ['category', 'brand'].forEach((key) => {
+        const values = new Set($$(`input[data-filter="${key}"]:checked`).map((cb) => cb.value));
+        values.forEach((value) => params.append(key, value));
+      });
       const sort = $('#sortSelect');
       if (sort && sort.value && sort.value !== 'featured') params.set('sort', sort.value);
       return params;
@@ -383,7 +442,7 @@
           chips.push(`<button class="chip is-active" data-chip="${key}" data-value="${escapeHtml(slug)}">${escapeHtml(label)} <i class="fa-solid fa-xmark chip-x"></i></button>`);
         });
       });
-      if (chips.length) chips.push('<button class="chip" id="clearFilters"><i class="fa-solid fa-rotate-left"></i> Clear all</button>');
+      if (chips.length) chips.push('<button class="chip" data-clear-filters><i class="fa-solid fa-rotate-left"></i> Clear all</button>');
       box.innerHTML = chips.join('');
       box.classList.toggle('hidden', !chips.length);
     }
@@ -403,7 +462,7 @@
         load(collectParams());
         return;
       }
-      if (e.target.closest('#clearFilters')) {
+      if (e.target.closest('[data-clear-filters]')) {
         $$('input[data-filter]').forEach((cb) => { cb.checked = false; });
         load(collectParams());
         return;
@@ -418,7 +477,7 @@
     document.addEventListener('input', debounce((e) => {
       if (!e.target.matches('[data-filter-search]')) return;
       const term = e.target.value.toLowerCase();
-      const list = e.target.closest('.card').querySelector('.filter-list');
+      const list = e.target.closest('.filter-group').querySelector('.filter-list');
       $$('label', list).forEach((label) => { label.classList.toggle('hidden', !label.textContent.toLowerCase().includes(term)); });
     }, 120));
     window.addEventListener('popstate', () => {

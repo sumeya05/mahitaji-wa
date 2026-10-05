@@ -1,151 +1,107 @@
 {% extends 'core/account/base.html' %}
 {% load shop %}
 
-{% block account_title %}Dashboard{% endblock %}
-{% block account_crumb %}Dashboard{% endblock %}
-{% block account_heading %}My account{% endblock %}
-{% block account_subtitle %}Welcome back, {{ user.first_name|default:profile.display_name }}. Here's what's happening with your orders.{% endblock %}
-
-{% block extra_css %}<style>
-  .dash-split { display: grid; gap: 20px; }
-  @media (min-width: 992px) { .dash-split { grid-template-columns: 2fr 1fr; align-items: start; } }
-  .dash-list li { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: .9rem; }
-  .dash-list li:last-child { border-bottom: 0; }
-  .dash-list li span:first-child { color: var(--muted); flex: none; }
-  .dash-list li span:last-child { text-align: right; font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
-  .quick-links a { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; font-size: .9rem; }
-  .quick-links a:last-child { border-bottom: 0; }
-  .quick-links a i:first-child { width: 18px; text-align: center; color: var(--brand-600); }
-  .quick-links a i:last-child { margin-left: auto; color: var(--line-2); font-size: .75rem; }
-</style>{% endblock %}
+{% block account_title %}My account{% endblock %}
+{% block account_heading %}Hello, {{ user.first_name|default:profile.display_name }}{% endblock %}
+{% block account_subtitle %}{% if profile.business_name %}{{ profile.business_name }} · {% endif %}Here is a summary of your account and recent orders.{% endblock %}
 
 {% block account_content %}
-<div class="grid grid-4 mb-5">
+<div class="grid grid-4">
   <div class="stat">
-    <div class="stat-icon"><i class="fa-solid fa-box"></i></div>
-    <div class="stat-value">{{ order_count }}</div>
     <div class="stat-label">Orders placed</div>
+    <div class="stat-value">{{ order_count }}</div>
+    <div class="stat-note">All time</div>
   </div>
   <div class="stat">
-    <div class="stat-icon amber"><i class="fa-solid fa-truck-fast"></i></div>
-    <div class="stat-value">{{ pending_count }}</div>
     <div class="stat-label">In progress</div>
+    <div class="stat-value">{{ pending_count }}</div>
+    <div class="stat-note">Being packed or on the way</div>
   </div>
   <div class="stat">
-    <div class="stat-icon blue"><i class="fa-solid fa-coins"></i></div>
-    <div class="stat-value" style="font-size:1.35rem">{{ total_spent|ksh }}</div>
     <div class="stat-label">Total spent</div>
+    <div class="stat-value">{{ total_spent|ksh }}</div>
+    <div class="stat-note">On paid orders</div>
   </div>
   <div class="stat">
-    <div class="stat-icon red"><i class="fa-solid fa-heart"></i></div>
-    <div class="stat-value">{{ wishlist_count }}</div>
-    <div class="stat-label">Saved products</div>
+    <div class="stat-label">Items in your cart</div>
+    <div class="stat-value">{{ cart|length }}</div>
+    <div class="stat-note">{% if cart|length %}<a href="{% url 'checkout' %}">Check out {{ cart.get_total_price|ksh }}</a>{% else %}Not yet checked out{% endif %}</div>
   </div>
 </div>
 
-<div class="dash-split">
-  <div>
-    <div class="card">
-      <div class="card-header">
-        <h3>Recent orders</h3>
-        <a href="{% url 'transactions' %}" class="link text-sm">All orders <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      {% if recent_orders %}
-      <div class="table-wrap" style="border:0;border-radius:0 0 var(--radius-lg) var(--radius-lg)">
-        <table class="table">
-          <thead>
-            <tr><th>Order #</th><th>Date</th><th class="num">Items</th><th class="num">Total</th><th>Status</th><th></th></tr>
-          </thead>
-          <tbody>
-            {% for order in recent_orders %}
-            <tr>
-              <td><a href="{{ order.get_absolute_url }}" class="fw-600">{{ order.order_number }}</a></td>
-              <td class="muted" style="white-space:nowrap">{{ order.created_at|date:"j M Y" }}</td>
-              <td class="num">{{ order.item_count }}</td>
-              <td class="num fw-600">{{ order.total_amount|ksh }}</td>
-              <td>{% status_badge order %}</td>
-              <td class="text-right" style="white-space:nowrap">
-                <button type="button" class="btn btn-outline btn-sm" data-order-details="{% url 'get_order_details' order.id %}" data-order-number="{{ order.order_number }}">View</button>
-                {% if order.can_pay %}<a href="{{ order.get_absolute_url }}" class="btn btn-amber btn-sm">Pay</a>{% endif %}
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-      {% else %}
-      <div class="empty">
-        <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
-        <h3>No orders yet</h3>
-        <p>Your first order will show up here with live delivery status.</p>
-        <a href="{% url 'products' %}" class="btn btn-primary mt-3"><i class="fa-solid fa-store"></i> Browse the catalogue</a>
-      </div>
-      {% endif %}
-    </div>
+<div class="card">
+  <div class="card-header">
+    <h2 class="card-title">Recent orders</h2>
+    {% if recent_orders %}<a href="{% url 'transactions' %}" class="btn btn-outline btn-sm">All orders <i class="fa-solid fa-arrow-right"></i></a>{% endif %}
+  </div>
+  {% if recent_orders %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead>
+        <tr><th>Order</th><th class="hide-sm">Date</th><th class="num hide-sm">Items</th><th>Status</th><th class="num">Total</th><th class="num hide-sm"><span class="sr-only">Actions</span></th></tr>
+      </thead>
+      <tbody>
+        {% for order in recent_orders %}
+        <tr>
+          <td class="nowrap"><a href="{{ order.get_absolute_url }}" class="fw-600">{{ order.order_number }}</a><small class="show-sm muted">{{ order.created_at|date:"j M Y" }}</small></td>
+          <td class="nowrap hide-sm">{{ order.created_at|date:"j M Y" }}</td>
+          <td class="num hide-sm">{{ order.item_count }}</td>
+          <td>{% status_badge order %}</td>
+          <td class="num nowrap fw-600">{{ order.total_amount|ksh }}</td>
+          <td class="num nowrap hide-sm">
+            {% if order.can_pay %}<a href="{{ order.get_absolute_url }}" class="btn btn-amber btn-sm">Pay</a>{% endif %}
+            <button type="button" class="btn btn-outline btn-sm" data-order-details="{% url 'get_order_details' order.id %}" data-order-number="{{ order.order_number }}">View</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>You have not placed an order yet.</p>
+    <a href="{% url 'products' %}" class="btn btn-primary btn-sm mt-3">Browse the catalogue</a>
+  </div>
+  {% endif %}
+</div>
 
-    {% if recent_wishlist %}
-    <div class="card mt-5">
-      <div class="card-header">
-        <h3>Saved products</h3>
-        <a href="{% url 'wishlist' %}" class="link text-sm">View wishlist <i class="fa-solid fa-arrow-right"></i></a>
-      </div>
-      <div class="card-body" style="padding-top:8px;padding-bottom:8px">
-        <div class="quick-links">
-          {% for item in recent_wishlist %}
-          <a href="{{ item.product.get_absolute_url }}"><i class="fa-regular fa-heart"></i><span class="truncate">{{ item.product.name }}</span><span class="muted text-sm fw-500" style="margin-left:auto;white-space:nowrap">{{ item.product.brand.name|default:'' }}</span><i class="fa-solid fa-chevron-right"></i></a>
-          {% endfor %}
-        </div>
-      </div>
+<div class="grid dash-pair">
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Your details</h2>
+      <a href="{% url 'update_account' %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-pen"></i> Edit</a>
     </div>
-    {% endif %}
+    <div class="card-body">
+      <dl class="dl">
+        <dt>Name</dt><dd>{{ user.get_full_name|default:user.username }}</dd>
+        <dt>Email</dt><dd>{{ user.email|default:'—' }}</dd>
+        <dt>Phone</dt><dd>{{ profile.phone_number|default:'—' }}</dd>
+        <dt>Business</dt><dd>{{ profile.business_name|default:'—' }}</dd>
+        <dt>KRA PIN</dt><dd>{{ profile.tax_id|default:'—' }}</dd>
+        <dt>Pricing tier</dt><dd><span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span></dd>
+        <dt>Delivery address</dt>
+        <dd>{% if primary_address %}{{ primary_address.physical_address }}, {{ primary_address.city }}{% else %}<span class="muted">Not set</span> · <a href="{% url 'addresses' %}">Add one</a>{% endif %}</dd>
+      </dl>
+    </div>
   </div>
 
-  <div class="grid" style="gap:20px">
-    <div class="card">
-      <div class="card-header">
-        <h4><i class="fa-solid fa-location-dot" style="color:var(--brand-600)"></i> Delivery address</h4>
-        <a href="{% url 'addresses' %}" class="link text-sm">Manage</a>
-      </div>
-      <div class="card-body">
-        {% if primary_address %}
-        <div class="flex items-center gap-2 mb-2"><strong>{{ primary_address.label }}</strong><span class="badge badge-success">Primary</span></div>
-        <p class="text-2 mb-1" style="white-space:pre-line">{{ primary_address.physical_address }}</p>
-        <p class="muted text-sm mb-0">{{ primary_address.city }}</p>
-        {% else %}
-        <p class="muted text-sm">No delivery address saved yet. Add one to speed up checkout.</p>
-        <a href="{% url 'addresses' %}" class="btn btn-soft btn-sm"><i class="fa-solid fa-plus"></i> Add an address</a>
-        {% endif %}
-      </div>
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Saved products</h2>
+      {% if recent_wishlist %}<a href="{% url 'wishlist' %}" class="btn btn-outline btn-sm">Wishlist <i class="fa-solid fa-arrow-right"></i></a>{% endif %}
     </div>
-
-    <div class="card">
-      <div class="card-header">
-        <h4><i class="fa-solid fa-id-card" style="color:var(--brand-600)"></i> Account</h4>
-        <a href="{% url 'update_account' %}" class="link text-sm">Edit</a>
-      </div>
-      <div class="card-body" style="padding-top:8px;padding-bottom:8px">
-        <ul class="dash-list">
-          <li><span>Business</span><span>{{ profile.business_name|default:'—' }}</span></li>
-          <li><span>Contact</span><span>{{ user.get_full_name|default:user.username }}</span></li>
-          <li><span>Phone</span><span>{{ profile.phone_number|default:'—' }}</span></li>
-          <li><span>KRA PIN</span><span>{{ profile.tax_id|default:'Not added' }}</span></li>
-          <li><span>Tier</span><span><span class="badge {% if profile.is_wholesaler %}badge-amber{% else %}badge-success{% endif %}">{{ profile.tier_label }}</span></span></li>
-        </ul>
-      </div>
+    {% if recent_wishlist %}
+    <ul class="link-list">
+      {% for item in recent_wishlist %}
+      <li><a href="{{ item.product.get_absolute_url }}"><span class="truncate">{{ item.product.name }}</span><small class="muted">{{ item.product.brand.name|default:'' }}</small></a></li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty">
+      <p>Tap the heart on any product to keep it here for next time.</p>
+      <a href="{% url 'products' %}" class="btn btn-outline btn-sm mt-3">Browse the catalogue</a>
     </div>
-
-    <div class="card">
-      <div class="card-header"><h4>Quick links</h4></div>
-      <div class="card-body" style="padding-top:6px;padding-bottom:6px">
-        <div class="quick-links">
-          <a href="{% url 'products' %}"><i class="fa-solid fa-store"></i> Shop the catalogue <i class="fa-solid fa-chevron-right"></i></a>
-          <a href="{% url 'offers' %}"><i class="fa-solid fa-bolt"></i> This week's offers <i class="fa-solid fa-chevron-right"></i></a>
-          <a href="{% url 'transactions' %}"><i class="fa-solid fa-truck-fast"></i> Track a delivery <i class="fa-solid fa-chevron-right"></i></a>
-          <a href="{% url 'payment_methods' %}"><i class="fa-solid fa-mobile-screen-button"></i> M-Pesa settings <i class="fa-solid fa-chevron-right"></i></a>
-          <a href="{{ site.whatsapp }}" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> Chat with sales <i class="fa-solid fa-chevron-right"></i></a>
-        </div>
-      </div>
-    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

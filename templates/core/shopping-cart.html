@@ -3,16 +3,15 @@
 
 {% block title %}Shopping cart · Mahitaji{% endblock %}
 {% block meta_description %}Review the products in your Mahitaji cart, update quantities and proceed to checkout. Pay by M-Pesa or cash on delivery.{% endblock %}
-{% block body_class %}is-cart{% endblock %}
 
 {% block content %}
-{% include 'partials/page_hero.html' with title="Shopping cart" subtitle="Review your items, adjust quantities and check out in under a minute." crumb="Cart" compact=True %}
+{% include 'partials/page_head.html' with title="Your cart" subtitle="Review quantities before checkout." crumb="Cart" %}
 
 <div id="cartPage">
   <div class="container">
     {% if cart.is_empty %}
     <div class="section-sm">
-      <div class="empty card" style="max-width:560px;margin:0 auto">
+      <div class="empty card">
         <div class="empty-icon"><i class="fa-solid fa-cart-shopping"></i></div>
         <h3>Your cart is empty</h3>
         <p>Browse the catalogue and add the essentials your shop needs. Prices reflect your account tier automatically.</p>
@@ -25,11 +24,8 @@
     {% else %}
     <div class="cart-layout">
       <div class="card">
-        <div class="card-header">
-          <h3><i class="fa-solid fa-cart-shopping" style="color:var(--brand-600);margin-right:6px"></i>Your items <span class="muted text-sm fw-500">(<span data-cart-lines>{{ cart.line_count }}</span> product{{ cart.line_count|pluralize }} · <span data-cart-count>{{ cart|length }}</span> units)</span></h3>
-          <span class="badge {% if cart.tier == 'wholesale' %}badge-amber{% else %}badge-muted{% endif %}">{{ cart.tier|title }} pricing</span>
-        </div>
-        <div class="card-body" style="padding-top:4px;padding-bottom:4px">
+        <div class="card-body" style="padding-top:6px;padding-bottom:6px">
+          <div class="cart-head"><span>Product</span><span>Quantity</span><span class="num">Total</span><span></span></div>
           {% for item in cart %}{% with product=item.product %}
           <div class="cart-row" data-cart-row="{{ product.id }}">
             <a href="{{ product.get_absolute_url }}" class="cart-thumb" aria-label="{{ product.name }}">
@@ -37,8 +33,11 @@
             </a>
             <div style="min-width:0">
               <a href="{{ product.get_absolute_url }}" class="cart-name">{{ product.name }}</a>
-              <div class="cart-sub">{{ product.brand.name|default:'Mahitaji' }}{% if product.pack_size %} · {{ product.pack_size }}{% endif %} · {% product_price_label product %}</div>
-              <div class="text-sm mt-1"><span class="fw-600">{{ item.price|ksh }}</span> <span class="muted">each</span></div>
+              <div class="cart-sub">{{ product.brand.name|default:'Mahitaji' }}{% if product.item_code %} · {{ product.item_code }}{% endif %}</div>
+              <div class="text-sm mt-1"><span class="fw-600">{{ item.price|ksh }}</span> <span class="muted">per {{ product.pack_size|default:'unit'|lower }} · {% product_price_label product %}</span></div>
+              {% if product.stock_state == 'out' %}<div class="text-sm stock stock-out mt-1"><span class="stock-dot"></span>Out of stock: remove to check out</div>
+              {% elif product.available_stock is not None and item.qty > product.available_stock %}<div class="text-sm stock stock-low mt-1"><span class="stock-dot"></span>Only {{ product.available_stock }} left</div>
+              {% elif product.stock_state == 'low' %}<div class="text-sm mt-1">{% stock_badge product %}</div>{% endif %}
             </div>
             <div class="cart-mobile-row">
               <div class="qty qty-sm">
@@ -47,32 +46,24 @@
                 <button type="button" class="qty-plus" aria-label="Increase quantity"><i class="fa-solid fa-plus"></i></button>
               </div>
               <div class="cart-line-total" data-line-total>{{ item.total_price|ksh }}</div>
-              <button class="icon-btn" data-cart-remove="{{ product.id }}" aria-label="Remove {{ product.name }}" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
+              <button class="icon-btn cart-remove" data-cart-remove="{{ product.id }}" aria-label="Remove {{ product.name }}" title="Remove"><i class="fa-regular fa-trash-can"></i></button>
             </div>
           </div>
           {% endwith %}{% endfor %}
         </div>
-        <div class="card-header cart-foot" style="border-top:1px solid var(--line);border-bottom:0">
-          <a href="{% url 'products' %}" class="link"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
-          <span class="text-sm muted">Prices are charged at the {{ cart.tier }} tier of your account.</span>
+        <div class="card-foot">
+          <a href="{% url 'products' %}" class="btn btn-outline btn-sm"><i class="fa-solid fa-arrow-left"></i> Continue shopping</a>
+          <span class="text-sm muted"><span data-cart-lines>{{ cart.line_count }}</span> product{{ cart.line_count|pluralize }} · <span data-cart-count>{{ cart|length }}</span> units · {{ cart.tier }} pricing</span>
         </div>
       </div>
 
       <aside class="summary">
-        <div class="card">
-          <div class="card-header"><h3>Order summary</h3></div>
-          <div class="card-body">
-            <div class="summary-row"><span>Subtotal</span><span class="fw-600" style="color:var(--ink)" data-cart-total>{{ cart.get_total_price|ksh }}</span></div>
-            <div class="summary-row"><span>Delivery</span><span class="text-right text-sm" style="max-width:60%">Calculated at checkout · free in Nairobi above {{ site.free_delivery_threshold|ksh }}</span></div>
-            <div class="summary-row total"><span>Total</span><strong data-cart-total>{{ cart.get_total_price|ksh }}</strong></div>
-            <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg btn-block mt-4">Proceed to checkout <i class="fa-solid fa-arrow-right"></i></a>
-            <a href="{% url 'products' %}" class="btn btn-outline btn-block mt-2">Continue shopping</a>
-            <ul class="mt-4 text-sm text-2" style="display:grid;gap:8px">
-              <li class="flex items-center gap-2"><i class="fa-solid fa-mobile-screen-button" style="color:var(--brand-600);width:18px;text-align:center"></i> M-Pesa STK push or cash on delivery</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-certificate" style="color:var(--brand-600);width:18px;text-align:center"></i> KEBS-certified, genuine stock</li>
-              <li class="flex items-center gap-2"><i class="fa-solid fa-truck-fast" style="color:var(--brand-600);width:18px;text-align:center"></i> Next-day delivery in Nairobi</li>
-            </ul>
-          </div>
+        <div class="card card-body">
+          <h2 class="card-title">Summary</h2>
+          {% include 'partials/cart_totals.html' with delivery_note='Confirmed at checkout' %}
+          <p class="text-sm muted">Prices include VAT. Delivery is free in Nairobi for orders above {{ site.free_delivery_threshold|ksh }}.</p>
+          <a href="{% url 'checkout' %}" class="btn btn-primary btn-lg btn-block">Proceed to checkout</a>
+          {% if not user.is_authenticated %}<p class="text-sm muted text-center mt-3 mb-0">You will be asked to <a href="{% url 'login' %}?next={% url 'checkout' %}">sign in</a> or <a href="{% url 'register' %}">create an account</a> at checkout.</p>{% endif %}
         </div>
         <div class="card card-body mt-3" style="background:var(--brand-50);border-color:var(--brand-200)">
           <strong style="display:block;margin-bottom:4px"><i class="fa-brands fa-whatsapp" style="color:var(--success)"></i> Ordering in bulk?</strong>
@@ -84,14 +75,4 @@
     {% endif %}
   </div>
 </div>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .is-cart .cart-thumb .pack { width: 100%; height: 100%; }
-  .is-cart .cart-mobile-row .icon-btn { color: var(--muted); }
-  .is-cart .cart-mobile-row .icon-btn:hover { color: var(--danger); background: var(--danger-100); }
-  .is-cart .cart-foot { flex-wrap: wrap; }
-  @media (max-width: 719.98px) { .is-cart .cart-mobile-row { padding-top: 4px; } }
-</style>
 {% endblock %}

@@ -3,28 +3,22 @@
 
 {% block title %}Checkout · Mahitaji{% endblock %}
 {% block meta_description %}Confirm your delivery details and pay by M-Pesa or cash on delivery. Next-day delivery across Nairobi from Mahitaji Enterprises.{% endblock %}
-{% block body_class %}is-checkout{% endblock %}
 
 {% block content %}
 {% url 'shopping-cart' as cart_url %}
-{% include 'partials/page_hero.html' with title="Checkout" subtitle="Confirm where to deliver and how you'd like to pay." crumb="Checkout" compact=True parent_url=cart_url parent_label="Cart" %}
+{% include 'partials/page_head.html' with title="Checkout" subtitle="Confirm where to deliver and how you'd like to pay." crumb="Checkout" parent_url=cart_url parent_label="Cart" %}
 
 <div class="container">
-  <div class="checkout-steps mt-5">
-    <span><a href="{% url 'shopping-cart' %}" class="link-muted"><i class="fa-solid fa-circle-check" style="color:var(--brand-600);font-size:.8rem"></i> Cart</a></span>
-    <i class="fa-solid fa-chevron-right"></i>
-    <span class="is-active"><i class="fa-solid fa-circle" style="color:var(--amber-500)"></i> Delivery &amp; payment</span>
-    <i class="fa-solid fa-chevron-right"></i>
-    <span><i class="fa-regular fa-circle"></i> Confirmation</span>
-  </div>
-
-  <div class="cart-layout" style="padding-top:0">
-    <form id="checkoutForm" method="post" action="{% url 'place-order' %}" novalidate autocomplete="on">
+  {% if stock_problems %}
+  <div class="alert alert-warning mt-4 mb-0"><i class="fa-solid fa-triangle-exclamation"></i><span>{{ stock_problems|join:" " }} <a href="{% url 'shopping-cart' %}">Update your cart</a> to continue.</span></div>
+  {% endif %}
+  <div class="cart-layout">
+    <form id="checkoutForm" class="stack" method="post" action="{% url 'place-order' %}" novalidate autocomplete="on">
       {% csrf_token %}
       <div class="card">
-        <div class="card-header"><h3><i class="fa-solid fa-location-dot" style="color:var(--brand-600);margin-right:6px"></i>Delivery details</h3><span class="text-sm muted">Fields marked <span style="color:var(--danger)">*</span> are required</span></div>
+        <div class="card-header"><h2 class="card-title">Delivery details</h2><span class="text-sm muted">Fields marked <span class="req">*</span> are required</span></div>
         <div class="card-body">
-          <div class="form-row">
+          <div class="form-grid">
             <div class="field">
               <label class="label" for="first_name">First name <span class="req">*</span></label>
               <input class="input" type="text" id="first_name" name="first_name" value="{{ request.user.first_name }}" autocomplete="given-name" required>
@@ -33,127 +27,110 @@
               <label class="label" for="last_name">Last name <span class="req">*</span></label>
               <input class="input" type="text" id="last_name" name="last_name" value="{{ request.user.last_name }}" autocomplete="family-name" required>
             </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label class="label" for="email">Email <span class="req">*</span></label>
-              <input class="input" type="email" id="email" name="email" value="{{ request.user.email }}" autocomplete="email" required>
-              <span class="field-help">Your order confirmation goes here.</span>
-            </div>
             <div class="field">
               <label class="label" for="phone">Phone <span class="req">*</span></label>
               <input class="input" type="tel" id="phone" name="phone" value="{{ profile.phone_number|default:'' }}" placeholder="07XX XXX XXX" autocomplete="tel" required>
               <span class="field-help">Our driver calls this number on delivery.</span>
             </div>
-          </div>
-
-          {% if addresses|length > 1 %}
-          <div class="field">
-            <span class="label">Saved addresses</span>
-            <div class="addr-list">
-              {% for a in addresses %}
-              <label class="addr-opt">
-                <input type="radio" name="saved_address" value="{{ a.id }}" data-saved-address data-address="{{ a.physical_address }}" data-city="{{ a.city }}" {% if a.id == primary_address.id %}checked{% endif %}>
-                <span><strong>{{ a.label }}{% if a.is_primary %} <span class="badge badge-success">Primary</span>{% endif %}</strong><small>{{ a.physical_address }}, {{ a.city }}</small></span>
-              </label>
-              {% endfor %}
+            <div class="field">
+              <label class="label" for="email">Email <span class="req">*</span></label>
+              <input class="input" type="email" id="email" name="email" value="{{ request.user.email }}" autocomplete="email" required>
+              <span class="field-help">Your order confirmation goes here.</span>
             </div>
-            <span class="field-help">Pick one to fill the address below, or type a new one.</span>
-          </div>
-          {% endif %}
 
-          <div class="field">
-            <label class="label" for="address">Delivery address <span class="req">*</span></label>
-            <textarea class="textarea" id="address" name="address" rows="2" style="min-height:84px" placeholder="Shop name, building, street and landmark" autocomplete="street-address" required>{{ primary_address.physical_address|default:'' }}</textarea>
-          </div>
-          <div class="form-row">
+            {% if addresses|length > 1 %}
+            <div class="field field-wide">
+              <label class="label" for="savedAddress">Deliver to</label>
+              <select class="select" id="savedAddress" data-address-pick>
+                {% for a in addresses %}<option data-address="{{ a.physical_address }}" data-city="{{ a.city }}"{% if a.id == primary_address.id %} selected{% endif %}>{{ a.label }}: {{ a.physical_address|truncatechars:50 }}, {{ a.city }}</option>{% endfor %}
+                <option data-address="" data-city="">Another address…</option>
+              </select>
+              <span class="field-help">Manage saved addresses in <a href="{% url 'addresses' %}">My account › Addresses</a>.</span>
+            </div>
+            {% endif %}
+
+            <div class="field field-wide">
+              <label class="label" for="address">Delivery address <span class="req">*</span></label>
+              <textarea class="textarea" id="address" name="address" rows="2" style="min-height:76px" placeholder="Shop name, building, street and landmark" autocomplete="street-address" required>{{ primary_address.physical_address|default:'' }}</textarea>
+            </div>
             <div class="field">
               <label class="label" for="city">Town / city</label>
               <input class="input" type="text" id="city" name="city" value="{{ primary_address.city|default:'Nairobi' }}" autocomplete="address-level2">
             </div>
             <div class="field">
-              <label class="label" for="notes">Delivery notes <span class="muted fw-500">(optional)</span></label>
-              <textarea class="textarea" id="notes" name="notes" rows="2" style="min-height:46px" placeholder="Gate code, opening hours, who to ask for…"></textarea>
+              <label class="label" for="notes">Notes for the driver</label>
+              <input class="input" type="text" id="notes" name="notes" placeholder="Landmarks, opening hours…">
             </div>
           </div>
           <label class="check">
             <input type="checkbox" name="save_address" value="1" checked>
-            <span>Save this as my primary delivery address</span>
+            <span>Save this address to my account</span>
           </label>
         </div>
       </div>
 
-      <div class="card mt-4">
-        <div class="card-header"><h3><i class="fa-solid fa-wallet" style="color:var(--brand-600);margin-right:6px"></i>Payment</h3><span class="text-sm muted">Choose how to pay</span></div>
+      <div class="card">
+        <div class="card-header"><h2 class="card-title">Payment</h2></div>
         <div class="card-body">
           <label class="pay-option">
             <input type="radio" name="payment_method" value="cod" checked>
             <span class="po-icon cod"><i class="fa-solid fa-truck"></i></span>
             <span class="grow">
               <strong>Cash on delivery</strong>
-              <small>Pay when your order arrives — cash or M-Pesa to our driver.</small>
+              <small>Pay when your order arrives, in cash or by M-Pesa to our driver.</small>
             </span>
           </label>
           <label class="pay-option{% if not mpesa_enabled %} is-disabled{% endif %}">
             <input type="radio" name="payment_method" value="mpesa"{% if not mpesa_enabled %} disabled{% endif %}>
             <span class="po-icon mpesa">M-PESA</span>
             <span class="grow">
-              <strong>M-Pesa</strong>
-              <small>Pay now with an STK prompt sent straight to your phone.</small>
+              <strong>M-Pesa now</strong>
+              <small>We send a payment request to your phone. Approve it with your M-Pesa PIN.</small>
               {% if mpesa_enabled %}
               <span class="po-extra">
-                <span class="field mb-0">
+                <span class="field">
                   <span class="label">M-Pesa number</span>
                   <input class="input" type="tel" id="mpesa_phone" name="mpesa_phone" aria-label="M-Pesa number" value="{{ profile.phone_number|default:'' }}" placeholder="07XX XXX XXX" inputmode="tel">
-                  <span class="field-help">You'll receive an STK prompt on this number.</span>
+                  <span class="field-help">The payment request goes to this Safaricom number.</span>
                 </span>
               </span>
               {% else %}
-              <span class="field-help">M-Pesa payments are being set up — choose cash on delivery for now.</span>
+              <span class="field-help">M-Pesa payments are being set up. Choose cash on delivery for now.</span>
               {% endif %}
             </span>
           </label>
-          <p class="text-sm muted mb-0 mt-2"><i class="fa-solid fa-lock"></i> Your details are used only to process this order. See our <a href="{% url 'terms' %}">terms</a> and <a href="{% url 'payment_info' %}">payment options</a>.</p>
         </div>
       </div>
     </form>
 
     <aside class="summary">
-      <div class="card">
-        <div class="card-header"><h3>Your order</h3><a href="{% url 'shopping-cart' %}" class="link text-sm">Edit cart</a></div>
-        <div class="card-body">
-          <ul class="co-items">
-            {% for item in cart %}
-            <li>
-              <span class="grow"><span class="co-name">{{ item.product.name }}</span><span class="co-meta">{{ item.qty }} × {{ item.price|ksh }}{% if item.product.pack_size %} · {{ item.product.pack_size }}{% endif %}</span></span>
-              <span class="fw-600">{{ item.total_price|ksh }}</span>
-            </li>
-            {% endfor %}
-          </ul>
-          <div class="summary-row mt-3"><span>Subtotal ({{ cart|length }} unit{{ cart|length|pluralize }})</span><span class="fw-600" style="color:var(--ink)">{{ cart.get_total_price|ksh }}</span></div>
-          <div class="summary-row"><span>Delivery</span><span>{% if cart.get_total_price >= site.free_delivery_threshold %}<span class="badge badge-success">Free in Nairobi</span>{% else %}Calculated on dispatch{% endif %}</span></div>
-          <div class="summary-row total"><span>Total</span><strong>{{ cart.get_total_price|ksh }}</strong></div>
-          {% if cart.get_total_price < site.free_delivery_threshold %}<p class="text-xs muted mt-2 mb-0">Orders above {{ site.free_delivery_threshold|ksh }} are delivered free within Nairobi.</p>{% endif %}
+      <div class="card card-body">
+        <h2 class="card-title">Your order</h2>
+        <ul class="order-lines">
+          {% for item in cart %}
+          <li>
+            <span><span class="ol-name">{{ item.qty }} × {{ item.product.name }}</span><span class="ol-meta">{{ item.price|ksh }} per {{ item.product.pack_size|default:'unit'|lower }}</span></span>
+            <b>{{ item.total_price|ksh }}</b>
+          </li>
+          {% endfor %}
+        </ul>
+        <div class="mt-3">{% include 'partials/cart_totals.html' %}</div>
+        {% if cart.total < site.free_delivery_threshold %}<p class="text-sm muted mb-0">Orders above {{ site.free_delivery_threshold|ksh }} are delivered free within Nairobi.</p>{% endif %}
 
-          <div class="alert alert-danger form-alert mt-4" id="checkoutAlert" role="alert"></div>
-          <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg btn-block mt-4" id="placeOrderBtn"><i class="fa-solid fa-lock"></i> Place order</button>
+        <div class="alert alert-danger form-alert mt-4 mb-0" id="checkoutAlert" role="alert"></div>
+        <button type="submit" form="checkoutForm" class="btn btn-primary btn-lg btn-block mt-4" id="placeOrderBtn"{% if stock_problems %} disabled{% endif %}>Place order</button>
 
-          <div class="pay-wait hidden mt-4" id="payWait" aria-live="polite">
-            <span class="spinner" id="paySpinner"></span>
-            <div class="grow">
-              <strong style="display:block">Check your phone and enter your M-Pesa PIN…</strong>
-              <div class="text-sm" id="payStatus">Waiting for confirmation from Safaricom.</div>
-              <button type="button" class="btn btn-outline btn-sm mt-2 hidden" id="resendBtn"><i class="fa-solid fa-rotate-right"></i> Resend prompt</button>
-            </div>
+        <div class="pay-wait hidden mt-4" id="payWait" aria-live="polite">
+          <span class="spinner" id="paySpinner"></span>
+          <div class="grow">
+            <strong style="display:block">Check your phone and enter your M-Pesa PIN…</strong>
+            <div class="text-sm" id="payStatus">Waiting for confirmation from Safaricom.</div>
+            <button type="button" class="btn btn-outline btn-sm mt-2 hidden" id="resendBtn"><i class="fa-solid fa-rotate-right"></i> Resend prompt</button>
           </div>
-
-          <p class="text-xs muted mt-3 mb-0 text-center">By placing this order you agree to our <a href="{% url 'terms' %}">terms &amp; conditions</a>.</p>
         </div>
-      </div>
-      <div class="card card-body mt-3 text-sm text-2">
-        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-truck-fast" style="color:var(--brand-600);width:18px;text-align:center"></i> Next-day delivery in Nairobi</div>
-        <div class="flex items-center gap-2 mb-2"><i class="fa-solid fa-certificate" style="color:var(--brand-600);width:18px;text-align:center"></i> KEBS-certified, genuine stock</div>
-        <div class="flex items-center gap-2"><i class="fa-solid fa-headset" style="color:var(--brand-600);width:18px;text-align:center"></i> Help: <a href="{{ site.phone_href }}">{{ site.phone }}</a></div>
+
+        <p class="text-sm muted mt-3 mb-0">By placing an order you agree to our <a href="{% url 'terms' %}">terms &amp; conditions</a>. See also our <a href="{% url 'payment_info' %}">payment options</a>.</p>
+        <a href="{% url 'shopping-cart' %}" class="btn btn-ghost btn-block mt-2">Edit cart</a>
       </div>
     </aside>
   </div>
@@ -162,21 +139,7 @@
 
 {% block extra_css %}
 <style>
-  .is-checkout .addr-list { display: grid; gap: 8px; }
-  .is-checkout .addr-opt { display: flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--radius); cursor: pointer; background: var(--surface); }
-  .is-checkout .addr-opt:hover { border-color: var(--brand-400); }
-  .is-checkout .addr-opt:has(input:checked) { border-color: var(--brand-600); background: var(--brand-50); }
-  .is-checkout .addr-opt input { margin-top: 3px; accent-color: var(--brand-600); width: 18px; height: 18px; flex: none; }
-  .is-checkout .addr-opt strong { display: block; font-size: .92rem; }
-  .is-checkout .addr-opt small { color: var(--muted); }
-  .is-checkout .pay-option.is-disabled { opacity: .6; cursor: not-allowed; }
-  .is-checkout .pay-option .po-extra .field { display: block; }
-  .is-checkout .pay-option .field-help { display: block; }
-  .is-checkout .co-items { display: grid; gap: 10px; max-height: 320px; overflow: auto; }
-  .is-checkout .co-items li { display: flex; gap: 12px; align-items: flex-start; font-size: .9rem; }
-  .is-checkout .co-name { display: block; font-weight: 600; color: var(--ink); line-height: 1.3; }
-  .is-checkout .co-meta { display: block; font-size: .78rem; color: var(--muted); }
-  .is-checkout #checkoutForm.is-locked { pointer-events: none; opacity: .6; }
+  #checkoutForm.is-locked { pointer-events: none; opacity: .6; }
 </style>
 {% endblock %}
 
@@ -200,14 +163,14 @@
   const POLL_EVERY = 3000, POLL_MAX = 120000;
   let order = null, pollTimer = null, pollStart = 0;
 
-  // Saved addresses fill the address / city fields.
-  document.querySelectorAll('[data-saved-address]').forEach((radio) => {
-    radio.addEventListener('change', () => {
-      if (!radio.checked) return;
-      form.elements.address.value = radio.getAttribute('data-address') || '';
-      form.elements.city.value = radio.getAttribute('data-city') || 'Nairobi';
-      clearFieldError(form.elements.address);
-    });
+  // Picking a saved address fills the address / city fields; "Another address" clears them.
+  const pick = form.querySelector('[data-address-pick]');
+  if (pick) pick.addEventListener('change', () => {
+    const option = pick.selectedOptions[0];
+    form.elements.address.value = option.dataset.address || '';
+    form.elements.city.value = option.dataset.city || 'Nairobi';
+    clearFieldError(form.elements.address);
+    if (!option.dataset.address) form.elements.address.focus();
   });
 
   // Keep the M-Pesa number in step with the phone until the user edits it.

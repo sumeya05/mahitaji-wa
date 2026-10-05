@@ -4,8 +4,8 @@ Views for the Mahitaji storefront, grouped by area. ``core/urls.py`` does
 re-exported here; the module map is:
 
     storefront.py  home, product listings, search, categories, brands, product page
-    cart.py        session cart page, drawer and AJAX endpoints
-    checkout.py    checkout, order placement, order pages, cancellation
+    cart.py        session cart page, drawer, AJAX endpoints and the coupon form
+    checkout.py    checkout, order placement, order pages, order PDF, cancellation
     payments.py    M-Pesa STK push, status polling, callback
     auth.py        login, register, logout, password reset
     account.py     dashboard, orders, addresses, settings, wishlist
@@ -22,7 +22,7 @@ Conventions
 * Any view that changes state is POST-only.
 * Prices shown/charged depend on the customer's tier (retail/wholesale), see cart.py.
 """
-from ._common import form_errors, get_profile, is_ajax, json_error, json_ok, request_data, safe_next_url  # noqa: F401
+from ._common import back_url, form_errors, get_profile, is_ajax, json_error, json_ok, request_data, safe_next_url  # noqa: F401
 from .account import (  # noqa: F401
     address_delete, addresses, dashboard, payment_methods, transactions, update_account, wishlist, wishlist_toggle,
 )
@@ -32,9 +32,9 @@ from .auth import (  # noqa: F401
     custom_password_reset, custom_password_reset_confirm, login_view, logout_view, password_reset_complete,
     password_reset_done, register_view,
 )
-from .cart import cart_add, cart_delete, cart_update, mini_cart, shopping_cart  # noqa: F401
+from .cart import apply_coupon, cart_add, cart_delete, cart_update, mini_cart, shopping_cart  # noqa: F401
 from .checkout import (  # noqa: F401
-    checkout, get_order_details, order_cancel, order_detail, order_success, place_order,
+    checkout, get_order_details, order_cancel, order_detail, order_pay_on_delivery, order_pdf, order_success, place_order,
 )
 from .errors import error_404, error_500  # noqa: F401
 from .pages import (  # noqa: F401

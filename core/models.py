@@ -3,8 +3,10 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Exists, OuterRef, Subquery, Sum
+from django.db.models.functions import Coalesce
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
@@ -12,6 +14,26 @@ from django.utils.text import slugify
 
 PRICE_TIER_RETAIL = 'retail'
 PRICE_TIER_WHOLESALE = 'wholesale'
+
+# Kenya's standard VAT rate. Catalogue prices include VAT; zero-rated and exempt lines carry 0.
+DEFAULT_VAT_RATE = Decimal('16')
+TWO_PLACES = Decimal('0.01')
+
+
+def vat_included(amount, rate):
+    """The VAT contained in a VAT-inclusive ``amount`` at ``rate`` percent."""
+    rate = Decimal(rate or 0)
+    return Decimal(amount) * rate / (100 + rate)
+
+
+def plain_number(value):
+    """A decimal without trailing zeros: 16.00 -> "16", 7.50 -> "7.5" (for "16%" style labels)."""
+    return format(Decimal(value).normalize(), 'f')
+
+
+def bounded_slug(text, max_length, fallback='item'):
+    """A slug cut to fit its column (MySQL rejects longer values instead of truncating them)."""
+    return (slugify(text)[:max_length].strip('-')) or fallback
 
 
 # ---------------------------------------------------------------------------
@@ -85,7 +107,7 @@ class Category(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = bounded_slug(self.name, self._meta.get_field('slug').max_length)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -112,7 +134,7 @@ class Brand(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            self.slug = slugify(self.name)
+            self.slug = bounded_slug(self.name, self._meta.get_field('slug').max_length)
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -176,13 +198,25 @@ class ProductQuerySet(models.QuerySet):
             old_wholesale_price__gt=models.F('wholesale_price'),
         )
         if tier == PRICE_TIER_WHOLESALE:
-            return self.filter(wholesale)
+            # A wholesaler pays the retail price for lines without a wholesale price, so a
+            # retail reduction on such a line is a real offer for them too.
+            return self.filter(wholesale | (models.Q(wholesale_price__isnull=True) & retail))
         if tier == PRICE_TIER_RETAIL:
             return self.filter(retail)
         return self.filter(retail | wholesale)
 
     def with_wholesale_price(self):
         return self.filter(wholesale_price__isnull=False)
+
+    def with_stock(self):
+        """Pre-compute the stock figures ``Product.stock_state`` needs, so a page of
+        products costs no extra query per product."""
+        ledger = StockLedger.objects.filter(product=OuterRef('pk'))
+        total = ledger.order_by().values('product').annotate(total=Sum('quantity')).values('total')
+        return self.annotate(
+            stock_total=Coalesce(Subquery(total, output_field=models.IntegerField()), 0),
+            stock_tracked=Exists(ledger.filter(quantity__gt=0)),
+        )
 
 
 class Product(models.Model):
@@ -200,6 +234,10 @@ class Product(models.Model):
     old_wholesale_price = models.DecimalField(
         max_digits=12, decimal_places=2, null=True, blank=True,
         help_text="Previous wholesale price; when higher than the wholesale price the product is a wholesale offer.",
+    )
+    vat_rate = models.DecimalField(
+        'VAT rate (%)', max_digits=5, decimal_places=2, default=DEFAULT_VAT_RATE, db_default=DEFAULT_VAT_RATE,
+        help_text="VAT included in the prices above: 16 for standard-rated goods, 0 for zero-rated or exempt lines.",
     )
     average_rating = models.PositiveIntegerField(default=4)
     image = models.ImageField(upload_to='products/', null=True, blank=True)
@@ -273,22 +311,51 @@ class Product(models.Model):
     def amount_saved(self):
         return self.amount_saved_for(PRICE_TIER_RETAIL)
 
+    @property
+    def is_purchasable(self):
+        """A product with no price set must never be sold for KSh 0."""
+        return self.price_for(PRICE_TIER_RETAIL) > 0
+
     # --- stock -------------------------------------------------------------
+    # The ledger counts this product's own unit of sale (cartons for a carton line).
+    # Querysets built with ``.with_stock()`` carry ``stock_total`` / ``stock_tracked``
+    # so none of these properties runs a query per product.
     @property
     def current_stock(self):
-        # Querysets can pre-compute this with .annotate(stock_total=Sum('stock_ledger__quantity'))
-        # to avoid one query per product (see ProductViewSet).
         if hasattr(self, 'stock_total'):
             return self.stock_total or 0
         total = self.stock_ledger.aggregate(total=Sum('quantity'))['total']
         return total or 0
 
     @property
+    def is_stock_tracked(self):
+        """The ledger only speaks for a product once stock has actually been received for it;
+        until then the product stays available to order."""
+        if hasattr(self, 'stock_tracked'):
+            return bool(self.stock_tracked)
+        return self.stock_ledger.filter(quantity__gt=0).exists()
+
+    @property
+    def available_stock(self):
+        """Units that can still be ordered, or None while stock is not tracked."""
+        return max(self.current_stock, 0) if self.is_stock_tracked else None
+
+    @property
+    def stock_state(self):
+        """'in', 'low' or 'out'; '' while stock is not tracked (then nothing is blocked)."""
+        available = self.available_stock
+        if available is None:
+            return ''
+        if available <= 0:
+            return 'out'
+        return 'low' if available <= settings.LOW_STOCK_THRESHOLD else 'in'
+
+    @property
     def in_stock(self):
-        # The ledger is only authoritative once stock has actually been imported.
-        # A product with no positive movements is treated as available-to-order.
-        has_positive = self.stock_ledger.filter(quantity__gt=0).exists()
-        return (self.current_stock > 0) if has_positive else True
+        return self.stock_state != 'out'
+
+    def get_stock_state_display(self):
+        return {'in': 'In stock', 'low': 'Low stock', 'out': 'Out of stock'}.get(self.stock_state, 'Not tracked')
 
     # --- presentation ------------------------------------------------------
     @property
@@ -322,12 +389,14 @@ class Product(models.Model):
         return self.unit_of_measure.name.strip().title()
 
     def save(self, *args, **kwargs):
+        max_length = self._meta.get_field('slug').max_length
         if not self.slug:
-            self.slug = slugify(self.name) or 'product'
+            self.slug = bounded_slug(self.name, max_length, 'product')
         base_slug = self.slug
         counter = 1
         while Product.objects.filter(slug=self.slug).exclude(pk=self.pk).exists():
-            self.slug = f"{base_slug}-{counter:03d}"
+            suffix = f"-{counter:03d}"
+            self.slug = base_slug[:max_length - len(suffix)].rstrip('-') + suffix
             counter += 1
         super().save(*args, **kwargs)
 
@@ -341,7 +410,7 @@ class StockLedger(models.Model):
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='stock_ledger')
     transaction_type = models.CharField(max_length=20, choices=TRANSACTION_TYPES)
-    quantity = models.IntegerField(help_text="Quantity in pieces (Positive for In, Negative for Out)")
+    quantity = models.IntegerField(help_text="Quantity in the product's own unit of sale (positive for stock in, negative for stock out)")
     reference_number = models.CharField(max_length=100, blank=True, null=True)
     timestamp = models.DateTimeField(auto_now_add=True)
 
@@ -390,8 +459,13 @@ class Order(models.Model):
     notes = models.TextField(blank=True, null=True)
 
     payment_method = models.CharField(max_length=10, choices=PAYMENT_CHOICES, default=PAYMENT_COD)
-    total_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    total_amount = models.DecimalField(max_digits=12, decimal_places=2, help_text='What the customer pays: after any coupon, VAT included')
+    vat_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, db_default=0, help_text='VAT included in the total')
+    coupon_code = models.CharField(max_length=30, blank=True, default='', db_default='')
+    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, default=0, db_default=0)
+    discount_amount = models.DecimalField(max_digits=12, decimal_places=2, default=0, db_default=0, help_text='Already taken off the total')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDING)
+    paid_at = models.DateTimeField(null=True, blank=True, help_text='When payment was received; empty while the order is unpaid')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -414,6 +488,14 @@ class Order(models.Model):
     def save(self, *args, **kwargs):
         if not self.order_number:
             self.order_number = self.generate_order_number()
+        # Marking an order Paid, or delivering a cash-on-delivery order (the driver collects
+        # the money), is when payment is received.
+        collected = self.status == self.STATUS_PAID or (
+            self.status == self.STATUS_DELIVERED and self.payment_method == self.PAYMENT_COD)
+        if collected and self.paid_at is None:
+            self.paid_at = timezone.now()
+            if kwargs.get('update_fields') is not None:
+                kwargs['update_fields'] = set(kwargs['update_fields']) | {'paid_at'}
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -423,17 +505,46 @@ class Order(models.Model):
     def item_count(self):
         return sum(item.quantity for item in self.items.all())
 
+    # --- money -------------------------------------------------------------
+    @property
+    def subtotal_amount(self):
+        """List-price total of the items, before the coupon."""
+        return self.total_amount + self.discount_amount
+
+    @property
+    def net_amount(self):
+        return self.total_amount - self.vat_amount
+
     @property
     def is_paid(self):
-        return self.status in (self.STATUS_PAID, self.STATUS_SHIPPED, self.STATUS_DELIVERED)
+        return self.paid_at is not None
+
+    @property
+    def needs_refund(self):
+        return self.is_paid and self.status == self.STATUS_CANCELLED
+
+    def mark_paid(self, when=None):
+        """Record a received payment. A pending or failed order moves on to Paid; an order
+        that was cancelled in the meantime stays cancelled (and now needs a refund)."""
+        self.paid_at = self.paid_at or when or timezone.now()
+        if self.status in (self.STATUS_PENDING, self.STATUS_FAILED):
+            self.status = self.STATUS_PAID
+        self.save()
+
+    @property
+    def latest_payment(self):
+        """The M-Pesa attempt that matters: the successful one if there is one, else the newest."""
+        attempts = list(self.mpesa_payments.all())
+        return next((txn for txn in attempts if txn.is_success), attempts[0] if attempts else None)
 
     @property
     def can_pay(self):
-        return self.status in (self.STATUS_PENDING, self.STATUS_FAILED) and self.payment_method == self.PAYMENT_MPESA
+        return (not self.is_paid and self.payment_method == self.PAYMENT_MPESA
+                and self.status in (self.STATUS_PENDING, self.STATUS_FAILED))
 
     @property
     def can_cancel(self):
-        return self.status in (self.STATUS_PENDING, self.STATUS_FAILED)
+        return not self.is_paid and self.status in (self.STATUS_PENDING, self.STATUS_FAILED)
 
     @property
     def status_tone(self):
@@ -459,6 +570,37 @@ class Order(models.Model):
         }.get(self.status, 0)
 
 
+class Coupon(models.Model):
+    """Percentage discount on the whole order, typed in at the cart or checkout."""
+    code = models.CharField(max_length=30, unique=True, help_text='What customers type, e.g. KARIBU5 (not case-sensitive)')
+    percent = models.DecimalField(
+        max_digits=5, decimal_places=2, validators=[MinValueValidator(Decimal('0.01')), MaxValueValidator(Decimal('100'))],
+        help_text='Discount on the order total, e.g. 5',
+    )
+    active = models.BooleanField(default=True)
+    valid_until = models.DateField(null=True, blank=True, help_text='Last day it can be used; empty = no end date')
+    promote = models.BooleanField(default=False, help_text='Advertise this code in the offer pop-up on the site')
+
+    class Meta:
+        ordering = ['code']
+
+    def __str__(self):
+        return f'{self.code} ({plain_number(self.percent)}%)'
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.strip().upper()
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def usable(cls, code):
+        """The active, unexpired coupon with this code, or None."""
+        code = (code or '').strip()
+        if not code:
+            return None
+        return cls.objects.filter(code__iexact=code, active=True).filter(
+            models.Q(valid_until__isnull=True) | models.Q(valid_until__gte=timezone.localdate())).first()
+
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.PROTECT)
@@ -474,12 +616,16 @@ class OrderItem(models.Model):
             return Decimal('0.00')
         return self.price_at_purchase * self.quantity
 
+    line_total = subtotal
+
 
 # ---------------------------------------------------------------------------
 # D. Payments (M-Pesa)
 # ---------------------------------------------------------------------------
 class MpesaTransaction(models.Model):
-    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='mpesa_payment')
+    """One STK push. An order keeps every attempt, so a customer who asks for a second
+    prompt and then approves the first one is still matched to their payment."""
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='mpesa_payments')
     checkout_request_id = models.CharField(max_length=100, unique=True)
     merchant_request_id = models.CharField(max_length=100)
     receipt_number = models.CharField(max_length=50, null=True, blank=True)
@@ -487,6 +633,7 @@ class MpesaTransaction(models.Model):
     phone_number = models.CharField(max_length=15)
     transaction_date = models.DateTimeField(null=True, blank=True)
     is_success = models.BooleanField(default=False)
+    result_code = models.IntegerField(null=True, blank=True, help_text='Outcome reported by Safaricom: 0 = paid, empty = no outcome yet')
     response_description = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
 
@@ -495,6 +642,13 @@ class MpesaTransaction(models.Model):
 
     def __str__(self):
         return f"M-Pesa {self.receipt_number or self.checkout_request_id}"
+
+    @property
+    def state(self):
+        """'paid', 'failed' or 'pending' (no outcome from Safaricom yet)."""
+        if self.is_success:
+            return 'paid'
+        return 'pending' if self.result_code is None else 'failed'
 
 
 # ---------------------------------------------------------------------------

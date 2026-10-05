@@ -1,0 +1,14 @@
+{% load shop %}{# Coupon entry, or the applied code with a Remove button, for the cart and checkout summaries. Expects: cart #}
+{% if cart.coupon %}
+<form method="post" action="{% url 'apply_coupon' %}" class="coupon is-applied" data-coupon-form data-reload>
+  {% csrf_token %}
+  <span><i class="fa-solid fa-tag"></i> <strong>{{ cart.coupon.code }}</strong> · {{ cart.discount_percent|plain }}% off</span>
+  <button type="submit" name="remove" value="1" class="btn btn-ghost btn-sm">Remove</button>
+</form>
+{% else %}
+<form method="post" action="{% url 'apply_coupon' %}" class="coupon" data-coupon-form data-reload>
+  {% csrf_token %}
+  <input class="input" type="text" name="code" placeholder="Coupon code" aria-label="Coupon code" autocomplete="off" maxlength="30" required>
+  <button type="submit" class="btn btn-outline btn-sm">Apply</button>
+</form>
+{% endif %}

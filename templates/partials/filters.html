@@ -1,19 +1,28 @@
-<div class="card">
-  <div class="filter-head"><span><i class="fa-solid fa-tags" style="color:var(--brand-600);margin-right:6px"></i>Categories</span><span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">{{ all_categories|length }}</span></div>
-  <div class="filter-search"><input type="search" class="input" placeholder="Find a category…" data-filter-search aria-label="Find a category"></div>
-  <div class="filter-list">
-    {% for cat in all_categories %}
-    <label><input type="checkbox" data-filter="category" value="{{ cat.slug }}" data-label="{{ cat.name }}" {% if cat.slug in selected_categories %}checked{% endif %}><span>{{ cat.name }}</span><span class="cnt">{{ cat.product_count }}</span></label>
-    {% endfor %}
+{# Filter panel for the catalogue. Rendered twice: in the sidebar and in the mobile drawer. #}
+<div class="card filters-card">
+  <div class="filters-head">
+    <h2>Filters</h2>
+    <button type="button" class="btn btn-ghost btn-sm" data-clear-filters><i class="fa-solid fa-rotate-left"></i> Clear</button>
   </div>
-</div>
-<div class="card">
-  <div class="filter-head"><span><i class="fa-solid fa-industry" style="color:var(--brand-600);margin-right:6px"></i>Brands</span><span class="muted" style="font-weight:500;text-transform:none;letter-spacing:0">{{ all_brands|length }}</span></div>
-  <div class="filter-search"><input type="search" class="input" placeholder="Find a brand…" data-filter-search aria-label="Find a brand"></div>
-  <div class="filter-list">
-    {% for brand in all_brands %}
-    <label><input type="checkbox" data-filter="brand" value="{{ brand.slug }}" data-label="{{ brand.name }}" {% if brand.slug in selected_brands %}checked{% endif %}><span>{{ brand.name }}</span><span class="cnt">{{ brand.product_count }}</span></label>
-    {% endfor %}
+
+  <div class="filter-group">
+    <h3 class="filter-title"><span>Category</span><span>{{ all_categories|length }}</span></h3>
+    {% if all_categories|length > 8 %}<div class="filter-search"><input type="search" class="input" placeholder="Find a category…" data-filter-search aria-label="Find a category"></div>{% endif %}
+    <div class="filter-list">
+      {% for cat in all_categories %}
+      <label><input type="checkbox" data-filter="category" value="{{ cat.slug }}" data-label="{{ cat.name }}" {% if cat.slug in selected_categories %}checked{% endif %}><span>{{ cat.name }}</span><span class="cnt">{{ cat.product_count }}</span></label>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="filter-group">
+    <h3 class="filter-title"><span>Brand</span><span>{{ all_brands|length }}</span></h3>
+    {% if all_brands|length > 8 %}<div class="filter-search"><input type="search" class="input" placeholder="Find a brand…" data-filter-search aria-label="Find a brand"></div>{% endif %}
+    <div class="filter-list">
+      {% for brand in all_brands %}
+      <label><input type="checkbox" data-filter="brand" value="{{ brand.slug }}" data-label="{{ brand.name }}" {% if brand.slug in selected_brands %}checked{% endif %}><span>{{ brand.name }}</span><span class="cnt">{{ brand.product_count }}</span></label>
+      {% endfor %}
+    </div>
   </div>
 </div>
 <div class="card card-body mt-3" style="background:var(--brand-50);border-color:var(--brand-200)">

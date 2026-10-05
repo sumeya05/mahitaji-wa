@@ -2,112 +2,91 @@
 
 {% block title %}Create an account · {{ site.name }}{% endblock %}
 {% block meta_description %}Open a Mahitaji account to order FMCG stock online with M-Pesa or cash on delivery, and unlock wholesale pricing for your business.{% endblock %}
-{% block body_class %}is-auth{% endblock %}
 
 {% block content %}
 <section class="auth">
-  <aside class="auth-side">
-    <span class="eyebrow">Open an account</span>
-    <h2>Stock your shop direct from the distributor.</h2>
-    <p>Retail or wholesale, one account covers it. Register in a minute and place your first order today.</p>
-    <ul>
-      <li><i class="fa-solid fa-circle-check"></i><span>Next-day delivery across Nairobi, 2–3 days upcountry</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>Pay with M-Pesa STK push or cash on delivery</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>eTIMS-compliant invoices when you add your KRA PIN</span></li>
-      <li><i class="fa-solid fa-circle-check"></i><span>Ask for wholesale pricing once your business is verified</span></li>
-    </ul>
-  </aside>
+  <div class="auth-card wide">
+    <h1 class="auth-title">Create your account</h1>
+    <p class="auth-lead">Retail or wholesale, one account covers it. Register in a minute and place your first order today. Fields marked <span class="req">*</span> are required.</p>
 
-  <div class="auth-main">
-    <div class="auth-card wide">
-      <h1>Create your account</h1>
-      <p class="sub">Tell us a little about you and where we should deliver.</p>
+    <form data-ajax method="post" action="{% url 'register' %}" novalidate>
+      {% csrf_token %}
+      {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
+      <div class="alert alert-danger form-alert{% if form.non_field_errors %} is-visible{% endif %}" data-form-alert role="alert">{{ form.non_field_errors|join:" " }}</div>
 
-      <form data-ajax method="post" action="{% url 'register' %}" novalidate>
-        {% csrf_token %}
-        {% if request.GET.next %}<input type="hidden" name="next" value="{{ request.GET.next }}">{% endif %}
-        <div class="alert alert-danger form-alert{% if form.non_field_errors %} is-visible{% endif %}" data-form-alert role="alert">{{ form.non_field_errors|join:" " }}</div>
-
-        <div class="form-row">
-          <div class="field{% if form.first_name.errors %} has-error{% endif %}">
-            <label class="label" for="id_first_name">First name <span class="req">*</span></label>
-            <input class="input" type="text" id="id_first_name" name="first_name" value="{{ form.first_name.value|default:'' }}" autocomplete="given-name" required>
-            {% for e in form.first_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
-          <div class="field{% if form.last_name.errors %} has-error{% endif %}">
-            <label class="label" for="id_last_name">Last name <span class="req">*</span></label>
-            <input class="input" type="text" id="id_last_name" name="last_name" value="{{ form.last_name.value|default:'' }}" autocomplete="family-name" required>
-            {% for e in form.last_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
+      <div class="form-grid">
+        <div class="field{% if form.first_name.errors %} has-error{% endif %}">
+          <label class="label" for="id_first_name">First name <span class="req">*</span></label>
+          <input class="input" type="text" id="id_first_name" name="first_name" value="{{ form.first_name.value|default:'' }}" autocomplete="given-name" required>
+          {% for e in form.first_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
+        <div class="field{% if form.last_name.errors %} has-error{% endif %}">
+          <label class="label" for="id_last_name">Last name <span class="req">*</span></label>
+          <input class="input" type="text" id="id_last_name" name="last_name" value="{{ form.last_name.value|default:'' }}" autocomplete="family-name" required>
+          {% for e in form.last_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
 
-        <div class="form-row">
-          <div class="field{% if form.business_name.errors %} has-error{% endif %}">
-            <label class="label" for="id_business_name">Business name <span class="muted fw-500">(optional)</span></label>
-            <input class="input" type="text" id="id_business_name" name="business_name" value="{{ form.business_name.value|default:'' }}" autocomplete="organization" placeholder="e.g. Mama Njeri Wholesalers">
-            {% for e in form.business_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
-          <div class="field{% if form.phone_number.errors %} has-error{% endif %}">
-            <label class="label" for="id_phone_number">Mobile number <span class="req">*</span></label>
-            <input class="input" type="tel" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" autocomplete="tel" placeholder="0712 345 678" required>
-            {% for e in form.phone_number.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
+        <div class="field field-wide{% if form.business_name.errors %} has-error{% endif %}">
+          <label class="label" for="id_business_name">Business name</label>
+          <input class="input" type="text" id="id_business_name" name="business_name" value="{{ form.business_name.value|default:'' }}" autocomplete="organization" placeholder="e.g. Mama Njeri Supermarket">
+          <span class="field-help">Shown on your invoices and delivery notes.</span>
+          {% for e in form.business_name.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
 
+        <div class="field{% if form.phone_number.errors %} has-error{% endif %}">
+          <label class="label" for="id_phone_number">Phone number <span class="req">*</span></label>
+          <input class="input" type="tel" id="id_phone_number" name="phone_number" value="{{ form.phone_number.value|default:'' }}" autocomplete="tel" placeholder="07XX XXX XXX" required>
+          <span class="field-help">We call this number to confirm orders.</span>
+          {% for e in form.phone_number.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
         <div class="field{% if form.email.errors %} has-error{% endif %}">
           <label class="label" for="id_email">Email address <span class="req">*</span></label>
           <input class="input" type="email" id="id_email" name="email" value="{{ form.email.value|default:'' }}" autocomplete="email" placeholder="you@business.co.ke" required>
           {% for e in form.email.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
 
-        <div class="form-row">
-          <div class="field{% if form.billing_address.errors %} has-error{% endif %}">
-            <label class="label" for="id_billing_address">Delivery address <span class="muted fw-500">(optional)</span></label>
-            <input class="input" type="text" id="id_billing_address" name="billing_address" value="{{ form.billing_address.value|default:'' }}" autocomplete="street-address" placeholder="Street, building, shop number">
-            {% for e in form.billing_address.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
-          <div class="field{% if form.city.errors %} has-error{% endif %}">
-            <label class="label" for="id_city">Town / city <span class="muted fw-500">(optional)</span></label>
-            <input class="input" type="text" id="id_city" name="city" value="{{ form.city.value|default:'' }}" autocomplete="address-level2" placeholder="Nairobi">
-            {% for e in form.city.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
+        <div class="field field-wide{% if form.billing_address.errors %} has-error{% endif %}">
+          <label class="label" for="id_billing_address">Delivery address</label>
+          <input class="input" type="text" id="id_billing_address" name="billing_address" value="{{ form.billing_address.value|default:'' }}" autocomplete="street-address" placeholder="Building, street and area">
+          {% for e in form.billing_address.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
-
+        <div class="field{% if form.city.errors %} has-error{% endif %}">
+          <label class="label" for="id_city">Town / city</label>
+          <input class="input" type="text" id="id_city" name="city" value="{{ form.city.value|default:'' }}" autocomplete="address-level2" placeholder="Nairobi">
+          {% for e in form.city.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
         <div class="field{% if form.tax_id.errors %} has-error{% endif %}">
-          <label class="label" for="id_tax_id">KRA PIN <span class="muted fw-500">(optional)</span></label>
+          <label class="label" for="id_tax_id">KRA PIN</label>
           <input class="input" type="text" id="id_tax_id" name="tax_id" value="{{ form.tax_id.value|default:'' }}" placeholder="A012345678Z" style="text-transform:uppercase">
-          <span class="field-help">Needed for eTIMS-compliant invoices.</span>
+          <span class="field-help">Optional. Needed for tax invoices in your business name.</span>
           {% for e in form.tax_id.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
 
-        <div class="form-row">
-          <div class="field{% if form.password.errors %} has-error{% endif %}">
-            <label class="label" for="id_password">Password <span class="req">*</span></label>
-            <div class="input-group">
-              <input class="input" type="password" id="id_password" name="password" autocomplete="new-password" required>
-              <button type="button" class="input-addon" data-toggle-password="id_password">Show</button>
-            </div>
-            <span class="field-help">At least 8 characters, not entirely numeric.</span>
-            {% for e in form.password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        <div class="field{% if form.password.errors %} has-error{% endif %}">
+          <label class="label" for="id_password">Password <span class="req">*</span></label>
+          <div class="input-group">
+            <input class="input" type="password" id="id_password" name="password" autocomplete="new-password" required>
+            <button type="button" class="input-addon" data-toggle-password="id_password">Show</button>
           </div>
-          <div class="field{% if form.confirm_password.errors %} has-error{% endif %}">
-            <label class="label" for="id_confirm_password">Confirm password <span class="req">*</span></label>
-            <div class="input-group">
-              <input class="input" type="password" id="id_confirm_password" name="confirm_password" autocomplete="new-password" required>
-              <button type="button" class="input-addon" data-toggle-password="id_confirm_password">Show</button>
-            </div>
-            {% for e in form.confirm_password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
-          </div>
+          <span class="field-help">At least 8 characters, not entirely numeric.</span>
+          {% for e in form.password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
         </div>
+        <div class="field{% if form.confirm_password.errors %} has-error{% endif %}">
+          <label class="label" for="id_confirm_password">Confirm password <span class="req">*</span></label>
+          <div class="input-group">
+            <input class="input" type="password" id="id_confirm_password" name="confirm_password" autocomplete="new-password" required>
+            <button type="button" class="input-addon" data-toggle-password="id_confirm_password">Show</button>
+          </div>
+          {% for e in form.confirm_password.errors %}<span class="field-error">{{ e }}</span>{% endfor %}
+        </div>
+      </div>
 
-        <p class="text-sm muted">By creating an account you agree to our <a href="{% url 'terms' %}" class="link">terms &amp; conditions</a>. We only use your details to process and deliver your orders.</p>
+      <p class="text-sm muted">By creating an account you agree to our <a href="{% url 'terms' %}" class="link">terms &amp; conditions</a>. We only use your details to process and deliver your orders.</p>
 
-        <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy="Creating account…"><i class="fa-solid fa-user-plus"></i> Create account</button>
-      </form>
+      <button type="submit" class="btn btn-primary btn-lg btn-block" data-busy="Creating account…">Create account</button>
+    </form>
 
-      <div class="divider">Already registered?</div>
-      <p class="text-center text-sm muted mb-0"><a href="{% url 'login' %}" class="link">Sign in to your account</a></p>
-    </div>
+    <p class="auth-foot">Already have an account? <a href="{% url 'login' %}" class="link">Sign in</a></p>
   </div>
 </section>
 {% endblock %}

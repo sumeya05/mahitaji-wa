@@ -1,79 +1,73 @@
 {% extends 'core/account/base.html' %}
 {% load shop %}
 
-{% block account_title %}Payment methods{% endblock %}
+{% block account_title %}Payments{% endblock %}
 {% block account_crumb %}Payments{% endblock %}
-{% block account_heading %}Payment methods{% endblock %}
-{% block account_subtitle %}How you pay for orders, and every M-Pesa receipt in one place.{% endblock %}
-
-{% block extra_css %}<style>
-  .pm-icon { width: 48px; height: 48px; border-radius: 12px; display: grid; place-items: center; font-weight: 800; font-size: .72rem; flex: none; letter-spacing: .02em; }
-  .pm-icon.mpesa { background: var(--success-100); color: var(--success-700); }
-  .pm-icon.cod { background: var(--bg-2); color: var(--text-2); font-size: 1.15rem; }
-  .pm-head { display: flex; gap: 14px; align-items: center; }
-  .pm-head h3 { margin: 0; }
-  .pm-head small { color: var(--muted); display: block; }
-</style>{% endblock %}
+{% block account_heading %}Payments{% endblock %}
+{% block account_subtitle %}How you pay for orders, and a record of your M-Pesa payments.{% endblock %}
 
 {% block account_content %}
-<div class="grid grid-2 mb-5" style="grid-template-columns:1fr">
-  <div class="card">
-    <div class="card-header">
-      <div class="pm-head"><span class="pm-icon mpesa">M-PESA</span><div><h3>M-Pesa</h3><small>Lipa na M-Pesa, STK push at checkout</small></div></div>
-      <span class="badge badge-success">Active</span>
+<div class="grid dash-pair">
+  <div class="card card-body feature">
+    <span class="feature-icon"><i class="fa-solid fa-mobile-screen-button"></i></span>
+    <div>
+      <h4>M-Pesa</h4>
+      <p>Choose M-Pesa at checkout and we send a payment prompt to your phone. Enter your PIN and the order is marked paid as soon as Safaricom confirms it.</p>
     </div>
-    <div class="card-body">
-      <form method="post" action="{% url 'payment_methods' %}">
-        {% csrf_token %}
+  </div>
+  <div class="card card-body feature">
+    <span class="feature-icon"><i class="fa-solid fa-money-bill-wave"></i></span>
+    <div>
+      <h4>Cash on delivery</h4>
+      <p>Pay our driver in cash or by M-Pesa when the stock arrives, on our verified Nairobi routes. Large or upcountry orders may need a deposit first.</p>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><h2 class="card-title">M-Pesa number</h2></div>
+  <div class="card-body">
+    <form method="post" action="{% url 'payment_methods' %}">
+      {% csrf_token %}
+      <div class="form-grid">
         <div class="field">
-          <label class="label" for="id_mpesa_number">M-Pesa number</label>
-          <div class="input-icon">
-            <i class="fa-solid fa-mobile-screen-button"></i>
-            <input class="input" type="tel" id="id_mpesa_number" name="mpesa_number" value="{{ profile.phone_number|default:'' }}" placeholder="0712 345 678" autocomplete="tel" required>
-          </div>
-          <span class="field-help">This number receives the STK prompt at checkout. Safaricom numbers only.</span>
+          <label class="label" for="id_mpesa_number">Safaricom number</label>
+          <input class="input" type="tel" id="id_mpesa_number" name="mpesa_number" value="{{ profile.phone_number|default:'' }}" placeholder="07XX XXX XXX" autocomplete="tel" required>
+          <span class="field-help">The payment prompt goes to this number. It is also used as your account phone number.</span>
         </div>
-        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save number</button>
-      </form>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-header">
-      <div class="pm-head"><span class="pm-icon cod"><i class="fa-solid fa-money-bill-wave"></i></span><div><h3>Cash on delivery</h3><small>Pay our driver when your order arrives</small></div></div>
-      <span class="badge badge-info">On verified routes</span>
-    </div>
-    <div class="card-body">
-      <p class="text-2 mb-2">Available for deliveries on our verified Nairobi routes. Choose it at checkout and settle in cash or by M-Pesa to our till when the goods are handed over.</p>
-      <p class="text-sm muted mb-0"><i class="fa-solid fa-circle-info"></i> Large or upcountry orders may need a deposit first. <a href="{% url 'payment_info' %}" class="link">Read our payment options</a>.</p>
-    </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save number</button>
+      </div>
+    </form>
   </div>
 </div>
 
-<h3 class="mb-3">Payment history</h3>
-{% if payments %}
-<div class="table-wrap">
-  <table class="table">
-    <thead><tr><th>Receipt</th><th>Order</th><th class="num">Amount</th><th>Date</th><th>Status</th></tr></thead>
-    <tbody>
-      {% for p in payments %}
-      <tr>
-        <td class="fw-600">{{ p.receipt_number|default:'—' }}</td>
-        <td><a href="{{ p.order.get_absolute_url }}">{{ p.order.order_number }}</a></td>
-        <td class="num">{{ p.amount|ksh }}</td>
-        <td class="muted" style="white-space:nowrap">{{ p.transaction_date|default:p.created_at|date:"j M Y, H:i" }}</td>
-        <td>{% if p.is_success %}<span class="badge badge-success">Successful</span>{% elif p.response_description %}<span class="badge badge-danger" title="{{ p.response_description }}">Failed</span>{% else %}<span class="badge badge-warning">Pending</span>{% endif %}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+<div class="card">
+  <div class="card-header"><h2 class="card-title">Recent M-Pesa payments</h2></div>
+  {% if payments %}
+  <div class="table-wrap">
+    <table class="table">
+      <thead><tr><th class="hide-sm">Date</th><th class="hide-sm">Order</th><th>Receipt</th><th class="num">Amount</th><th>Status</th></tr></thead>
+      <tbody>
+        {% for p in payments %}
+        <tr>
+          <td class="nowrap hide-sm">{{ p.transaction_date|default:p.created_at|date:"j M Y, H:i" }}</td>
+          <td class="nowrap hide-sm"><a href="{{ p.order.get_absolute_url }}">{{ p.order.order_number }}</a></td>
+          <td class="nowrap">{{ p.receipt_number|default:'—' }}<small class="show-sm muted">{{ p.order.order_number }} · {{ p.transaction_date|default:p.created_at|date:"j M Y" }}</small></td>
+          <td class="num nowrap fw-600">{{ p.amount|ksh }}</td>
+          <td>{% if p.state == 'paid' %}<span class="badge badge-success">Paid</span>{% elif p.state == 'failed' %}<span class="badge badge-danger" title="{{ p.response_description|default:'' }}">Not completed</span>{% else %}<span class="badge badge-warning">Pending</span>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty">
+    <p class="mb-0">No M-Pesa payments yet. They will appear here once you pay for an order by M-Pesa.</p>
+  </div>
+  {% endif %}
 </div>
-{% else %}
-<div class="empty card">
-  <div class="empty-icon"><i class="fa-solid fa-receipt"></i></div>
-  <h3>No M-Pesa payments yet</h3>
-  <p>Receipts for orders paid via M-Pesa will be listed here.</p>
-  <a href="{% url 'products' %}" class="btn btn-primary mt-3"><i class="fa-solid fa-store"></i> Start an order</a>
-</div>
-{% endif %}
+
+<p class="text-sm muted mb-0">Questions about a payment? <a href="{% url 'payment_info' %}">Read our payment options</a> or <a href="{% url 'contact' %}">contact us</a> with the receipt number.</p>
 {% endblock %}
