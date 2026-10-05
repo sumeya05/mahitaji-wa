@@ -49,7 +49,7 @@ def _apply_sort(queryset, sort, tier):
         return queryset.order_by('-created_at', 'name')
     if sort == 'discount':
         price_field = 'wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'retail_price'
-        old_field = 'old_wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'old_price'
+        old_field = 'old_wholesale_price' if tier == PRICE_TIER_WHOLESALE else 'old_retail_price'
         return queryset.annotate(discount_amount=F(old_field) - F(price_field)) \
             .order_by(F('discount_amount').desc(nulls_last=True), 'name')
     return queryset.order_by('-is_best_seller', '-is_trending', 'name')

@@ -14,6 +14,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from .. import mailer
 from ..cart import Cart
 from ..forms import (
     CheckoutForm,
@@ -55,8 +56,9 @@ def _send_order_confirmation(order):
         body = render_to_string('core/emails/order_confirmation.txt', {'order': order, 'site': settings.SITE_INFO})
         # The shop's own copy goes as a blind copy, so customers never see the internal address.
         bcc = [settings.ORDER_NOTIFICATION_EMAIL] if settings.ORDER_NOTIFICATION_EMAIL else []
-        EmailMessage(f"Order {order.order_number} confirmed", body, settings.DEFAULT_FROM_EMAIL,
-                     [order.email], bcc=bcc).send(fail_silently=True)
+        message = EmailMessage(f"Order {order.order_number} confirmed", body, settings.DEFAULT_FROM_EMAIL,
+                               [order.email], bcc=bcc)
+        mailer.send(message, label=f"confirmation for {order.order_number}")
     except Exception:  # never let email problems break checkout
         logger.exception("Could not send confirmation for %s", order.order_number)
 

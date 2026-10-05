@@ -1,0 +1,7 @@
+[Unit]
+Description=Mahitaji nightly backup (database + media)
+
+[Service]
+Type=oneshot
+User=root
+ExecStart=/srv/mahitaji/app/deploy/scripts/backup.sh

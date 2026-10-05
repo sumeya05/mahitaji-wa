@@ -4,12 +4,15 @@ Test-suite for the Mahitaji storefront. Runs against in-memory SQLite (see setti
     python manage.py test core
 """
 import json
+from datetime import timedelta
 from decimal import Decimal
 from unittest import mock
 
 from django.contrib.auth.models import User
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from django.utils import timezone
+from django.conf import settings
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
@@ -35,7 +38,7 @@ def make_product(name="Golden Fry Cooking Oil 3L", item_code="BD001", retail="10
     return Product.objects.create(
         name=name, item_code=item_code, category=category, brand=brand, unit_of_measure=uom,
         retail_price=Decimal(retail) if retail else None, wholesale_price=Decimal(wholesale) if wholesale else None,
-        old_price=Decimal(old) if old else None, **extra,
+        old_retail_price=Decimal(old) if old else None, **extra,
     )
 
 
@@ -1193,3 +1196,244 @@ class CheckoutAndAccountFixTests(TestCase):
         names = [p.name for p in self.client.get(reverse('products') + '?sort=price_asc').context['products']]
         self.assertEqual(names.index("Cheap Retail Only"), 0)
         self.assertLess(names.index("Golden Fry Cooking Oil 3L"), names.index("Dear Wholesale"))
+
+
+class HardeningTests(TestCase):
+    """Rate limits, staff session expiry, background email and the order-expiry command."""
+
+    def setUp(self):
+        cache.clear()
+        self.product = make_product()
+
+    def _login(self, username, password, ip='203.0.113.5'):
+        return self.client.post(reverse('login'), {'username': username, 'password': password},
+                                HTTP_X_REQUESTED_WITH='XMLHttpRequest', REMOTE_ADDR=ip)
+
+    def test_an_address_spraying_many_accounts_is_paused(self):
+        for n in range(30):
+            self.assertEqual(self._login(f'victim{n}@example.com', 'wrong').status_code, 400)
+        self.assertEqual(self._login('someone-else@example.com', 'wrong').status_code, 429)
+        self.assertEqual(self._login('someone-else@example.com', 'wrong', ip='198.51.100.9').status_code, 400)
+
+    def test_forwarded_address_is_ignored_unless_behind_our_proxy(self):
+        with override_settings(TRUST_X_FORWARDED_FOR=False):
+            for n in range(8):   # spoofing a different address each time must not reset the count
+                self.client.post(reverse('login'), {'username': 'shop@example.com', 'password': 'wrong'},
+                                 HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_X_FORWARDED_FOR=f'10.0.0.{n}')
+            res = self.client.post(reverse('login'), {'username': 'shop@example.com', 'password': 'wrong'},
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest', HTTP_X_FORWARDED_FOR='10.0.0.99')
+            self.assertEqual(res.status_code, 429)
+
+    def test_registration_and_password_reset_are_rate_limited(self):
+        form = {'first_name': 'A', 'last_name': 'B', 'phone_number': '0712345678', 'password': 'Str0ngPass!42', 'confirm_password': 'Str0ngPass!42'}
+        for n in range(10):
+            res = self.client.post(reverse('register'), {**form, 'email': f'new{n}@example.com'},
+                                   HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+            self.assertEqual(res.status_code, 200, res.content[:200])
+            self.client.logout()
+        res = self.client.post(reverse('register'), {**form, 'email': 'new99@example.com'}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
+        self.assertEqual(res.status_code, 429)
+        self.assertFalse(User.objects.filter(email='new99@example.com').exists())
+
+        from django.core import mail
+        make_user()
+        for _ in range(5):
+            self.assertEqual(self.client.post(reverse('password_reset'), {'email': 'shop@example.com'},
+                                              HTTP_X_REQUESTED_WITH='XMLHttpRequest').status_code, 200)
+        self.assertEqual(self.client.post(reverse('password_reset'), {'email': 'shop@example.com'},
+                                          HTTP_X_REQUESTED_WITH='XMLHttpRequest').status_code, 429)
+        self.assertEqual(len(mail.outbox), 5)
+
+    @override_settings(STAFF_SESSION_IDLE_SECONDS=3600)
+    def test_staff_are_signed_out_after_idling_but_customers_are_not(self):
+        from core.middleware import SEEN_KEY
+        staff = User.objects.create_user('staff', 'staff@example.com', 'Str0ngPass!42', is_staff=True)
+        self.client.force_login(staff)
+        self.client.get(reverse('home'))
+        session = self.client.session
+        session[SEEN_KEY] = int(session[SEEN_KEY]) - 7200   # last seen two hours ago
+        session.save()
+        self.client.get(reverse('home'))
+        self.assertFalse(self.client.session.get('_auth_user_id'))
+        customer = make_user()
+        self.client.force_login(customer)
+        self.client.get(reverse('home'))
+        self.assertNotIn(SEEN_KEY, self.client.session)
+        self.assertTrue(self.client.session.get('_auth_user_id'))
+
+    def test_api_has_no_basic_auth_and_is_throttled(self):
+        import base64
+        user = make_user()
+        creds = base64.b64encode(b'shop@example.com:Str0ngPass!42').decode()
+        res = self.client.get('/data/orders/', HTTP_AUTHORIZATION=f'Basic {creds}')
+        self.assertEqual(res.status_code, 403)          # credentials in a header are ignored
+        for _ in range(60):
+            self.assertEqual(self.client.get('/data/products/').status_code, 200)
+        self.assertEqual(self.client.get('/data/products/').status_code, 429)
+        self.client.force_login(user)
+        self.assertEqual(self.client.get('/data/orders/').status_code, 200)
+
+    def test_admin_path_comes_from_settings(self):
+        from django.urls import reverse as rev
+        self.assertEqual(rev('admin:index'), '/' + settings.ADMIN_URL)
+
+    def test_order_confirmation_is_sent_in_the_background_when_configured(self):
+        from django.core import mail
+        from core import mailer
+        from django.core.mail import EmailMessage
+        with override_settings(EMAIL_IN_BACKGROUND=True):
+            mailer.send(EmailMessage('Hi', 'body', 'a@example.com', ['b@example.com']), label='test')
+            import threading
+            for thread in threading.enumerate():
+                if thread.name.startswith('email:'):
+                    thread.join(5)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_expire_unpaid_orders_cancels_old_mpesa_orders_only(self):
+        from io import StringIO
+        from django.core.management import call_command
+        add_stock(self.product, 10)
+        user = make_user()
+        def order(method, status, age_hours):
+            o = Order.objects.create(customer=user.customerprofile, payment_method=method, status=status,
+                                     total_amount=Decimal('1050'), full_name='J', phone='254712345678')
+            OrderItem.objects.create(order=o, product=self.product, quantity=1, price_at_purchase=Decimal('1050'))
+            sync_order_stock(o)
+            Order.objects.filter(pk=o.pk).update(created_at=timezone.now() - timedelta(hours=age_hours))
+            return o
+        old_failed = order(Order.PAYMENT_MPESA, Order.STATUS_FAILED, 30)
+        old_pending = order(Order.PAYMENT_MPESA, Order.STATUS_PENDING, 25)
+        fresh = order(Order.PAYMENT_MPESA, Order.STATUS_PENDING, 2)
+        cod = order(Order.PAYMENT_COD, Order.STATUS_PENDING, 90)
+        paid = order(Order.PAYMENT_MPESA, Order.STATUS_PAID, 90)
+        self.assertEqual(self.product.current_stock, 5)
+        out = StringIO()
+        call_command('expire_unpaid_orders', '--dry-run', stdout=out)
+        self.assertIn('would cancel 2', out.getvalue())
+        self.assertEqual(Order.objects.filter(status=Order.STATUS_CANCELLED).count(), 0)
+        call_command('expire_unpaid_orders', stdout=out)
+        for o in (old_failed, old_pending, fresh, cod, paid):
+            o.refresh_from_db()
+        self.assertEqual([o.status for o in (old_failed, old_pending)], ['CANCELLED', 'CANCELLED'])
+        self.assertEqual([fresh.status, cod.status, paid.status], ['PENDING', 'PENDING', 'PAID'])
+        self.assertEqual(self.product.current_stock, 7)   # the two cancelled orders gave their units back
+
+
+def png_bytes(size=(40, 40), colour=(200, 30, 30)):
+    from io import BytesIO
+    from PIL import Image
+    out = BytesIO()
+    Image.new('RGB', size, colour).save(out, 'PNG')
+    return out.getvalue()
+
+
+class ProductImageImportTests(TestCase):
+    """Bulk photo upload in the admin and the ``image`` column of a product CSV."""
+
+    def setUp(self):
+        import tempfile
+        self.media = tempfile.mkdtemp()
+        self.override = override_settings(MEDIA_ROOT=self.media)
+        self.override.enable()
+        self.addCleanup(self.override.disable)
+        self.addCleanup(lambda: __import__('shutil').rmtree(self.media, ignore_errors=True))
+        self.product = make_product()                       # BD001
+        self.other = make_product(name="Sunflower Oil 1L", item_code="BD002")
+        self.admin = User.objects.create_superuser('boss', 'boss@example.com', 'Str0ngPass!42')
+        self.client.force_login(self.admin)
+        self.url = reverse('admin:core_product_upload_images')
+
+    def _upload(self, files, replace=True):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        uploads = [SimpleUploadedFile(name, data) for name, data in files]
+        data = {'files': uploads}
+        if replace:
+            data['replace_existing'] = '1'
+        return self.client.post(self.url, data)
+
+    def test_upload_button_and_page_are_staff_only(self):
+        self.assertContains(self.client.get(reverse('admin:core_product_changelist')), self.url)
+        self.assertEqual(self.client.get(self.url).status_code, 200)
+        self.client.force_login(make_user())
+        self.assertEqual(self.client.get(self.url).status_code, 302)
+
+    def test_files_named_after_item_codes_are_attached(self):
+        import os
+        res = self._upload([('bd001.png', png_bytes()), ('BD002_front.png', png_bytes()), ('loose-shot.png', png_bytes()),
+                            ('notes.png', b'this is not an image'), ('readme.txt', b'hi')])
+        self.assertEqual(res.status_code, 200)
+        self.product.refresh_from_db(); self.other.refresh_from_db()
+        self.assertEqual(self.product.image.name, 'products/bd001.png')
+        self.assertEqual(self.other.image.name, 'products/BD002_front.png')
+        self.assertTrue(os.path.exists(os.path.join(self.media, 'products', 'loose-shot.png')))
+        self.assertFalse(os.path.exists(os.path.join(self.media, 'products', 'notes.png')))
+        self.assertContains(res, 'loose-shot.png')                 # saved, listed as unmatched
+        self.assertContains(res, 'notes.png: not a valid image')
+        self.assertContains(res, 'readme.txt: not a .jpg')
+
+    def test_zip_archives_are_unpacked_and_existing_photos_can_be_kept(self):
+        import io, zipfile
+        self.product.image.name = 'products/old.png'
+        self.product.save()
+        buffer = io.BytesIO()
+        with zipfile.ZipFile(buffer, 'w') as archive:
+            archive.writestr('photos/bd001.png', png_bytes())
+            archive.writestr('photos/bd002.png', png_bytes())
+            archive.writestr('__MACOSX/._bd001.png', b'junk')
+        res = self._upload([('photos.zip', buffer.getvalue())], replace=False)
+        self.product.refresh_from_db(); self.other.refresh_from_db()
+        self.assertEqual(self.product.image.name, 'products/old.png')   # kept: replace unticked
+        self.assertEqual(self.other.image.name, 'products/bd002.png')
+        self.assertContains(res, 'Already had a photo')
+
+    def test_large_photos_are_shrunk(self):
+        from PIL import Image
+        import os
+        self._upload([('bd001.png', png_bytes(size=(4000, 3000)))])
+        with Image.open(os.path.join(self.media, 'products', 'bd001.png')) as image:
+            self.assertEqual(image.size, (1600, 1200))
+
+    def test_csv_import_links_files_downloads_urls_and_keeps_blank_cells(self):
+        import tablib
+        from core.resources import ProductResource
+        from core import images
+        images.store('shelf.png', png_bytes())
+        self.other.image.name = 'products/keep.png'
+        self.other.save()
+        fake = mock.Mock(status_code=200, headers={'Content-Type': 'image/png'})
+        fake.iter_content = lambda n: [png_bytes(colour=(0, 0, 200))]
+        fake.raise_for_status = lambda: None
+        fake.__enter__ = lambda self_: self_
+        fake.__exit__ = lambda *a: False
+        dataset = tablib.Dataset(headers=['item_code', 'name', 'image'])
+        dataset.append(['BD001', 'Golden Fry Cooking Oil 3L', 'shelf.png'])
+        dataset.append(['BD002', 'Sunflower Oil 1L', ''])
+        dataset.append(['BD003', 'Brand New Soap', 'https://cdn.example.com/photos/soap.png'])
+        with mock.patch('core.images.requests.get', return_value=fake) as get:
+            result = ProductResource().import_data(dataset, dry_run=False, raise_errors=True)
+        self.assertFalse(result.has_errors())
+        get.assert_called_once()
+        self.product.refresh_from_db(); self.other.refresh_from_db()
+        self.assertEqual(self.product.image.name, 'products/shelf.png')
+        self.assertEqual(self.other.image.name, 'products/keep.png')         # blank cell: untouched
+        self.assertEqual(Product.objects.get(item_code='BD003').image.name, 'products/BD003.png')
+
+    def test_csv_import_reports_a_missing_image_file(self):
+        import tablib
+        from core.resources import ProductResource
+        dataset = tablib.Dataset(headers=['item_code', 'name', 'image'])
+        dataset.append(['BD001', 'Golden Fry Cooking Oil 3L', 'nowhere.jpg'])
+        result = ProductResource().import_data(dataset, dry_run=True)
+        self.assertTrue(result.has_errors() or result.has_validation_errors())
+        text = str([e.error for row in result.row_errors() for e in row[1]] + [str(r.error_dict) for r in result.invalid_rows])
+        self.assertIn('nowhere.jpg', text)
+        self.product.refresh_from_db()
+        self.assertFalse(self.product.image)
+
+    def test_export_includes_the_image_path(self):
+        from core.resources import ProductResource
+        self.product.image.name = 'products/bd001.png'
+        self.product.save()
+        exported = ProductResource().export(Product.objects.filter(pk=self.product.pk))
+        self.assertIn('image', exported.headers)
+        self.assertEqual(exported.dict[0]['image'], 'products/bd001.png')

@@ -21,6 +21,8 @@ from dataclasses import dataclass, field
 
 from django.conf import settings
 from django.core.cache import cache
+
+from . import throttle
 from django.db.models import Q
 from django.utils import timezone
 
@@ -78,19 +80,10 @@ def visitor_key(request):
         return f'user:{request.user.pk}'
     if request.session.session_key:
         return f'session:{request.session.session_key}'
-    forwarded = request.META.get('HTTP_X_FORWARDED_FOR', '')
-    return 'ip:' + (forwarded.split(',')[0].strip() or request.META.get('REMOTE_ADDR', 'unknown'))
+    return 'ip:' + throttle.client_ip(request)
 
 
-def _bump(key, limit, window):
-    """Increment a cache counter and return False once ``limit`` is exceeded."""
-    if cache.add(key, 1, window):
-        return True
-    try:
-        return cache.incr(key) <= limit
-    except ValueError:  # key expired between add and incr
-        cache.add(key, 1, window)
-        return True
+_bump = throttle.hit
 
 
 def check_rate_limit(request):

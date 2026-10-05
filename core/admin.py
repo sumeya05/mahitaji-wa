@@ -1,6 +1,13 @@
-from django.contrib import admin
+from django import forms
+from django.conf import settings
+from django.core.exceptions import PermissionDenied
+from django.contrib import admin, messages
+from django.shortcuts import redirect, render
+from django.urls import path
 from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
+
+from . import images
 
 from .models import (
     ChatMessage,
@@ -63,12 +70,35 @@ class CategoryAdmin(ImportExportModelAdmin):
         return obj.products.count()
 
 
+class MultipleFileInput(forms.ClearableFileInput):
+    allow_multiple_selected = True
+
+
+class MultipleFileField(forms.FileField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('widget', MultipleFileInput(attrs={'accept': '.jpg,.jpeg,.png,.webp,.gif,.zip'}))
+        super().__init__(*args, **kwargs)
+
+    def clean(self, data, initial=None):
+        single = super().clean
+        return [single(item, initial) for item in (data if isinstance(data, (list, tuple)) else [data])]
+
+
+class ProductImageUploadForm(forms.Form):
+    files = MultipleFileField(label="Image files or .zip archives")
+    replace_existing = forms.BooleanField(
+        label="Replace photos products already have", required=False, initial=True,
+        help_text="Untick to only fill in products that have no photo yet.",
+    )
+
+
 @admin.register(Product)
 class ProductAdmin(ImportExportModelAdmin):
     resource_class = ProductResource
+    change_list_template = 'admin/core/product/change_list.html'
     list_display = [
         'item_code', 'name', 'brand', 'category', 'unit_of_measure',
-        'old_price', 'retail_price', 'old_wholesale_price', 'wholesale_price', 'vat_rate', 'stock_level',
+        'old_retail_price', 'retail_price', 'old_wholesale_price', 'wholesale_price', 'vat_rate', 'stock_level',
         'is_trending', 'is_best_seller', 'is_active', 'thumbnail',
     ]
     readonly_fields = ['stock_level', 'created_at', 'last_sync_time']
@@ -81,6 +111,32 @@ class ProductAdmin(ImportExportModelAdmin):
 
     def get_queryset(self, request):
         return super().get_queryset(request).with_stock()  # stock column without a query per row
+
+    def get_urls(self):
+        return [
+            path('upload-images/', self.admin_site.admin_view(self.upload_images_view), name='core_product_upload_images'),
+        ] + super().get_urls()
+
+    def upload_images_view(self, request):
+        """Bulk photo upload: files named after item codes are attached to those products."""
+        if not self.has_change_permission(request):
+            raise PermissionDenied
+        report = None
+        form = ProductImageUploadForm(request.POST or None, request.FILES or None)
+        if request.method == 'POST' and form.is_valid():
+            report = images.attach(form.cleaned_data['files'], replace_existing=form.cleaned_data['replace_existing'])
+            linked = len(report['linked'])
+            if linked:
+                messages.success(request, f"{linked} product photo{'s' if linked != 1 else ''} attached.")
+            if report['errors']:
+                messages.warning(request, f"{len(report['errors'])} file(s) could not be used; see below.")
+            form = ProductImageUploadForm()
+        context = {
+            **self.admin_site.each_context(request),
+            'opts': self.model._meta, 'title': "Upload product images", 'form': form, 'report': report,
+            'media_folder': f"{settings.MEDIA_ROOT}/products/",
+        }
+        return render(request, 'admin/core/product/upload_images.html', context)
 
     @admin.display(description='Stock')
     def stock_level(self, obj):

@@ -45,8 +45,8 @@ Open http://127.0.0.1:8000/ for the shop and http://127.0.0.1:8000/admin/ for ad
 ### Loading products
 
 Use **Admin → Products → Import** with a CSV that has the columns
-`item_code, name, category, brand, supplier, uom, old_price, retail_price, old_wholesale_price, wholesale_price, is_active, is_trending, is_best_seller`
-(`old_price` / `old_wholesale_price` are the previous prices; a product is on offer for a tier when its previous price is higher than the current one)
+`item_code, name, category, brand, supplier, uom, old_retail_price, retail_price, old_wholesale_price, wholesale_price, is_active, is_trending, is_best_seller`
+(`old_retail_price` / `old_wholesale_price` are the previous prices; a product is on offer for a tier when its previous price is higher than the current one)
 (categories, brands, suppliers and units are matched by name). Opening stock can be imported into **Stock Ledger** with `item_code, transaction_type, quantity, reference_number`.
 
 If product photos are already in `media/products/`, link them to image-less products by filename:
@@ -72,12 +72,15 @@ python manage.py test core
 
 The test-suite runs on an in-memory SQLite database, so it needs no MySQL privileges.
 
-## Deployment checklist
+## Deployment
 
-- `DEBUG=False`, a strong `SECRET_KEY`, real `ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS`.
-- `python manage.py collectstatic` (WhiteNoise serves the compressed files).
-- SMTP settings for order confirmations, or keep the console backend if email is not needed.
-- Run with `gunicorn ecommerce.wsgi` behind an HTTPS proxy; the settings enable HSTS and secure cookies automatically when `DEBUG` is off.
+Everything needed for an Ubuntu + MySQL + Redis + Gunicorn + Nginx server is in [`deploy/`](deploy/README.md):
+a step-by-step runbook, the Nginx and systemd units, Gunicorn and MySQL tuning, backup and
+maintenance timers, and a hardening script (firewall, fail2ban, SSH, automatic updates).
+
+In short: `DEBUG=False`, a strong `SECRET_KEY`, real `ALLOWED_HOSTS`/`CSRF_TRUSTED_ORIGINS`,
+`REDIS_URL`, `ADMINS`, an unguessable `ADMIN_URL`, SMTP settings, production M-Pesa credentials;
+then `collectstatic`, `migrate` and `python manage.py check --deploy`.
 
 ## Project layout
 

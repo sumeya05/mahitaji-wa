@@ -1,0 +1,11 @@
+[Unit]
+Description=Mahitaji maintenance: cancel stale unpaid orders, purge expired sessions
+
+[Service]
+Type=oneshot
+User=mahitaji
+Group=www-data
+WorkingDirectory=/srv/mahitaji/app
+EnvironmentFile=/srv/mahitaji/app/.env
+ExecStart=/srv/mahitaji/venv/bin/python manage.py expire_unpaid_orders
+ExecStart=/srv/mahitaji/venv/bin/python manage.py clearsessions

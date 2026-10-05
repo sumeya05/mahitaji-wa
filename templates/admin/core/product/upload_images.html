@@ -1,0 +1,80 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+  .upload-box { max-width: 760px; }
+  .upload-box .help { color: var(--body-quiet-color); margin: 4px 0 0; }
+  .upload-box input[type=file] { padding: 14px; border: 2px dashed var(--border-color); border-radius: 8px; width: 100%; box-sizing: border-box; }
+  .upload-box .field { margin: 0 0 18px; }
+  .report { margin-top: 24px; }
+  .report h2 { font-size: 15px; margin: 18px 0 6px; }
+  .report ul { margin: 0; padding-left: 20px; }
+  .report li { margin: 2px 0; }
+  .report .err { color: var(--error-fg); }
+  .howto { background: var(--darkened-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 14px 18px; margin: 0 0 22px; }
+  .howto h2 { font-size: 14px; margin: 0 0 8px; }
+  .howto code { background: var(--selected-bg); padding: 1px 5px; border-radius: 4px; }
+  .howto ul { margin: 6px 0 0; padding-left: 20px; }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% translate 'Home' %}</a>
+  &rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+  &rsaquo; <a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>
+  &rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="upload-box">
+  <div class="howto">
+    <h2>How photos reach products</h2>
+    <ul>
+      <li><strong>Name each file after the item code</strong>: <code>BID283.jpg</code> attaches to product BID283 (case does not matter; <code>bid283_front.jpg</code> works too).</li>
+      <li>You can select many files at once, or upload one or more <strong>.zip</strong> archives of photos.</li>
+      <li>Files whose name matches no item code are still saved to the images folder, so a <strong>CSV import</strong> can point at them: give the <code>image</code> column the file name (<code>bd001.jpg</code>) or a web address (<code>https://…/photo.jpg</code>, downloaded for you). A blank cell keeps the current photo.</li>
+      <li>Accepted: JPG, PNG, WebP, GIF up to 8 MB each; large photos are shrunk to 1600 px.</li>
+    </ul>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" novalidate>
+    {% csrf_token %}
+    <div class="field">
+      <label for="id_files"><strong>{{ form.files.label }}</strong></label><br>
+      {{ form.files }}
+      {% if form.files.errors %}<p class="err">{{ form.files.errors|join:" " }}</p>{% endif %}
+    </div>
+    <div class="field">
+      <label>{{ form.replace_existing }} {{ form.replace_existing.label }}</label>
+      <p class="help">{{ form.replace_existing.help_text }}</p>
+    </div>
+    <input type="submit" class="default" value="Upload and attach">
+    <a href="{% url opts|admin_urlname:'changelist' %}" class="button" style="margin-left:10px">Back to products</a>
+  </form>
+
+  {% if report %}
+  <div class="report">
+    {% if report.linked %}
+    <h2>Attached ({{ report.linked|length }})</h2>
+    <ul>{% for product, name in report.linked %}<li><a href="{% url 'admin:core_product_change' product.pk %}">{{ product.item_code }}</a> {{ product.name }} ← <code>{{ name }}</code></li>{% endfor %}</ul>
+    {% endif %}
+    {% if report.skipped %}
+    <h2>Already had a photo, left unchanged ({{ report.skipped|length }})</h2>
+    <ul>{% for product, name in report.skipped %}<li>{{ product.item_code }} {{ product.name }} — file saved as <code>{{ name }}</code></li>{% endfor %}</ul>
+    {% endif %}
+    {% if report.unmatched %}
+    <h2>Saved, but no product has that item code ({{ report.unmatched|length }})</h2>
+    <p class="help">Reference these from a CSV <code>image</code> column, or rename them after the item code and upload again.</p>
+    <ul>{% for name in report.unmatched %}<li><code>{{ name }}</code></li>{% endfor %}</ul>
+    {% endif %}
+    {% if report.errors %}
+    <h2 class="err">Not used ({{ report.errors|length }})</h2>
+    <ul>{% for error in report.errors %}<li class="err">{{ error }}</li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -192,7 +192,7 @@ class ProductQuerySet(models.QuerySet):
 
     def on_offer(self, tier=None):
         """Products with a genuine reduction for ``tier`` (retail / wholesale), or for either when omitted."""
-        retail = models.Q(old_price__isnull=False, old_price__gt=models.F('retail_price'))
+        retail = models.Q(old_retail_price__isnull=False, old_retail_price__gt=models.F('retail_price'))
         wholesale = models.Q(
             wholesale_price__isnull=False, old_wholesale_price__isnull=False,
             old_wholesale_price__gt=models.F('wholesale_price'),
@@ -228,7 +228,10 @@ class Product(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     supplier = models.ForeignKey(Supplier, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
     unit_of_measure = models.ForeignKey(UnitOfMeasure, on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
-    old_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    old_retail_price = models.DecimalField(
+        max_digits=12, decimal_places=2, null=True, blank=True, db_column='old_price',
+        help_text="Previous retail price; when higher than the retail price the product is a retail offer.",
+    )
     retail_price = models.DecimalField(default=100, max_digits=12, decimal_places=2, null=True, blank=True)
     wholesale_price = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     old_wholesale_price = models.DecimalField(
@@ -278,7 +281,7 @@ class Product(models.Model):
         if self.tier_used(tier) == PRICE_TIER_WHOLESALE:
             old, now = self.old_wholesale_price, self.wholesale_price
         else:
-            old, now = self.old_price, self.retail_price
+            old, now = self.old_retail_price, self.retail_price
         if old is not None and now is not None and old > now:
             return old
         return None

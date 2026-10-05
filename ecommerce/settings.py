@@ -60,9 +60,19 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'core.middleware.StaffSessionTimeoutMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# The admin lives at this path. Set ADMIN_URL in production to something unguessable
+# (e.g. "office-7f3k/") so bots scanning /admin/ never find the sign-in page.
+ADMIN_URL = os.getenv('ADMIN_URL', 'admin/').strip().strip('/') + '/'
+
+# Behind Nginx the client address arrives in X-Forwarded-For (Nginx overwrites it with the
+# real peer address, so it can be trusted). Without a proxy, trusting it would let anyone
+# spoof their address and dodge the sign-in and API limits.
+TRUST_X_FORWARDED_FOR = env_bool('TRUST_X_FORWARDED_FOR', not DEBUG)
 
 # WhiteNoise serves the collected static files in production. With DEBUG on,
 # runserver serves them straight from ``static/`` via the staticfiles finders,
@@ -135,6 +145,34 @@ LOGIN_URL = 'login'
 
 SESSION_COOKIE_AGE = 60 * 60 * 24 * 14  # two weeks, so carts survive between visits
 SESSION_SAVE_EVERY_REQUEST = False
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+# Staff accounts can reach the admin, so their sessions end after this much inactivity
+# (customers keep the two-week session above). See core.middleware.
+STAFF_SESSION_IDLE_SECONDS = int(float(os.getenv('STAFF_SESSION_IDLE_HOURS', '8')) * 3600)
+
+# ---------------------------------------------------------------------------
+# Cache
+# ---------------------------------------------------------------------------
+# Sign-in, M-Pesa and assistant rate limits, and the navigation cache, all live here.
+# Set REDIS_URL in production: the in-process fallback is per Gunicorn worker, so limits
+# would be counted separately by each worker.
+REDIS_URL = os.getenv('REDIS_URL', '').strip()
+if REDIS_URL and 'test' not in sys.argv:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': REDIS_URL,
+            'KEY_PREFIX': 'mahitaji',
+            'TIMEOUT': 300,
+        }
+    }
+    # Sessions are read from Redis and written through to the database, which stays the
+    # source of truth (a Redis restart does not sign anyone out).
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+else:
+    CACHES = {'default': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'mahitaji'}}
 
 # ---------------------------------------------------------------------------
 # Internationalisation
@@ -170,10 +208,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # ---------------------------------------------------------------------------
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+    # Session auth only: HTTP Basic would let scripts brute-force passwords through the API.
+    'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.SessionAuthentication'],
+    'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
     ],
+    'DEFAULT_THROTTLE_RATES': {'anon': '60/min', 'user': '300/min'},
+    'NUM_PROXIES': 1 if TRUST_X_FORWARDED_FOR else None,
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 24,
 }
@@ -219,6 +261,15 @@ EMAIL_USE_TLS = env_bool('EMAIL_USE_TLS', True)
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Mahitaji <no-reply@mahitaji.co.ke>')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', DEFAULT_FROM_EMAIL)
+# A stuck mail server must not stall checkout: give up after this many seconds.
+EMAIL_TIMEOUT = int(os.getenv('EMAIL_TIMEOUT', '10'))
+# Order confirmations are sent from a background thread so the customer is not kept waiting
+# on SMTP. Off during tests, where the outbox is inspected right after checkout.
+EMAIL_IN_BACKGROUND = env_bool('EMAIL_IN_BACKGROUND', not DEBUG) and 'test' not in sys.argv
+# "Name:email,Name:email" — these addresses get an email for every server error.
+ADMINS = [tuple(item.split(':', 1)) if ':' in item else (item, item) for item in env_list('ADMINS')]
+MANAGERS = ADMINS
 ORDER_NOTIFICATION_EMAIL = os.getenv('ORDER_NOTIFICATION_EMAIL', '')
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', '')
@@ -240,6 +291,10 @@ COUPON_SESSION_ID = 'coupon'
 # Stock: at or below this many units (in the product's unit of sale) a line shows "Low stock".
 LOW_STOCK_THRESHOLD = int(os.getenv('LOW_STOCK_THRESHOLD', '5'))
 
+# Unpaid M-Pesa orders older than this are cancelled by `manage.py expire_unpaid_orders`
+# (run on a timer), which puts the stock they hold back on sale.
+UNPAID_ORDER_EXPIRY_HOURS = int(os.getenv('UNPAID_ORDER_EXPIRY_HOURS', '24'))
+
 SITE_INFO = {
     'name': 'Mahitaji',
     'legal_name': 'Mahitaji Enterprises Ltd',
@@ -258,15 +313,21 @@ SITE_INFO = {
 # ---------------------------------------------------------------------------
 # Security (production only)
 # ---------------------------------------------------------------------------
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
+X_FRAME_OPTIONS = 'DENY'
+FILE_UPLOAD_PERMISSIONS = 0o644
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024   # forms; file uploads stream to disk separately
+DATA_UPLOAD_MAX_NUMBER_FILES = 500               # bulk product-photo uploads in the admin
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = env_bool('SECURE_SSL_REDIRECT', True)
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = 60 * 60 * 24 * 30
+    # Start at 30 days; once HTTPS has been stable for a while set SECURE_HSTS_SECONDS=31536000.
+    SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', str(60 * 60 * 24 * 30)))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    SECURE_CONTENT_TYPE_NOSNIFF = True
-    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', False)
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -275,10 +336,18 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {'simple': {'format': '%(levelname)s %(asctime)s %(name)s: %(message)s'}},
-    'handlers': {'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'}},
+    'filters': {'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'}},
+    'handlers': {
+        'console': {'class': 'logging.StreamHandler', 'formatter': 'simple'},
+        # Server errors (500s) are emailed to ADMINS in production.
+        'mail_admins': {'class': 'django.utils.log.AdminEmailHandler', 'level': 'ERROR',
+                        'filters': ['require_debug_false']},
+    },
     'root': {'handlers': ['console'], 'level': 'INFO'},
     'loggers': {
-        'django': {'handlers': ['console'], 'level': 'WARNING', 'propagate': False},
-        'core': {'handlers': ['console'], 'level': 'DEBUG' if DEBUG else 'INFO', 'propagate': False},
+        'django': {'handlers': ['console', 'mail_admins'], 'level': 'WARNING', 'propagate': False},
+        # Suspicious requests (bad Host header, CSRF failures, ...) are worth seeing but not emailing.
+        'django.security': {'handlers': ['console'], 'level': 'WARNING', 'propagate': False},
+        'core': {'handlers': ['console', 'mail_admins'], 'level': 'DEBUG' if DEBUG else 'INFO', 'propagate': False},
     },
 }

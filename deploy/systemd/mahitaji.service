@@ -1,0 +1,34 @@
+[Unit]
+Description=Mahitaji (Gunicorn)
+Requires=mahitaji.socket
+After=network.target mysql.service redis-server.service
+
+[Service]
+Type=notify
+User=mahitaji
+Group=www-data
+RuntimeDirectory=mahitaji
+WorkingDirectory=/srv/mahitaji/app
+EnvironmentFile=/srv/mahitaji/app/.env
+ExecStart=/srv/mahitaji/venv/bin/gunicorn --config deploy/gunicorn.conf.py ecommerce.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=25
+Restart=always
+RestartSec=3
+
+# Hardening: the app can only write to media/ and its runtime dir.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/srv/mahitaji/app/media /run/mahitaji
+ProtectKernelTunables=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+# ~1.5 GB cap so a runaway worker cannot take the database down with it
+MemoryMax=1536M
+
+[Install]
+WantedBy=multi-user.target

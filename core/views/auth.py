@@ -8,7 +8,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import PasswordResetForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.core.cache import cache
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.http import urlsafe_base64_decode
@@ -17,20 +16,36 @@ from django.views.decorators.http import require_http_methods, require_POST
 from ..forms import (
     RegisterForm,
 )
+from .. import throttle
 from ._common import form_errors, is_ajax, json_error, json_ok, safe_next_url
 
 logger = logging.getLogger(__name__)
 
-# Sign-in attempts: after this many failures for one account from one address, sign-in for
-# that pair is paused for the rest of the window. (Counters live in the cache.)
+# Sign-in attempts (counters live in the cache):
+#  - after LOGIN_FAILURE_LIMIT failures for one account from one address, that pair is paused
+#    for the rest of the window;
+#  - after LOGIN_ADDRESS_LIMIT failures from one address against any accounts, the address is
+#    paused, which stops password spraying across many accounts.
 LOGIN_FAILURE_LIMIT = 8
+LOGIN_ADDRESS_LIMIT = 30
 LOGIN_FAILURE_WINDOW = 15 * 60
+# New accounts and password-reset emails per address per hour.
+REGISTER_LIMIT, REGISTER_WINDOW = 10, 60 * 60
+RESET_LIMIT, RESET_WINDOW = 5, 60 * 60
+
+TOO_MANY = "Too many sign-in attempts. Please wait 15 minutes, or reset your password."
 
 
-def _login_throttle_key(request, login_input):
-    forwarded = request.META.get('HTTP_X_FORWARDED_FOR', '')
-    address = forwarded.split(',')[0].strip() or request.META.get('REMOTE_ADDR', '')
-    return f'login-failures:{address}:{login_input.lower()[:150]}'
+def _login_throttle_keys(request, login_input):
+    address = throttle.client_ip(request)
+    return f'login-failures:{address}:{login_input.lower()[:150]}', f'login-failures:{address}'
+
+
+def _too_many(request, template, context, message):
+    if is_ajax(request):
+        return json_error(message, status=429)
+    messages.error(request, message)
+    return render(request, template, context, status=429)
 
 
 @require_http_methods(["GET", "POST"])
@@ -41,13 +56,9 @@ def login_view(request):
     if request.method == "POST":
         login_input = (request.POST.get('username') or '').strip()
         password = request.POST.get('password') or ''
-        throttle_key = _login_throttle_key(request, login_input)
-        if cache.get(throttle_key, 0) >= LOGIN_FAILURE_LIMIT:
-            error_msg = "Too many sign-in attempts. Please wait 15 minutes, or reset your password."
-            if is_ajax(request):
-                return json_error(error_msg, status=429)
-            messages.error(request, error_msg)
-            return render(request, 'core/auth/login.html', {'next': request.GET.get('next', '')}, status=429)
+        pair_key, address_key = _login_throttle_keys(request, login_input)
+        if throttle.exhausted(pair_key, LOGIN_FAILURE_LIMIT) or throttle.exhausted(address_key, LOGIN_ADDRESS_LIMIT):
+            return _too_many(request, 'core/auth/login.html', {'next': request.GET.get('next', '')}, TOO_MANY)
 
         username = login_input
         if '@' in login_input:
@@ -56,7 +67,7 @@ def login_view(request):
                 username = matched.username
         user = authenticate(request, username=username, password=password)
         if user is not None and user.is_active:
-            cache.delete(throttle_key)
+            throttle.clear(pair_key)
             login(request, user)
             if not request.POST.get('remember_me'):
                 request.session.set_expiry(0)
@@ -65,11 +76,9 @@ def login_view(request):
                 return json_ok(redirect_url=next_url)
             return redirect(next_url)
 
-        if not cache.add(throttle_key, 1, LOGIN_FAILURE_WINDOW):
-            try:
-                cache.incr(throttle_key)
-            except ValueError:  # expired between add and incr
-                cache.add(throttle_key, 1, LOGIN_FAILURE_WINDOW)
+        throttle.hit(pair_key, LOGIN_FAILURE_LIMIT, LOGIN_FAILURE_WINDOW)
+        throttle.hit(address_key, LOGIN_ADDRESS_LIMIT, LOGIN_FAILURE_WINDOW)
+        logger.warning("Failed sign-in for %r from %s", login_input[:150], throttle.client_ip(request))
         error_msg = "We couldn't sign you in with those details. Check your email/username and password."
         if is_ajax(request):
             return json_error(error_msg, status=400)
@@ -86,6 +95,9 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
+            if not throttle.hit(f'register:{throttle.client_ip(request)}', REGISTER_LIMIT, REGISTER_WINDOW):
+                return _too_many(request, 'core/auth/register.html', {'form': form},
+                                 "Too many accounts have been created from your connection. Please try again in an hour.")
             user = form.save()
             login(request, user)
             messages.success(request, f"Welcome to Mahitaji, {user.first_name}! Your account is ready.")
@@ -113,6 +125,9 @@ def custom_password_reset(request):
     if request.method == "POST":
         form = PasswordResetForm(request.POST)
         if form.is_valid():
+            if not throttle.hit(f'password-reset:{throttle.client_ip(request)}', RESET_LIMIT, RESET_WINDOW):
+                return _too_many(request, 'core/auth/password_reset.html', {},
+                                 "Too many reset emails have been requested. Please wait an hour and try again.")
             form.save(
                 request=request,
                 use_https=request.is_secure(),

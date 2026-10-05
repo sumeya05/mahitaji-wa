@@ -1,0 +1,7 @@
+{% extends "admin/change_list.html" %}{# import-export wraps this template with its own Import/Export buttons #}
+{% load i18n %}
+
+{% block object-tools-items %}
+  <li><a href="{% url 'admin:core_product_upload_images' %}" class="btn">Upload images</a></li>
+  {{ block.super }}
+{% endblock %}

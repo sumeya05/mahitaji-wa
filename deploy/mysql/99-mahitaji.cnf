@@ -1,0 +1,16 @@
+# /etc/mysql/mysql.conf.d/99-mahitaji.cnf  (MySQL 8 on a 4 GB server shared with the app)
+[mysqld]
+bind-address            = 127.0.0.1
+innodb_buffer_pool_size = 768M
+innodb_log_file_size    = 128M
+innodb_flush_log_at_trx_commit = 1     # every committed order is on disk
+max_connections         = 60           # 2 workers x 4 threads + admin/cron leaves lots of room
+performance_schema      = OFF          # saves ~200 MB on a small box
+tmp_table_size          = 32M
+max_heap_table_size     = 32M
+slow_query_log          = ON
+slow_query_log_file     = /var/log/mysql/slow.log
+long_query_time         = 1
+character-set-server    = utf8mb4
+collation-server        = utf8mb4_0900_ai_ci
+local_infile            = OFF

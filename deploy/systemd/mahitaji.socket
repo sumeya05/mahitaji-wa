@@ -1,0 +1,11 @@
+[Unit]
+Description=Mahitaji Gunicorn socket
+
+[Socket]
+ListenStream=/run/mahitaji/gunicorn.sock
+SocketUser=www-data
+SocketGroup=www-data
+SocketMode=0660
+
+[Install]
+WantedBy=sockets.target

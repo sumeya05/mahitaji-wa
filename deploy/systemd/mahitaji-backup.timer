@@ -1,0 +1,10 @@
+[Unit]
+Description=Mahitaji nightly backup at 02:30 Nairobi time
+
+[Timer]
+OnCalendar=*-*-* 02:30:00 Africa/Nairobi
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target
