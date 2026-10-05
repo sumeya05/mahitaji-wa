@@ -21,6 +21,7 @@ from django.db.models import Sum
 from django.utils import timezone
 from django.utils.crypto import constant_time_compare, salted_hmac
 
+from . import throttle
 from .forms import normalize_phone
 from .models import Address, MpesaTransaction, Order, Product, StockLedger
 
@@ -92,6 +93,14 @@ def initiate_stk_push(order, phone):
     throttle_key = f'mpesa-prompt-{order.pk}'
     if settings.MPESA_PROMPT_INTERVAL and not cache.add(throttle_key, 1, settings.MPESA_PROMPT_INTERVAL):
         raise MpesaError("A payment prompt was sent a moment ago. Check your phone, or try again in a few seconds.")
+    # ...and only so many per customer per hour: the prompt goes to whatever number they typed.
+    if settings.MPESA_PROMPTS_PER_HOUR and not throttle.hit(f'mpesa-prompts:customer:{order.customer_id}',
+                                                           settings.MPESA_PROMPTS_PER_HOUR, 60 * 60):
+        cache.delete(throttle_key)
+        raise MpesaError("You have requested several payment prompts in the last hour. Please wait a while, "
+                         "or choose Cash on Delivery.")
+    if msisdn != normalize_phone(order.phone):
+        logger.info("STK push for order %s goes to %s, not the order's number", order.order_number, msisdn)
 
     account_reference = order.order_number[:12]
     try:
@@ -218,9 +227,10 @@ def process_stk_callback(payload, trusted=False):
     """
     Apply an STK callback payload to the matching transaction and order.
 
-    ``trusted`` says the callback arrived on the secret URL only Safaricom knows.
-    A success claimed on the plain URL is confirmed with Safaricom before any order
-    is marked paid; if that cannot be done the prompt simply stays pending.
+    ``trusted`` says the callback arrived on the secret URL only Safaricom knows. An
+    untrusted callback decides nothing by itself, whether it claims success or failure:
+    Safaricom is asked, and only its answer is recorded. If Safaricom cannot be reached,
+    or has no outcome yet, the prompt simply stays pending.
 
     Returns (transaction, success). Raises KeyError/LookupError for malformed
     or unknown callbacks so the view can answer Safaricom appropriately.
@@ -234,9 +244,6 @@ def process_stk_callback(payload, trusted=False):
     if txn.is_success:
         return txn, True  # a repeat of a callback we already handled
 
-    if result_code != 0:
-        return record_payment_outcome(txn, False, result_desc, result_code=result_code), False
-
     metadata = {item.get('Name'): item.get('Value') for item in callback.get('CallbackMetadata', {}).get('Item', [])}
     amount = None
     if metadata.get('Amount') is not None:
@@ -244,10 +251,7 @@ def process_stk_callback(payload, trusted=False):
             amount = Decimal(str(metadata['Amount']))
         except InvalidOperation:
             amount = None
-    if amount is not None and amount < txn.amount:
-        logger.error("M-Pesa callback for %s reports KSh %s, expected KSh %s: not marking paid",
-                     txn.order.order_number, amount, txn.amount)
-        return txn, False
+    underpaid = amount is not None and amount < txn.amount
 
     if not trusted:
         try:
@@ -255,12 +259,28 @@ def process_stk_callback(payload, trusted=False):
         except MpesaError as exc:
             logger.warning("Unverified M-Pesa callback for %s left pending: %s", txn.order.order_number, exc)
             return txn, False
-        if paid is not True:
-            logger.warning("Unverified M-Pesa callback for %s contradicted by Safaricom (%s)",
+        if paid is None:
+            logger.warning("Unverified M-Pesa callback for %s has no outcome at Safaricom yet (%s)",
                            txn.order.order_number, description)
-            if paid is False:
-                record_payment_outcome(txn, False, description)
             return txn, False
+        if paid is False:
+            logger.warning("Unverified M-Pesa callback for %s: Safaricom reports no payment (%s)",
+                           txn.order.order_number, description)
+            return record_payment_outcome(txn, False, description), False
+        if result_code != 0 or underpaid:
+            # Safaricom says paid but the callback claimed otherwise: trust Safaricom, not the
+            # callback's figures. The receipt details arrive with the next status check.
+            logger.warning("Unverified M-Pesa callback for %s contradicted by Safaricom, which reports payment",
+                           txn.order.order_number)
+            return record_payment_outcome(txn, True, description), True
+
+    if result_code != 0:
+        return record_payment_outcome(txn, False, result_desc, result_code=result_code), False
+
+    if underpaid:
+        logger.error("M-Pesa callback for %s reports KSh %s, expected KSh %s: not marking paid",
+                     txn.order.order_number, amount, txn.amount)
+        return txn, False
 
     txn = record_payment_outcome(
         txn, True, result_desc, receipt=metadata.get('MpesaReceiptNumber'), amount=amount,

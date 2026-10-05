@@ -126,7 +126,7 @@
 
 {% block extra_js %}
 {% if awaiting_payment %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 (function () {
   const STATUS_URL = "{% url 'check_payment_status' order.order_number %}";
   const PAY_URL = "{% url 'pay' %}";

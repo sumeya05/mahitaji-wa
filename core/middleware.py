@@ -1,6 +1,7 @@
 """
 Request middleware specific to the shop.
 """
+import secrets
 import time
 
 from django.conf import settings
@@ -29,3 +30,31 @@ class StaffSessionTimeoutMiddleware:
             elif not last_seen or now - last_seen > 60:
                 request.session[SEEN_KEY] = now  # written at most once a minute
         return self.get_response(request)
+
+
+class ContentSecurityPolicyMiddleware:
+    """
+    Send a Content-Security-Policy on storefront pages. Scripts may only come from this
+    origin or from inline blocks that carry this request's nonce (``request.csp_nonce``),
+    so a stray piece of HTML can never run script even if escaping slips somewhere.
+    The admin and the browsable API are exempt (settings.CSP_EXEMPT_PREFIXES).
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.csp_nonce = secrets.token_urlsafe(16)
+        response = self.get_response(request)
+        if any(request.path.startswith(prefix) for prefix in settings.CSP_EXEMPT_PREFIXES):
+            return response
+        if 'Content-Security-Policy' in response or not response.get('Content-Type', '').startswith('text/html'):
+            return response
+        directives = []
+        for name, sources in settings.CSP_DIRECTIVES.items():
+            values = list(sources)
+            if name == 'script-src':
+                values.append(f"'nonce-{request.csp_nonce}'")
+            directives.append(f"{name} {' '.join(values)}".strip())
+        response['Content-Security-Policy'] = '; '.join(directives)
+        return response

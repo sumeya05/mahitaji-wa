@@ -271,7 +271,7 @@
 </div>
 {% endif %}
 
-<script>
+<script nonce="{{ request.csp_nonce }}">
   window.MAHITAJI = {
     csrf: '{{ csrf_token }}',
     tier: '{{ price_tier }}',
@@ -282,7 +282,7 @@
     }
   };
 </script>
-<script src="{% static 'js/mahitaji.js' %}?v=6" defer></script>
+<script src="{% static 'js/mahitaji.js' %}?v=7" defer></script>
 {% block extra_js %}{% endblock %}
 </body>
 </html>

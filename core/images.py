@@ -6,10 +6,12 @@ Every image is checked with Pillow, shrunk to at most MAX_SIDE pixels on its lon
 and saved under media/products/<name>. Nothing that is not a real image is ever written.
 """
 import io
+import ipaddress
 import os
 import re
+import socket
 import zipfile
-from urllib.parse import urlparse
+from urllib.parse import urljoin, urlparse
 
 import requests
 from django.core.files.base import ContentFile
@@ -24,6 +26,7 @@ MAX_SIDE = 1600
 MAX_ZIP_ENTRIES = 2000
 MAX_ZIP_TOTAL = 600 * 1024 * 1024
 FETCH_TIMEOUT = 10
+MAX_FETCH_REDIRECTS = 3
 
 
 class ImageProblem(ValueError):
@@ -89,20 +92,52 @@ def resolve(reference):
     return None
 
 
-def fetch(url):
-    """Download an image from ``url`` and return (bytes, filename)."""
+def _addresses_of(host):
+    """Every address ``host`` resolves to (patched in tests)."""
+    return [info[4][0] for info in socket.getaddrinfo(host, None)]
+
+
+def check_public_url(url):
+    """
+    Only fetch from public web servers. The import runs on the server, so a URL pointing at
+    127.0.0.1, the private network or the cloud metadata address would otherwise let a CSV
+    reach services that are supposed to be unreachable from outside.
+    """
     parsed = urlparse(url)
-    if parsed.scheme not in ('http', 'https') or not parsed.netloc:
+    if parsed.scheme not in ('http', 'https') or not parsed.hostname:
         raise ImageProblem(f"{url}: not an http(s) address")
     try:
-        with requests.get(url, timeout=FETCH_TIMEOUT, stream=True, headers={'User-Agent': 'Mahitaji catalogue import'}) as response:
-            response.raise_for_status()
-            content_type = response.headers.get('Content-Type', '').split(';')[0].strip().lower()
-            data = b''
-            for chunk in response.iter_content(64 * 1024):
-                data += chunk
-                if len(data) > MAX_IMAGE_BYTES:
-                    raise ImageProblem(f"{url}: larger than {MAX_IMAGE_BYTES // (1024 * 1024)} MB")
+        addresses = _addresses_of(parsed.hostname)
+    except (socket.gaierror, UnicodeError) as exc:
+        raise ImageProblem(f"{url}: host could not be resolved") from exc
+    for address in addresses:
+        if not ipaddress.ip_address(address).is_global:
+            raise ImageProblem(f"{url}: points at a private or local address")
+    return parsed
+
+
+def fetch(url):
+    """Download an image from ``url`` and return (bytes, filename)."""
+    parsed = check_public_url(url)
+    try:
+        for _ in range(MAX_FETCH_REDIRECTS + 1):
+            # Redirects are followed by hand so every hop gets the same public-address check.
+            with requests.get(url, timeout=FETCH_TIMEOUT, stream=True, allow_redirects=False,
+                              headers={'User-Agent': 'Mahitaji catalogue import'}) as response:
+                if response.status_code in (301, 302, 303, 307, 308) and response.headers.get('Location'):
+                    url = urljoin(url, response.headers['Location'])
+                    parsed = check_public_url(url)
+                    continue
+                response.raise_for_status()
+                content_type = response.headers.get('Content-Type', '').split(';')[0].strip().lower()
+                data = b''
+                for chunk in response.iter_content(64 * 1024):
+                    data += chunk
+                    if len(data) > MAX_IMAGE_BYTES:
+                        raise ImageProblem(f"{url}: larger than {MAX_IMAGE_BYTES // (1024 * 1024)} MB")
+                break
+        else:
+            raise ImageProblem(f"{url}: too many redirects")
     except requests.RequestException as exc:
         raise ImageProblem(f"{url}: could not be downloaded ({exc.__class__.__name__})") from exc
     filename = os.path.basename(parsed.path)
@@ -129,7 +164,10 @@ def unpack(uploaded_files):
             for entry in entries:
                 filename = os.path.basename(entry.filename)
                 if filename and not filename.startswith('.'):
-                    yield filename, archive.read(entry) if entry.file_size <= MAX_IMAGE_BYTES else b'x' * (MAX_IMAGE_BYTES + 1)
+                    # Read at most the limit plus one byte: the size in the zip's own table is
+                    # whatever the zip's author wrote there, so it is not relied on.
+                    with archive.open(entry) as member:
+                        yield filename, member.read(MAX_IMAGE_BYTES + 1)
         else:
             yield upload.name, upload.read()
 

@@ -44,7 +44,8 @@ urlpatterns = [
 
     # Payments (M-Pesa)
     path('mpesa/pay/', views.initiate_stk_push, name='pay'),
-    path('mpesa/callback/', views.mpesa_callback, name='callback'),
+    # Safaricom is given this URL with a secret token (core.services.callback_url). There is no
+    # token-less route: a callback that cannot present the token is never taken at its word.
     path('mpesa/callback/<str:token>/', views.mpesa_callback, name='callback_token'),
     path('check-payment-status/<str:order_number>/', views.check_payment_status, name='check_payment_status'),
 

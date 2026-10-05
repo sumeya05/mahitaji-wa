@@ -254,7 +254,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 (function () {
   'use strict';
   const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;

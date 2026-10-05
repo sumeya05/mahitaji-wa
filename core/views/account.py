@@ -17,7 +17,7 @@ from ..forms import (
 from ..models import (
     Address, MpesaTransaction, Order, Product, WishlistItem,
 )
-from ._common import form_errors, get_profile, is_ajax, json_error, json_ok, request_data
+from ._common import back_url, form_errors, get_profile, is_ajax, json_error, json_ok, request_data
 
 logger = logging.getLogger(__name__)
 
@@ -200,4 +200,4 @@ def wishlist_toggle(request):
         return json_ok(added=created, count=count,
                        message=f"{product.name} {'saved to' if created else 'removed from'} your wishlist.")
     messages.success(request, f"{product.name} {'saved to' if created else 'removed from'} your wishlist.")
-    return redirect(request.META.get('HTTP_REFERER') or 'wishlist')
+    return redirect(back_url(request, 'wishlist'))

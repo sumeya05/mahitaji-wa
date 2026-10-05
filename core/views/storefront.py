@@ -4,6 +4,8 @@ Public catalogue: home page, product listings (catalogue / retailers / wholesale
 import csv
 import logging
 
+from django.conf import settings
+from django.core.cache import cache
 from django.http import HttpResponse
 from django.core.paginator import Paginator
 from django.db.models import Count, F, Q
@@ -13,6 +15,7 @@ from django.template.loader import render_to_string
 from django.views.decorators.http import require_GET
 
 from ..cart import Cart, price_tier_for
+from ..context_processors import PRICE_LIST_CACHE_KEY
 from ..models import (
     PRICE_TIER_RETAIL, PRICE_TIER_WHOLESALE, Brand, Category, Product, plain_number,
 )
@@ -249,19 +252,41 @@ def product_detail(request, pk):
     return render(request, 'core/product-detail.html', context)
 
 
-def price_list(request):
-    """Downloadable CSV price list generated from the live catalogue, so it never goes stale."""
-    response = HttpResponse(content_type='text/csv; charset=utf-8')
-    response['Content-Disposition'] = 'attachment; filename="mahitaji-price-list.csv"'
-    writer = csv.writer(response)
+def csv_text(value):
+    """A spreadsheet-safe cell: text starting with = + - @ would run as a formula when the
+    CSV is opened in Excel or Sheets, so such cells are prefixed with an apostrophe."""
+    value = str(value or '')
+    if value[:1] in ('=', '+', '-', '@', '\t', '\r'):
+        return "'" + value
+    return value
+
+
+def _build_price_list():
+    import io
+    buffer = io.StringIO()
+    writer = csv.writer(buffer)
     writer.writerow(['Item code', 'Product', 'Category', 'Brand', 'Unit', 'Retail price (KSh)', 'Wholesale price (KSh)',
                      'Was (retail)', 'Was (wholesale)', 'VAT %', 'In stock'])
     products = Product.objects.active().with_relations().with_stock().order_by('category__name', 'name')
     for p in products:
         writer.writerow([
-            p.item_code or '', p.name, p.category.name if p.category else '', p.brand.name if p.brand else '',
-            p.pack_size, p.retail_price or '', p.wholesale_price or '',
+            csv_text(p.item_code), csv_text(p.name), csv_text(p.category.name if p.category else ''),
+            csv_text(p.brand.name if p.brand else ''), csv_text(p.pack_size),
+            p.retail_price or '', p.wholesale_price or '',
             p.old_price_for(PRICE_TIER_RETAIL) or '', p.old_price_for(PRICE_TIER_WHOLESALE) or '',
             plain_number(p.vat_rate), 'yes' if p.in_stock else 'no',
         ])
+    return buffer.getvalue()
+
+
+def price_list(request):
+    """Downloadable CSV price list generated from the live catalogue. It is cached for a few
+    minutes (and dropped when the catalogue or stock changes) so anonymous downloads cannot
+    make the server walk the whole catalogue on every request."""
+    body = cache.get(PRICE_LIST_CACHE_KEY)
+    if body is None:
+        body = _build_price_list()
+        cache.set(PRICE_LIST_CACHE_KEY, body, settings.PRICE_LIST_CACHE_SECONDS)
+    response = HttpResponse(body, content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="mahitaji-price-list.csv"'
     return response

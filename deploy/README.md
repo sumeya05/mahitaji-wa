@@ -104,7 +104,8 @@ certbot renew --dry-run
 ```
 
 What the Nginx config does: TLS 1.2/1.3 only; serves `/static/` (1-year cache) and `/media/`
-(1-week cache, uploads can never execute) itself; rate-limits sign-in/registration/password
+(1-week cache, uploads can never execute) itself; caps request bodies at 1 MB except for the
+admin's imports and photo uploads (200 MB); rate-limits sign-in/registration/password
 reset (10/min), payment endpoints (20/min), the JSON API and assistant chat (60/min) and the
 rest (30/s) per address; drops WordPress/phpMyAdmin/.env scanners; forwards the real client
 address so Django's own sign-in limits work.
@@ -145,6 +146,10 @@ check fails.) Allow the `mahitaji` user `sudo systemctl restart mahitaji` in sud
 - HTTPS-only cookies, HSTS, nosniff, referrer policy, clickjacking denial, `SECRET_KEY` required.
 - Sign-in limits: 8 failures per account+address, 30 per address, 15-minute pause; registration 10/h and password-reset emails 5/h per address; API 60/min anonymous, 300/min signed in.
 - Staff sessions end after 8 idle hours (`STAFF_SESSION_IDLE_HOURS`); customers keep 14-day sessions.
-- M-Pesa callbacks use a secret URL and are re-verified with Safaricom; prompts are throttled.
+- M-Pesa callbacks use a secret URL; a callback without it never changes an order by itself (Safaricom is asked instead). Prompts are throttled per order (20 s) and per customer (6/h).
+- One account may have 5 orders open at a time; unpaid M-Pesa orders expire after 24 h and unconfirmed cash orders after 72 h (`UNCONFIRMED_COD_ORDER_EXPIRY_HOURS`, 0 disables). Staff confirm a cash order by marking it Paid, Shipped or Delivered in the admin.
+- Storefront pages carry a Content-Security-Policy (scripts only from this origin or nonce-tagged inline blocks).
+- Chat logs store a hash of the visitor's session, never the session key itself.
+- Product image URLs in CSV imports are only fetched from public addresses (never loopback, private or metadata ranges).
 - Order confirmation emails are sent from a background thread with a 10-second SMTP timeout.
 - Stock is reserved at checkout and released on cancellation or expiry.

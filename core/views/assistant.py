@@ -23,7 +23,7 @@ def ai_assistant_chat(request):
     if len(message) > settings.ASSISTANT_MAX_MESSAGE_LENGTH:
         return json_error(f"Please keep messages under {settings.ASSISTANT_MAX_MESSAGE_LENGTH} characters.")
     try:
-        reply = assistant.answer(request, message, data.get('history'))
+        reply = assistant.answer(request, message)  # context comes from the server-side log, not the browser
     except assistant.RateLimited:
         return json_error("You're sending messages very quickly. Please wait a few minutes and try again.", status=429)
     return json_ok(reply=reply.text, products=reply.product_links(), handled_by=reply.handled_by)

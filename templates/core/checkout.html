@@ -144,7 +144,7 @@
 {% endblock %}
 
 {% block extra_js %}
-<script>
+<script nonce="{{ request.csp_nonce }}">
 (function () {
   const form = document.getElementById('checkoutForm');
   const btn = document.getElementById('placeOrderBtn');

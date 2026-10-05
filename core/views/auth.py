@@ -29,8 +29,11 @@ logger = logging.getLogger(__name__)
 LOGIN_FAILURE_LIMIT = 8
 LOGIN_ADDRESS_LIMIT = 30
 LOGIN_FAILURE_WINDOW = 15 * 60
-# New accounts and password-reset emails per address per hour.
+# New accounts and password-reset emails per address per hour. Registration attempts (valid or
+# not) are capped separately, so the "email already registered" message cannot be used to
+# test thousands of addresses.
 REGISTER_LIMIT, REGISTER_WINDOW = 10, 60 * 60
+REGISTER_ATTEMPT_LIMIT = 30
 RESET_LIMIT, RESET_WINDOW = 5, 60 * 60
 
 TOO_MANY = "Too many sign-in attempts. Please wait 15 minutes, or reset your password."
@@ -94,6 +97,9 @@ def register_view(request):
 
     if request.method == "POST":
         form = RegisterForm(request.POST)
+        if not throttle.hit(f'register-attempts:{throttle.client_ip(request)}', REGISTER_ATTEMPT_LIMIT, REGISTER_WINDOW):
+            return _too_many(request, 'core/auth/register.html', {'form': form},
+                             "Too many sign-up attempts from your connection. Please try again in an hour.")
         if form.is_valid():
             if not throttle.hit(f'register:{throttle.client_ip(request)}', REGISTER_LIMIT, REGISTER_WINDOW):
                 return _too_many(request, 'core/auth/register.html', {'form': form},

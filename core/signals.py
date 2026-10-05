@@ -3,14 +3,17 @@ import logging
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
-from .context_processors import invalidate_catalogue_nav
+from .context_processors import invalidate_catalogue_nav, invalidate_price_list
 from .models import Brand, Category, Order, Product, StockLedger
 from .services import sync_order_stock
 
-# The header/filters navigation is cached; drop it whenever the catalogue changes.
+# The header/filters navigation and the price list CSV are cached; drop them whenever the
+# catalogue changes. Stock entries only affect the price list's "In stock" column.
 for _model in (Product, Category, Brand):
     post_save.connect(invalidate_catalogue_nav, sender=_model, dispatch_uid=f'nav-cache-save-{_model.__name__}')
     post_delete.connect(invalidate_catalogue_nav, sender=_model, dispatch_uid=f'nav-cache-delete-{_model.__name__}')
+post_save.connect(invalidate_price_list, sender=StockLedger, dispatch_uid='price-list-cache-save-StockLedger')
+post_delete.connect(invalidate_price_list, sender=StockLedger, dispatch_uid='price-list-cache-delete-StockLedger')
 
 logger = logging.getLogger(__name__)
 

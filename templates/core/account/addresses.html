@@ -87,7 +87,7 @@
 </div>
 {% endblock %}
 
-{% block extra_js %}<script>
+{% block extra_js %}<script nonce="{{ request.csp_nonce }}">
 (function () {
   var form = document.getElementById('addressFormEl');
   if (!form) return;

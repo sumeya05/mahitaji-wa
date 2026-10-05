@@ -7,7 +7,7 @@ VENV=/srv/mahitaji/venv
 cd "$APP"
 git pull --ff-only
 "$VENV/bin/pip" install -q -r requirements.txt
-"$VENV/bin/python" manage.py check --deploy --fail-level ERROR
+"$VENV/bin/python" manage.py check --deploy --fail-level WARNING   # a weak SECRET_KEY or missing HTTPS setting stops the release
 "$VENV/bin/python" manage.py migrate --noinput
 "$VENV/bin/python" manage.py collectstatic --noinput --clear
 sudo systemctl restart mahitaji

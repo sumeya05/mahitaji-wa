@@ -68,11 +68,12 @@ def check_payment_status(request, order_number):
 
 @csrf_exempt
 @require_POST
-def mpesa_callback(request, token=None):
+def mpesa_callback(request, token):
     """
     Safaricom posts the outcome of an STK push here. The URL we give Safaricom carries a
-    secret token; a callback without it (or with a wrong one) is still read, but a payment
-    it reports is confirmed with Safaricom before the order is marked paid.
+    secret token. A callback with the wrong token is still read (the token changes with
+    SECRET_KEY, so this covers a misconfiguration), but nothing it says is applied until
+    Safaricom has been asked and confirms it.
     """
     try:
         payload = json.loads(request.body or b'{}')

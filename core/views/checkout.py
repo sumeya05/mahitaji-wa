@@ -76,6 +76,14 @@ def place_order(request):
     data = form.cleaned_data
     profile = get_profile(request.user)
 
+    # An order reserves its stock until it is paid, confirmed or cancelled, so one account may
+    # only have a handful outstanding at a time (otherwise one could reserve the whole shop).
+    open_orders = profile.orders.filter(paid_at__isnull=True,
+                                        status__in=(Order.STATUS_PENDING, Order.STATUS_FAILED)).count()
+    if open_orders >= settings.MAX_OPEN_ORDERS:
+        return json_error(f"You already have {open_orders} orders awaiting payment or confirmation. "
+                          "Please complete or cancel one of them before placing another.")
+
     with transaction.atomic():
         # Two customers checking out the last cartons at once are handled one after the other.
         lock_products([item['product'].id for item in cart])

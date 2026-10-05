@@ -7,6 +7,7 @@ from .models import Brand, Category, Coupon, Product, WishlistItem
 
 NAV_CACHE_KEY = 'shop:catalogue-nav'
 NAV_CACHE_TTL = 300  # seconds; also invalidated by signals when the catalogue changes
+PRICE_LIST_CACHE_KEY = 'shop:price-list'  # the CSV at /price-list.csv (core.views.storefront.price_list)
 
 
 def catalogue_nav():
@@ -39,7 +40,11 @@ def catalogue_nav():
 
 
 def invalidate_catalogue_nav(**kwargs):
-    cache.delete(NAV_CACHE_KEY)
+    cache.delete_many([NAV_CACHE_KEY, PRICE_LIST_CACHE_KEY])
+
+
+def invalidate_price_list(**kwargs):
+    cache.delete(PRICE_LIST_CACHE_KEY)
 
 
 def shop(request):

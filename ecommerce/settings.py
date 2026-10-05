@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'core.middleware.StaffSessionTimeoutMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'core.middleware.ContentSecurityPolicyMiddleware',
 ]
 
 # The admin lives at this path. Set ADMIN_URL in production to something unguessable
@@ -240,6 +241,9 @@ if 'test' in sys.argv:
     MPESA_CALLBACK_URL = MPESA_CONSUMER_KEY = MPESA_CONSUMER_SECRET = ''
 MPESA_TIMEOUT = int(os.getenv('MPESA_TIMEOUT', '30'))                # seconds per call to Safaricom
 MPESA_PROMPT_INTERVAL = int(os.getenv('MPESA_PROMPT_INTERVAL', '20'))  # seconds between two prompts for one order
+# Payment prompts one customer may send per hour, across all their orders. Each prompt lands on a
+# phone of the customer's choosing, so an uncapped account could pester strangers in the shop's name.
+MPESA_PROMPTS_PER_HOUR = int(os.getenv('MPESA_PROMPTS_PER_HOUR', '6'))
 
 # ---------------------------------------------------------------------------
 # Messages, email, AI, site info
@@ -294,6 +298,17 @@ LOW_STOCK_THRESHOLD = int(os.getenv('LOW_STOCK_THRESHOLD', '5'))
 # Unpaid M-Pesa orders older than this are cancelled by `manage.py expire_unpaid_orders`
 # (run on a timer), which puts the stock they hold back on sale.
 UNPAID_ORDER_EXPIRY_HOURS = int(os.getenv('UNPAID_ORDER_EXPIRY_HOURS', '24'))
+# Cash-on-delivery orders that staff have not confirmed (moved past Pending) within this many
+# hours are cancelled by the same command, so an account cannot hold stock indefinitely by
+# placing orders it never means to take. 0 disables the expiry.
+UNCONFIRMED_COD_ORDER_EXPIRY_HOURS = int(os.getenv('UNCONFIRMED_COD_ORDER_EXPIRY_HOURS', '72'))
+# Orders one account may have awaiting payment or confirmation at the same time.
+MAX_OPEN_ORDERS = int(os.getenv('MAX_OPEN_ORDERS', '5'))
+# The public price list CSV is rebuilt from the catalogue at most this often (it is also
+# dropped whenever a product, category, brand or stock entry changes).
+PRICE_LIST_CACHE_SECONDS = int(os.getenv('PRICE_LIST_CACHE_SECONDS', '300'))
+# Cells in admin exports that start with = + - @ would run as formulas in Excel: escape them.
+IMPORT_EXPORT_ESCAPE_FORMULAE_ON_EXPORT = True
 
 SITE_INFO = {
     'name': 'Mahitaji',
@@ -328,6 +343,29 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = int(os.getenv('SECURE_HSTS_SECONDS', str(60 * 60 * 24 * 30)))
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = env_bool('SECURE_HSTS_PRELOAD', False)
+
+# Preload is a deliberate opt-in (see .env.example), so its warning must not fail the deploy
+# check; every other warning does (deploy/scripts/deploy.sh runs with --fail-level WARNING).
+SILENCED_SYSTEM_CHECKS = ['security.W021']
+
+# Content-Security-Policy for the storefront (core.middleware.ContentSecurityPolicyMiddleware).
+# Inline <script> blocks in the templates carry nonce="{{ request.csp_nonce }}"; everything
+# else must come from this origin or the hosts listed here. The admin and the browsable API
+# ship their own inline scripts, so they are left out.
+CSP_EXEMPT_PREFIXES = ['/' + ADMIN_URL, '/data/']
+CSP_DIRECTIVES = {
+    'default-src': ["'self'"],
+    'script-src': ["'self'"],  # the per-request nonce is added by the middleware
+    'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://cdnjs.cloudflare.com'],
+    'font-src': ["'self'", 'https://fonts.gstatic.com', 'https://cdnjs.cloudflare.com'],
+    'img-src': ["'self'", 'data:'],
+    'connect-src': ["'self'"],
+    'frame-src': ['https://www.google.com'],  # the map on the Location page
+    'frame-ancestors': ["'none'"],
+    'form-action': ["'self'"],
+    'base-uri': ["'self'"],
+    'object-src': ["'none'"],
+}
 
 # ---------------------------------------------------------------------------
 # Logging

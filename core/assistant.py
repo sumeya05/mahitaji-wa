@@ -15,6 +15,7 @@ Every exchange is rate-limited per visitor, capped per day for the paid model,
 and logged to ``ChatMessage`` so the questions customers really ask can be
 reviewed in the admin.
 """
+import hashlib
 import logging
 import re
 from dataclasses import dataclass, field
@@ -75,11 +76,23 @@ class RateLimited(Exception):
 # ---------------------------------------------------------------------------
 # Rate limiting
 # ---------------------------------------------------------------------------
+def session_fingerprint(session_key):
+    """
+    What the chat log stores instead of the session key. The key is the session cookie,
+    so writing it to a table staff can read would let them impersonate the visitor; a
+    one-way hash still groups one visitor's messages together. 40 characters fits the
+    column and cannot be mistaken for a raw key (those are 32).
+    """
+    if not session_key:
+        return ''
+    return hashlib.sha256(session_key.encode()).hexdigest()[:40]
+
+
 def visitor_key(request):
     if request.user.is_authenticated:
         return f'user:{request.user.pk}'
     if request.session.session_key:
-        return f'session:{request.session.session_key}'
+        return f'session:{session_fingerprint(request.session.session_key)}'
     return 'ip:' + throttle.client_ip(request)
 
 
@@ -252,16 +265,27 @@ def _generate(system_prompt, history, message):
     return (response.text or '').strip()
 
 
-def clean_history(raw, limit):
-    """Keep only well-formed recent turns sent by the browser."""
+def _visitor_messages(request):
+    """This visitor's own logged exchanges (by account when signed in, else by session)."""
+    if request.user.is_authenticated:
+        return ChatMessage.objects.filter(user=request.user)
+    fingerprint = session_fingerprint(request.session.session_key)
+    if not fingerprint:
+        return ChatMessage.objects.none()
+    return ChatMessage.objects.filter(user__isnull=True, session_key=fingerprint)
+
+
+def recent_history(request, limit):
+    """
+    The last ``limit`` turns of this visitor's conversation, oldest first, taken from the
+    server's own log rather than from the browser: a client-supplied transcript could put
+    words in the assistant's mouth ("you said everything is half price") and steer the model.
+    """
+    rows = list(_visitor_messages(request).order_by('-created_at', '-pk')[:max(1, limit // 2)])
     turns = []
-    for item in raw or []:
-        if not isinstance(item, dict):
-            continue
-        role = item.get('role')
-        text = str(item.get('text') or '').strip()[:settings.ASSISTANT_MAX_MESSAGE_LENGTH]
-        if role in ('user', 'assistant') and text:
-            turns.append({'role': role, 'text': text})
+    for row in reversed(rows):
+        turns.append({'role': 'user', 'text': row.message[:settings.ASSISTANT_MAX_MESSAGE_LENGTH]})
+        turns.append({'role': 'assistant', 'text': row.reply[:settings.ASSISTANT_MAX_MESSAGE_LENGTH]})
     return turns[-limit:]
 
 
@@ -290,20 +314,22 @@ def _llm(request, message, history, products, tier):
 # ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
-def answer(request, message, history=None):
+def answer(request, message):
     """Answer ``message`` for this visitor and log the exchange. Raises RateLimited."""
+    if not request.session.session_key:
+        request.session.save()  # a guest's conversation is grouped by their session
     check_rate_limit(request)
     tier = price_tier_for(request.user)
     products, _ = find_products(message)
 
     reply = _order_status(request, message) or _catalogue(message, products, tier) or _faq(message)
     if reply is None:
-        reply = _llm(request, message, clean_history(history, settings.ASSISTANT_HISTORY_TURNS), products, tier)
+        reply = _llm(request, message, recent_history(request, settings.ASSISTANT_HISTORY_TURNS), products, tier)
 
     try:
         ChatMessage.objects.create(
             user=request.user if request.user.is_authenticated else None,
-            session_key=request.session.session_key or '',
+            session_key=session_fingerprint(request.session.session_key),
             message=message,
             reply=reply.text,
             handled_by=reply.handled_by,

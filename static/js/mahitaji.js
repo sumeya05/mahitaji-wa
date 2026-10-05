@@ -656,13 +656,13 @@
       if (!message) return;
       input.value = '';
       append(message, 'user');
-      // Recent turns give the assistant context for follow-ups ("what about the mango one?").
-      const recent = history.slice(-8).map((m) => ({ role: m.role, text: m.text }));
+      // The server keeps the conversation (per account or session) and gives the assistant
+      // its context for follow-ups; the copy in localStorage is only for redrawing the panel.
       history.push({ role: 'user', text: message });
       const typing = append('Thinking…', 'assistant typing');
       send.disabled = true;
       try {
-        const res = await request(URLS.chat, { method: 'POST', data: { message, history: recent } });
+        const res = await request(URLS.chat, { method: 'POST', data: { message } });
         typing.remove();
         const reply = res.reply || res.error || 'Sorry, something went wrong.';
         append(reply, 'assistant', res.products);
