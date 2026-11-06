@@ -1,8 +1,10 @@
 from import_export import resources, fields
 from import_export.widgets import ForeignKeyWidget, Widget
 
+from fleet.models import Area
+
 from . import images
-from .models import Product, Category, Brand, Supplier, UnitOfMeasure, StockLedger
+from .models import Address, CustomerProfile, Product, Category, Brand, Supplier, UnitOfMeasure, StockLedger
 
 
 class ProductImageWidget(Widget):
@@ -49,6 +51,44 @@ class SupplierResource(resources.ModelResource):
         # Use erp_id as the unique key to prevent duplicates during import
         import_id_fields = ('erp_id',) 
         fields = ('id', 'name', 'erp_id', 'contact_person', 'email', 'phone_number', 'address')
+
+class CustomerResource(resources.ModelResource):
+    """
+    The customer master. Rows are matched by ``customer_code``; a row without one is a new
+    customer (with no shop login) and is given a code. ``area`` is the area code, and
+    ``address`` / ``city`` fill the customer's primary delivery address.
+    """
+    area = fields.Field(column_name='area', attribute='area', widget=ForeignKeyWidget(Area, 'code'))
+    address = fields.Field(column_name='address')
+    city = fields.Field(column_name='city')
+
+    class Meta:
+        model = CustomerProfile
+        import_id_fields = ('customer_code',)
+        fields = ('customer_code', 'business_name', 'contact_person', 'phone_number', 'tax_id', 'is_wholesaler',
+                  'erp_id', 'area', 'latitude', 'longitude', 'address', 'city')
+        clean_model_instances = True
+
+    def dehydrate_address(self, profile):
+        address = profile.primary_address
+        return address.physical_address if address else ''
+
+    def dehydrate_city(self, profile):
+        address = profile.primary_address
+        return address.city if address else ''
+
+    def after_save_instance(self, instance, row, **kwargs):
+        physical = (row.get('address') or '').strip()
+        if not physical:
+            return  # a blank cell keeps the customer's addresses as they are
+        city = (row.get('city') or '').strip() or 'Nairobi'
+        address = instance.primary_address
+        if address:
+            address.physical_address, address.city = physical, city
+            address.save()
+        else:
+            Address.objects.create(customer=instance, physical_address=physical, city=city, is_primary=True)
+
 
 class ProductResource(resources.ModelResource):
     # Mapping Foreign Keys by Name (so you can type "Grains" in CSV instead of ID 1)

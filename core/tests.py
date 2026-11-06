@@ -1619,3 +1619,204 @@ class ProductImageImportTests(TestCase):
         exported = ProductResource().export(Product.objects.filter(pk=self.product.pk))
         self.assertIn('image', exported.headers)
         self.assertEqual(exported.dict[0]['image'], 'products/bd001.png')
+
+
+class MobileApiTests(TestCase):
+    """The JSON API the mobile app uses (core/views/mobile.py)."""
+
+    def setUp(self):
+        cache.clear()
+        self.product = make_product()
+        self.user = make_user()
+        self.checkout = {
+            'first_name': 'Jane', 'last_name': 'Doe', 'email': 'shop@example.com', 'phone': '0712345678',
+            'address': 'Baba Dogo Rd', 'city': 'Nairobi', 'payment_method': 'cod',
+            'items': [{'product_id': self.product.id, 'qty': 3}],
+        }
+
+    def api(self, method, name, data=None, token=None, args=None):
+        headers = {'HTTP_AUTHORIZATION': f'Token {token}'} if token else {}
+        url = reverse(f'mobile:{name}', args=args or [])
+        if method == 'get':
+            return self.client.get(url, data or {}, **headers)
+        return getattr(self.client, method)(url, data=json.dumps(data or {}), content_type='application/json', **headers)
+
+    def sign_in(self, username='shop@example.com', password='Str0ngPass!42'):
+        res = self.api('post', 'login', {'username': username, 'password': password})
+        self.assertEqual(res.status_code, 200, res.content)
+        return res.json()['token']
+
+    def test_sign_in_with_email_returns_a_token_and_profile(self):
+        token = self.sign_in()
+        me = self.api('get', 'me', token=token).json()
+        self.assertEqual(me['email'], 'shop@example.com')
+        self.assertEqual(me['tier'], 'retail')
+        self.assertEqual(self.api('get', 'me').status_code, 401)
+
+    def test_failed_sign_ins_share_the_website_limit(self):
+        for _ in range(8):
+            self.api('post', 'login', {'username': 'shop', 'password': 'wrong'})
+        self.assertEqual(self.api('post', 'login', {'username': 'shop', 'password': 'Str0ngPass!42'}).status_code, 429)
+        self.assertEqual(self.client.post(reverse('login'), {'username': 'shop', 'password': 'Str0ngPass!42'}).status_code, 429)
+
+    def test_register_creates_account_and_signs_in(self):
+        res = self.api('post', 'register', {
+            'first_name': 'Ali', 'last_name': 'Omar', 'email': 'ali@example.com', 'phone_number': '0722000111',
+            'password': 'An0therPass!9', 'confirm_password': 'An0therPass!9',
+        })
+        self.assertEqual(res.status_code, 201, res.content)
+        self.assertEqual(res.json()['user']['phone_number'], '254722000111')
+        bad = self.api('post', 'register', {'email': 'ali@example.com'})
+        self.assertEqual(bad.status_code, 400)
+        self.assertIn('email', bad.json()['errors'])
+
+    def test_catalogue_prices_follow_the_account_tier(self):
+        wholesaler = make_user(username='bulk', email='bulk@example.com', wholesaler=True)
+        token = self.sign_in('bulk@example.com')
+        guest = self.api('get', 'products').json()['results'][0]
+        trade = self.api('get', 'products', token=token).json()['results'][0]
+        self.assertEqual(guest['price'], 1050.0)
+        self.assertEqual(guest['old_price'], 1100.0)
+        self.assertEqual(trade['price'], 1020.0)
+        self.assertIsNone(trade['old_price'])
+        self.assertEqual(self.api('get', 'product', args=[self.product.id], token=token).json()['price'], 1020.0)
+        self.assertEqual(wholesaler.customerprofile.price_tier, 'wholesale')
+        home = self.api('get', 'home').json()
+        self.assertEqual([p['id'] for p in home['offers']], [self.product.id])
+
+    def test_search_filters_and_inactive_products(self):
+        make_product(name="Ketepa Tea 100 bags", item_code="KT1", category_name='Beverages', old=None)
+        self.assertEqual(self.api('get', 'products', {'q': 'ketepa'}).json()['count'], 1)
+        self.assertEqual(self.api('get', 'products', {'collection': 'offers'}).json()['count'], 1)
+        self.product.is_active = False
+        self.product.save()
+        self.assertEqual(self.api('get', 'product', args=[self.product.id]).status_code, 404)
+
+    def test_a_revoked_token_is_refused_even_on_public_pages(self):
+        self.assertEqual(self.api('get', 'home', token='not-a-token').status_code, 401)
+
+    def test_quote_prices_lines_applies_coupon_and_reports_problems(self):
+        Coupon.objects.create(code='KARIBU5', percent=Decimal('5'))
+        gone = make_product(name="Old line", item_code="OLD1", is_active=False)
+        add_stock(self.product, 2)
+        res = self.api('post', 'cart_quote', {
+            'items': [{'product_id': self.product.id, 'qty': 3}, {'product_id': gone.id, 'qty': 1}, {'product_id': 'x'}],
+            'coupon': 'karibu5',
+        }).json()
+        self.assertEqual(res['subtotal'], 3150.0)
+        self.assertEqual(res['discount'], 157.5)
+        self.assertEqual(res['total'], 2992.5)
+        self.assertEqual(res['coupon']['code'], 'KARIBU5')
+        self.assertEqual(res['removed'], [gone.id])
+        self.assertEqual(res['problems'], [f"Only 2 of {self.product.name} left in stock."])
+        self.assertIn('not a valid coupon', self.api('post', 'cart_quote', {'items': [], 'coupon': 'NOPE'}).json()['coupon_error'])
+
+    def test_place_cash_on_delivery_order(self):
+        token = self.sign_in()
+        res = self.api('post', 'orders', self.checkout, token=token)
+        self.assertEqual(res.status_code, 201, res.content)
+        data = res.json()['order']
+        order = Order.objects.get(order_number=data['order_number'])
+        self.assertEqual(order.total_amount, Decimal('3150'))
+        self.assertEqual(order.items.get().price_at_purchase, Decimal('1050'))
+        self.assertEqual(data['items'][0]['quantity'], 3)
+        self.assertTrue(data['can_cancel'])
+        listed = self.api('get', 'orders', token=token).json()
+        self.assertEqual(listed['results'][0]['order_number'], order.order_number)
+
+    def test_order_is_refused_when_stock_runs_out(self):
+        add_stock(self.product, 1)
+        token = self.sign_in()
+        res = self.api('post', 'orders', self.checkout, token=token)
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('Only 1', res.json()['error'])
+        self.assertFalse(Order.objects.exists())
+
+    @override_settings(MPESA_CALLBACK_URL='https://example.com/mpesa/callback/', MPESA_CONSUMER_KEY='k')
+    def test_mpesa_order_sends_prompt_and_can_switch_to_cash(self):
+        token = self.sign_in()
+        fake = mock.Mock(checkout_request_id='ws_CO_9', merchant_request_id='m9', response_description='Success')
+        with mock.patch('core.services._client') as client:
+            client.return_value.stk_push.return_value = fake
+            res = self.api('post', 'orders', {**self.checkout, 'payment_method': 'mpesa', 'mpesa_phone': '0712345678'}, token=token)
+        body = res.json()
+        self.assertTrue(body['payment']['sent'], body)
+        number = body['order']['order_number']
+        self.assertTrue(body['order']['can_pay'])
+        with mock.patch('core.services.query_stk_status', return_value=(None, 'still processing')):
+            self.assertEqual(self.api('get', 'payment_status', args=[number], token=token).json()['status'], 'pending')
+        switched = self.api('post', 'order_action', args=[number, 'pay-on-delivery'], token=token).json()
+        self.assertEqual(switched['order']['payment_method'], 'cod')
+
+    def test_orders_are_private_and_can_be_cancelled(self):
+        token = self.sign_in()
+        number = self.api('post', 'orders', self.checkout, token=token).json()['order']['order_number']
+        make_user(username='other', email='other@example.com')
+        other = self.sign_in('other@example.com')
+        self.assertEqual(self.api('get', 'order', args=[number], token=other).status_code, 404)
+        self.assertEqual(self.api('post', 'order_action', args=[number, 'cancel'], token=other).status_code, 404)
+        res = self.api('post', 'order_action', args=[number, 'cancel'], token=token)
+        self.assertEqual(res.json()['order']['status'], 'CANCELLED')
+        self.assertEqual(self.api('post', 'order_action', args=[number, 'cancel'], token=token).status_code, 400)
+
+    def test_addresses_wishlist_and_profile(self):
+        token = self.sign_in()
+        added = self.api('post', 'addresses', {'label': 'Shop', 'physical_address': 'Tom Mboya St', 'city': ''}, token=token)
+        self.assertEqual(added.status_code, 201)
+        first = added.json()[0]
+        self.assertTrue(first['is_primary'])
+        self.assertEqual(first['city'], 'Nairobi')
+        second = self.api('post', 'addresses', {'physical_address': 'Moi Ave', 'is_primary': False}, token=token).json()
+        self.assertEqual(len(second), 2)
+        self.assertEqual(sum(a['is_primary'] for a in second), 1)
+        remaining = self.api('delete', 'address', args=[first['id']], token=token).json()
+        self.assertTrue(remaining[0]['is_primary'])
+
+        self.assertTrue(self.api('post', 'wishlist_toggle', {'product_id': self.product.id}, token=token).json()['added'])
+        self.assertEqual([p['id'] for p in self.api('get', 'wishlist', token=token).json()], [self.product.id])
+        self.assertFalse(self.api('post', 'wishlist_toggle', {'product_id': self.product.id}, token=token).json()['added'])
+
+        updated = self.api('patch', 'me', {'business_name': 'Jane Wholesale', 'phone_number': '0711000222'}, token=token)
+        self.assertEqual(updated.json()['phone_number'], '254711000222')
+        self.assertEqual(updated.json()['first_name'], 'Jane')
+        self.assertIn('tax_id', self.api('patch', 'me', {'tax_id': 'nope'}, token=token).json()['errors'])
+
+    def test_password_change_and_logout_revoke_the_token(self):
+        token = self.sign_in()
+        res = self.api('post', 'password_change', {
+            'current_password': 'Str0ngPass!42', 'new_password': 'Fresh3rPass!7', 'confirm_password': 'Fresh3rPass!7',
+        }, token=token)
+        new_token = res.json()['token']
+        self.assertNotEqual(new_token, token)
+        self.assertEqual(self.api('get', 'me', token=token).status_code, 401)
+        self.api('post', 'logout', token=new_token)
+        self.assertEqual(self.api('get', 'me', token=new_token).status_code, 401)
+
+    def test_contact_message_is_saved(self):
+        res = self.api('post', 'contact', {'full_name': 'Jane', 'email': 'j@example.com', 'inquiry_type': 'order',
+                                           'message': 'Where is my delivery today?'})
+        self.assertEqual(res.status_code, 201, res.content)
+        self.assertEqual(ContactMessage.objects.count(), 1)
+
+
+class SeedDemoTests(TestCase):
+    def test_refuses_without_debug_or_with_a_catalogue(self):
+        from django.core.management import CommandError, call_command
+        with override_settings(DEBUG=False):
+            with self.assertRaises(CommandError):
+                call_command('seed_demo')
+        make_product()
+        with override_settings(DEBUG=True):
+            with self.assertRaises(CommandError):
+                call_command('seed_demo')
+        self.assertEqual(Product.objects.count(), 1)
+
+    def test_fills_an_empty_database(self):
+        import tempfile
+        from django.core.management import call_command
+        with tempfile.TemporaryDirectory() as media, override_settings(DEBUG=True, MEDIA_ROOT=media):
+            call_command('seed_demo', stdout=io.StringIO())
+            self.assertEqual(Product.objects.count(), 12)
+            self.assertTrue(Brand.objects.get(name='Ketepa').logo)
+            self.assertTrue(Coupon.usable('KARIBU5'))
+            self.assertTrue(self.client.login(username='amina-duka', password='Duka2026!secure'))

@@ -13,6 +13,8 @@ A wholesale and retail e-commerce storefront for **Mahitaji Enterprises Ltd**, a
 - **Contact form**, newsletter signup, AI shopping assistant (Gemini, with a catalogue-search fallback when no API key is set).
 - **Admin**: import/export for products, categories, brands, suppliers and stock; order status actions.
 - Read-only JSON API at `/data/` (products, categories, brands, and the signed-in customer's orders).
+- **Mahitaji Fleet**: logistics masters (vehicles, drivers and turnboys, areas and routes, delivery customers) and the
+  **Mahitaji Fleet app** for Android and iOS in [`mahitaji-fleet/`](mahitaji-fleet/README.md) (Expo / React Native).
 
 ## Tech stack
 
@@ -64,10 +66,52 @@ python manage.py link_product_images --apply
 
 Until `MPESA_CALLBACK_URL` is set, checkout still works: M-Pesa orders are created as *Pending* and customers can retry the prompt from the order page.
 
+## Mahitaji Fleet
+
+### Masters
+
+The `fleet` app holds the logistics masters, all under **Admin → Fleet** with CSV import/export
+(related records are matched by code, not id):
+
+| Master | Fields | Import key |
+|---|---|---|
+| Company | code, name | `code` |
+| Employee | code, name, **role** (Driver / Turnboy / Other staff), company, phone | `employee_code` |
+| Route | code, name, company | `code` |
+| Area | code, name, route, company, county, town, description | `code` |
+| Vehicle | vehicle number, type, capacity (kg), company, driver, turnboy | `registration_number` |
+
+Drivers and turnboys are ordinary employees told apart by their role. A vehicle's driver must have the
+Driver role and its turnboy the Turnboy role, and each is on one vehicle at a time. An area's route
+must belong to the same company.
+
+The **customer master** is the shop's own customer list (**Admin → Core → Customer profiles**). Each
+customer has a customer code (assigned as `MC00042` when left blank), an area (which gives the route), a
+GPS location, contact details and addresses. Staff can add delivery customers who have no shop login, and
+import them with the columns `customer_code, business_name, contact_person, phone_number, tax_id,
+is_wholesaler, erp_id, area, latitude, longitude, address, city`.
+
+### The app
+
+The Expo app in [`mahitaji-fleet/`](mahitaji-fleet/README.md) is for logistics staff: browse and search the
+masters, add and edit them, call drivers and customers, and record a customer's GPS location from the
+phone. It uses the API in `fleet/api.py` at `/api/v1/fleet/` with token sign-in (`auth/login/`).
+
+Access follows the admin's permissions: put staff in a group (for example *Logistics*) with the *view*,
+*add* and *change* permissions for the masters they work with. A tab is shown only to people who can view
+that master; Add and Edit only to those who can add or change. Shop customers have no such permissions
+and cannot sign in. Companies are read-only in the app.
+
+To try it locally, run `./run-app.sh` (sample data from `python manage.py seed_fleet_demo`; sign in as
+`fleet@example.com` / `Fleet2026!secure`). See `mahitaji-fleet/README.md` for phones and store builds.
+
+The shop's earlier mobile API (`core/views/mobile.py`, at `/api/v1/`) is still served, but no app in this
+repository uses it any more.
+
 ## Tests
 
 ```bash
-python manage.py test core
+python manage.py test core fleet
 ```
 
 The test-suite runs on an in-memory SQLite database, so it needs no MySQL privileges.
@@ -88,6 +132,8 @@ then `collectstatic`, `migrate` and `python manage.py check --deploy`.
 core/                 # models, views, forms, cart, M-Pesa services, signals, admin, API
 core/templatetags/    # {% load shop %}: money formatting, tier pricing, badges
 core/management/      # link_product_images
+fleet/                # Mahitaji Fleet masters and the app's API at /api/v1/fleet/
+mahitaji-fleet/       # Mahitaji Fleet app (Expo / React Native)
 templates/base/       # base layout (header, footer, cart drawer, assistant)
 templates/partials/   # product card/grid, pagination, filters, hero
 templates/core/       # storefront, auth/, account/, pages/, emails/

@@ -8,6 +8,7 @@ handler500 = 'core.views.error_500'
 
 urlpatterns = [
     path(settings.ADMIN_URL, admin.site.urls),
+    path('api/v1/fleet/', include('fleet.urls')),  # Mahitaji Fleet masters (fleet/api.py)
     path('', include('core.urls')),
 ]
 

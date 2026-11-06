@@ -43,10 +43,9 @@ def initiate_stk_push(request):
     return json_ok(message="Check your phone and enter your M-Pesa PIN.")
 
 
-@login_required
-@require_GET
-def check_payment_status(request, order_number):
-    order = _owned_order(request, order_number)
+def payment_status(order):
+    """Where an order's payment stands: ``{'status': 'paid'|'failed'|'pending', ...}``.
+    Shared by the website's polling endpoint and the mobile API."""
     txn = order.latest_payment
     if txn and not order.is_paid:
         # The callback does not always arrive (sandbox, tunnels, outages): ask Safaricom ourselves.
@@ -58,12 +57,18 @@ def check_payment_status(request, order_number):
         status = 'failed'
     else:
         status = 'pending'
-    return json_ok(
-        status=status,
-        order_status=order.status,
-        receipt=txn.receipt_number if txn else None,
-        description=txn.response_description if txn else '',
-    )
+    return {
+        'status': status,
+        'order_status': order.status,
+        'receipt': txn.receipt_number if txn else None,
+        'description': txn.response_description if txn else '',
+    }
+
+
+@login_required
+@require_GET
+def check_payment_status(request, order_number):
+    return json_ok(**payment_status(_owned_order(request, order_number)))
 
 
 @csrf_exempt

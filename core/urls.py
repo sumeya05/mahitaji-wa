@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from . import views
+from .views import mobile
 from .views import BrandViewSet, CategoryViewSet, OrderViewSet, ProductViewSet
 
 router = DefaultRouter()
@@ -9,6 +10,31 @@ router.register(r'products', ProductViewSet)
 router.register(r'categories', CategoryViewSet)
 router.register(r'brands', BrandViewSet)
 router.register(r'orders', OrderViewSet, basename='order')
+
+mobile_urlpatterns = [
+    path('config/', mobile.ConfigView.as_view(), name='config'),
+    path('home/', mobile.HomeView.as_view(), name='home'),
+    path('categories/', mobile.CategoryListView.as_view(), name='categories'),
+    path('brands/', mobile.BrandListView.as_view(), name='brands'),
+    path('products/', mobile.ProductListView.as_view(), name='products'),
+    path('products/<int:pk>/', mobile.ProductDetailView.as_view(), name='product'),
+    path('cart/quote/', mobile.CartQuoteView.as_view(), name='cart_quote'),
+    path('auth/login/', mobile.LoginView.as_view(), name='login'),
+    path('auth/register/', mobile.RegisterView.as_view(), name='register'),
+    path('auth/logout/', mobile.LogoutView.as_view(), name='logout'),
+    path('auth/password-reset/', mobile.PasswordResetView.as_view(), name='password_reset'),
+    path('me/', mobile.MeView.as_view(), name='me'),
+    path('me/password/', mobile.PasswordChangeView.as_view(), name='password_change'),
+    path('addresses/', mobile.AddressListView.as_view(), name='addresses'),
+    path('addresses/<int:pk>/', mobile.AddressDetailView.as_view(), name='address'),
+    path('wishlist/', mobile.WishlistView.as_view(), name='wishlist'),
+    path('wishlist/toggle/', mobile.WishlistToggleView.as_view(), name='wishlist_toggle'),
+    path('orders/', mobile.OrderListView.as_view(), name='orders'),
+    path('orders/<str:order_number>/', mobile.OrderDetailView.as_view(), name='order'),
+    path('orders/<str:order_number>/payment-status/', mobile.PaymentStatusView.as_view(), name='payment_status'),
+    path('orders/<str:order_number>/<str:action>/', mobile.OrderActionView.as_view(), name='order_action'),
+    path('contact/', mobile.ContactView.as_view(), name='contact'),
+]
 
 urlpatterns = [
     # Storefront
@@ -85,4 +111,7 @@ urlpatterns = [
 
     # JSON API (browsable at /data/)
     path('data/', include(router.urls)),
+
+    # Mobile app API (token authentication, see core/views/mobile.py)
+    path('api/v1/', include((mobile_urlpatterns, 'mobile'))),
 ]

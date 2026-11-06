@@ -3,6 +3,7 @@ from decimal import Decimal
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Exists, OuterRef, Subquery, Sum
@@ -39,14 +40,30 @@ def bounded_slug(text, max_length, fallback='item'):
 # ---------------------------------------------------------------------------
 # A. Customers
 # ---------------------------------------------------------------------------
+CUSTOMER_CODE_PREFIX = 'MC'
+
+
 class CustomerProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customerprofile')
+    """
+    A customer: a shop account (with ``user``) or a delivery customer added by staff
+    without a login. The same record is the customer master for Mahitaji Fleet.
+    """
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='customerprofile', null=True, blank=True,
+                                help_text='Shop login, if the customer has one')
+    customer_code = models.CharField(max_length=20, unique=True, null=True, blank=True,
+                                     help_text=f'Left blank, a code like {CUSTOMER_CODE_PREFIX}00042 is assigned')
     business_name = models.CharField(max_length=255, blank=True, null=True)
     contact_person = models.CharField(max_length=255, null=True, blank=True)
     phone_number = models.CharField(max_length=15)
     tax_id = models.CharField(max_length=15, null=True, blank=True, verbose_name="KRA PIN")
     is_wholesaler = models.BooleanField(default=False)
     erp_id = models.CharField(max_length=50, null=True, blank=True, verbose_name='ERP customer ID')
+    area = models.ForeignKey('fleet.Area', on_delete=models.PROTECT, null=True, blank=True, related_name='customers',
+                             help_text='Delivery area; the route comes from the area')
+    latitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True,
+                                   validators=[MinValueValidator(-90), MaxValueValidator(90)])
+    longitude = models.DecimalField(max_digits=9, decimal_places=6, null=True, blank=True,
+                                    validators=[MinValueValidator(-180), MaxValueValidator(180)])
 
     class Meta:
         ordering = ['user__username']
@@ -54,9 +71,31 @@ class CustomerProfile(models.Model):
     def __str__(self):
         return f"{self.display_name} ({self.tier_label})"
 
+    def clean(self):
+        if not self.user_id and not (self.business_name or '').strip():
+            raise ValidationError({'business_name': "A customer without a shop login needs a business name."})
+        if (self.latitude is None) != (self.longitude is None):
+            raise ValidationError("Give both latitude and longitude, or neither.")
+
+    def save(self, *args, **kwargs):
+        self.customer_code = (self.customer_code or '').strip() or None  # blank is "assign one", never ''
+        super().save(*args, **kwargs)
+        if not self.customer_code:
+            # The code is built from the primary key, so it is only known after the first save.
+            self.customer_code = f"{CUSTOMER_CODE_PREFIX}{self.pk:05d}"
+            type(self).objects.filter(pk=self.pk).update(customer_code=self.customer_code)
+
     @property
     def display_name(self):
-        return self.business_name or self.user.get_full_name() or self.user.username
+        if self.business_name:
+            return self.business_name
+        if self.user:
+            return self.user.get_full_name() or self.user.username
+        return self.customer_code or 'Customer'
+
+    @property
+    def route(self):
+        return self.area.route if self.area else None
 
     @property
     def price_tier(self):
@@ -83,7 +122,7 @@ class Address(models.Model):
         ordering = ['-is_primary', 'id']
 
     def __str__(self):
-        return f"{self.label} - {self.customer.user.username}"
+        return f"{self.label} - {self.customer.display_name}"
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)

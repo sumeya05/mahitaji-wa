@@ -15,7 +15,9 @@ from .models import (
     NewsletterSubscriber, Order, OrderItem, Product, StockLedger, Supplier,
     UnitOfMeasure, WishlistItem,
 )
-from .resources import BrandResource, CategoryResource, ProductResource, StockLedgerResource, SupplierResource
+from .resources import (
+    BrandResource, CategoryResource, CustomerResource, ProductResource, StockLedgerResource, SupplierResource,
+)
 from .services import sync_order_stock
 
 admin.site.site_header = "Mahitaji Administration"
@@ -225,12 +227,28 @@ class CouponAdmin(admin.ModelAdmin):
 
 
 @admin.register(CustomerProfile)
-class CustomerProfileAdmin(admin.ModelAdmin):
-    list_display = ['user', 'business_name', 'phone_number', 'tax_id', 'is_wholesaler', 'erp_id']
-    list_filter = ['is_wholesaler']
+class CustomerProfileAdmin(ImportExportModelAdmin):
+    """The customer master: shop accounts and delivery customers added here without a login."""
+    resource_class = CustomerResource
+    list_display = ['customer_code', 'display_name', 'user', 'phone_number', 'area', 'route', 'tax_id',
+                    'is_wholesaler', 'erp_id']
+    list_filter = ['is_wholesaler', 'area__route', 'area']
     list_editable = ['is_wholesaler']
-    search_fields = ['user__username', 'user__email', 'business_name', 'phone_number', 'erp_id']
+    list_select_related = ['user', 'area__route']
+    search_fields = ['customer_code', 'user__username', 'user__email', 'business_name', 'contact_person',
+                     'phone_number', 'erp_id']
+    autocomplete_fields = ['area']
+    fieldsets = [
+        (None, {'fields': ['customer_code', 'business_name', 'contact_person', 'phone_number', 'user']}),
+        ('Pricing and ERP', {'fields': ['is_wholesaler', 'tax_id', 'erp_id']}),
+        ('Delivery', {'fields': ['area', 'latitude', 'longitude'],
+                      'description': 'Area and GPS location used by Mahitaji Fleet. The route comes from the area.'}),
+    ]
     inlines = [AddressInline]
+
+    @admin.display(description='Name', ordering='business_name')
+    def display_name(self, obj):
+        return obj.display_name
 
 
 @admin.register(MpesaTransaction)
@@ -268,7 +286,8 @@ class SupplierAdmin(ImportExportModelAdmin):
 @admin.register(Address)
 class AddressAdmin(admin.ModelAdmin):
     list_display = ['customer', 'label', 'city', 'is_primary']
-    search_fields = ['customer__user__username', 'physical_address', 'city']
+    search_fields = ['customer__user__username', 'customer__business_name', 'customer__customer_code',
+                     'physical_address', 'city']
 
 
 @admin.register(WishlistItem)

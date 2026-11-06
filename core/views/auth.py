@@ -51,26 +51,54 @@ def _too_many(request, template, context, message):
     return render(request, template, context, status=429)
 
 
+class SignInRefused(Exception):
+    def __init__(self, message, status=400):
+        super().__init__(message)
+        self.status = status
+
+
+def check_sign_in(request, login_input, password):
+    """
+    The active user for ``login_input`` (username or email) and ``password``, with the failed
+    attempt limits above. Raises SignInRefused. Shared by the website and the mobile API, so the
+    two count failures together.
+    """
+    login_input = (login_input or '').strip()
+    pair_key, address_key = _login_throttle_keys(request, login_input)
+    if throttle.exhausted(pair_key, LOGIN_FAILURE_LIMIT) or throttle.exhausted(address_key, LOGIN_ADDRESS_LIMIT):
+        raise SignInRefused(TOO_MANY, status=429)
+
+    username = login_input
+    if '@' in login_input:
+        matched = User.objects.filter(email__iexact=login_input).order_by('id').first()
+        if matched:
+            username = matched.username
+    user = authenticate(request, username=username, password=password or '')
+    if user is not None and user.is_active:
+        throttle.clear(pair_key)
+        return user
+
+    throttle.hit(pair_key, LOGIN_FAILURE_LIMIT, LOGIN_FAILURE_WINDOW)
+    throttle.hit(address_key, LOGIN_ADDRESS_LIMIT, LOGIN_FAILURE_WINDOW)
+    logger.warning("Failed sign-in for %r from %s", login_input[:150], throttle.client_ip(request))
+    raise SignInRefused("We couldn't sign you in with those details. Check your email/username and password.")
+
+
 @require_http_methods(["GET", "POST"])
 def login_view(request):
     if request.user.is_authenticated:
         return redirect('dashboard')
 
     if request.method == "POST":
-        login_input = (request.POST.get('username') or '').strip()
-        password = request.POST.get('password') or ''
-        pair_key, address_key = _login_throttle_keys(request, login_input)
-        if throttle.exhausted(pair_key, LOGIN_FAILURE_LIMIT) or throttle.exhausted(address_key, LOGIN_ADDRESS_LIMIT):
-            return _too_many(request, 'core/auth/login.html', {'next': request.GET.get('next', '')}, TOO_MANY)
-
-        username = login_input
-        if '@' in login_input:
-            matched = User.objects.filter(email__iexact=login_input).order_by('id').first()
-            if matched:
-                username = matched.username
-        user = authenticate(request, username=username, password=password)
-        if user is not None and user.is_active:
-            throttle.clear(pair_key)
+        try:
+            user = check_sign_in(request, request.POST.get('username'), request.POST.get('password'))
+        except SignInRefused as exc:
+            if exc.status == 429:
+                return _too_many(request, 'core/auth/login.html', {'next': request.GET.get('next', '')}, str(exc))
+            if is_ajax(request):
+                return json_error(str(exc), status=exc.status)
+            messages.error(request, str(exc))
+        else:
             login(request, user)
             if not request.POST.get('remember_me'):
                 request.session.set_expiry(0)
@@ -78,14 +106,6 @@ def login_view(request):
             if is_ajax(request):
                 return json_ok(redirect_url=next_url)
             return redirect(next_url)
-
-        throttle.hit(pair_key, LOGIN_FAILURE_LIMIT, LOGIN_FAILURE_WINDOW)
-        throttle.hit(address_key, LOGIN_ADDRESS_LIMIT, LOGIN_FAILURE_WINDOW)
-        logger.warning("Failed sign-in for %r from %s", login_input[:150], throttle.client_ip(request))
-        error_msg = "We couldn't sign you in with those details. Check your email/username and password."
-        if is_ajax(request):
-            return json_error(error_msg, status=400)
-        messages.error(request, error_msg)
 
     return render(request, 'core/auth/login.html', {'next': request.GET.get('next', '')})
 

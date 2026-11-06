@@ -63,39 +63,47 @@ def _send_order_confirmation(order):
         logger.exception("Could not send confirmation for %s", order.order_number)
 
 
-@login_required
-@require_POST
-def place_order(request):
-    cart = Cart(request)
-    if cart.is_empty:
-        return json_error("Your cart is empty.", status=400)
+class OrderRefused(Exception):
+    """The cart cannot become an order; the message is for the customer."""
 
-    form = CheckoutForm(request_data(request))
-    if not form.is_valid():
-        return json_error("Please check the highlighted fields.", errors=form_errors(form))
-    data = form.cleaned_data
-    profile = get_profile(request.user)
+    def __init__(self, message, status=400):
+        super().__init__(message)
+        self.status = status
+
+
+def create_order(profile, data, load_cart):
+    """
+    Turn a cart into an order for ``profile`` using cleaned ``CheckoutForm`` data.
+
+    ``load_cart`` returns a fresh ``Cart``; it is called again once the products are locked so
+    prices and stock are read under the lock. Returns ``(order, cart)``; the caller clears the
+    cart. Raises OrderRefused when the order cannot be placed. Shared by the website and the
+    mobile API.
+    """
+    cart = load_cart()
+    if cart.is_empty:
+        raise OrderRefused("Your cart is empty.")
 
     # An order reserves its stock until it is paid, confirmed or cancelled, so one account may
     # only have a handful outstanding at a time (otherwise one could reserve the whole shop).
     open_orders = profile.orders.filter(paid_at__isnull=True,
                                         status__in=(Order.STATUS_PENDING, Order.STATUS_FAILED)).count()
     if open_orders >= settings.MAX_OPEN_ORDERS:
-        return json_error(f"You already have {open_orders} orders awaiting payment or confirmation. "
-                          "Please complete or cancel one of them before placing another.")
+        raise OrderRefused(f"You already have {open_orders} orders awaiting payment or confirmation. "
+                           "Please complete or cancel one of them before placing another.")
 
     with transaction.atomic():
         # Two customers checking out the last cartons at once are handled one after the other.
         lock_products([item['product'].id for item in cart])
-        cart = Cart(request)  # re-read prices and stock now that the products are locked
+        cart = load_cart()  # re-read prices and stock now that the products are locked
         if cart.is_empty:
-            return json_error("Your cart is empty.", status=400)
+            raise OrderRefused("Your cart is empty.")
         unpriced = [item['product'].name for item in cart if item['price'] <= 0]
         if unpriced:
-            return json_error(f"{', '.join(unpriced)} cannot be ordered online yet. Please remove it and contact us for a price.")
+            raise OrderRefused(f"{', '.join(unpriced)} cannot be ordered online yet. Please remove it and contact us for a price.")
         problems = cart.stock_problems()
         if problems:
-            return json_error(' '.join(problems) + " Please update your cart.")
+            raise OrderRefused(' '.join(problems) + " Please update your cart.")
 
         coupon = cart.coupon
         order = Order.objects.create(
@@ -126,18 +134,38 @@ def place_order(request):
             profile.save(update_fields=['phone_number'])
         if data.get('save_address') or not profile.addresses.exists():
             save_address(profile, order.address, order.city, make_primary=not profile.addresses.exists())
+    return order, cart
+
+
+def after_order_placed(order, data):
+    """Confirmation email and, for M-Pesa, the first payment prompt. Returns ``{'sent', 'message'}``."""
+    _send_order_confirmation(order)
+    if order.payment_method != Order.PAYMENT_MPESA:
+        return {'sent': False, 'message': ''}
+    try:
+        mpesa_stk_push(order, data['mpesa_phone'])
+        return {'sent': True, 'message': 'Check your phone and enter your M-Pesa PIN to complete payment.'}
+    except MpesaError as exc:
+        return {'sent': False, 'message': str(exc)}
+
+
+@login_required
+@require_POST
+def place_order(request):
+    if Cart(request).is_empty:
+        return json_error("Your cart is empty.", status=400)
+
+    form = CheckoutForm(request_data(request))
+    if not form.is_valid():
+        return json_error("Please check the highlighted fields.", errors=form_errors(form))
+    data = form.cleaned_data
+    try:
+        order, cart = create_order(get_profile(request.user), data, lambda: Cart(request))
+    except OrderRefused as exc:
+        return json_error(str(exc), status=exc.status)
 
     cart.clear()
-    _send_order_confirmation(order)
-
-    payment = {'sent': False, 'message': ''}
-    if order.payment_method == Order.PAYMENT_MPESA:
-        try:
-            mpesa_stk_push(order, data['mpesa_phone'])
-            payment = {'sent': True, 'message': 'Check your phone and enter your M-Pesa PIN to complete payment.'}
-        except MpesaError as exc:
-            payment = {'sent': False, 'message': str(exc)}
-
+    payment = after_order_placed(order, data)
     return json_ok(
         order_number=order.order_number,
         order_id=order.id,

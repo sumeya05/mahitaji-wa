@@ -47,9 +47,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'rest_framework',
+    'rest_framework.authtoken',   # mobile app sign-in (core/views/mobile.py)
     'corsheaders',
     'import_export',
     'core',
+    'fleet',                      # Mahitaji Fleet masters (fleet/models.py)
     'django_daraja',
 ]
 

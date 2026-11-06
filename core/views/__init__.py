@@ -13,6 +13,7 @@ re-exported here; the module map is:
     assistant.py   AI shopping assistant endpoint
     errors.py      404 / 500 handlers
     api.py         read-only REST viewsets (/data/)
+    mobile.py      token-authenticated API for the mobile app (/api/v1/)
     _common.py     helpers shared by the modules above
 
 Conventions
